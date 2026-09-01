@@ -72,7 +72,7 @@ export const DEFAULT_USERS: User[] = [
     TwoFactorSecret: 'HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ',
     EmergencyBackupCode: '8492-3105',
     TwoFactorEnabled: true,
-    TwoFactorMethod: 'TOTP_AUTHENTICATOR',
+    TwoFactorMethod: 'EMAIL_OTP',
     Assigned_Tabs: [...ALL_ERP_TABS]
   },
   {
@@ -88,7 +88,7 @@ export const DEFAULT_USERS: User[] = [
     TwoFactorSecret: 'JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP',
     EmergencyBackupCode: '9182-4752',
     TwoFactorEnabled: true,
-    TwoFactorMethod: 'TOTP_AUTHENTICATOR',
+    TwoFactorMethod: 'EMAIL_OTP',
     Assigned_Tabs: [...ALL_ERP_TABS]
   },
   {
@@ -104,7 +104,7 @@ export const DEFAULT_USERS: User[] = [
     TwoFactorSecret: 'IFBEGRCJJVIVCRSFIFBEGRCJJVIVCRSF',
     EmergencyBackupCode: '6201-9483',
     TwoFactorEnabled: true,
-    TwoFactorMethod: 'TOTP_AUTHENTICATOR',
+    TwoFactorMethod: 'EMAIL_OTP',
     Assigned_Tabs: ['Dashboard', 'CollectionsBoard', 'LandlordPayments', 'Rent', 'Deposits', 'Utilities', 'Collections', 'Accounting', 'Reports']
   },
   {
@@ -120,7 +120,7 @@ export const DEFAULT_USERS: User[] = [
     TwoFactorSecret: 'KVKFKRCPNZQUYMLXKVKFKRCPNZQUYMLX',
     EmergencyBackupCode: '3719-5820',
     TwoFactorEnabled: true,
-    TwoFactorMethod: 'TOTP_AUTHENTICATOR',
+    TwoFactorMethod: 'EMAIL_OTP',
     Assigned_Tabs: ['Dashboard', 'CollectionsBoard', 'Properties', 'Units', 'Landlords', 'Tenants', 'Bookings', 'Leases', 'MoveIn', 'MoveOut']
   }
 ];
