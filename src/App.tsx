@@ -32,15 +32,7 @@ interface Toast {
 }
 
 export default function App() {
-  const users = storage.getUsers();
-  const [currentUser, setCurrentUser] = useState<User>(users[0] || {
-    User_ID: 'USR-001',
-    Full_Name: 'Alex Mercer, CPA',
-    Email: 'alex.mercer@canadalease-erp.ca',
-    Role: 'Admin',
-    Created_At: '2025-01-01'
-  });
-
+  const [currentUser, setCurrentUser] = useState<User | null>(() => storage.getAuthenticatedSession());
   const [activeTab, setActiveTab] = useState<string>('Dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showTaxGuide, setShowTaxGuide] = useState(false);
@@ -60,11 +52,12 @@ export default function App() {
   };
 
   const handleLogout = () => {
-    // Cycle to next user or reset
-    const currentIndex = users.findIndex(u => u.User_ID === currentUser.User_ID);
-    const nextUser = users[(currentIndex + 1) % users.length] || users[0];
-    setCurrentUser(nextUser);
-    addToast(`Switched active profile to ${nextUser.Full_Name} (${nextUser.Role})`, 'info');
+    if (currentUser) {
+      storage.logout(currentUser.Email);
+    }
+    setCurrentUser(null);
+    setShowLoginModal(false);
+    addToast('You have been securely signed out. 2FA verification required to sign in.', 'info');
   };
 
   const handleQuickAction = (action: string) => {
@@ -81,6 +74,51 @@ export default function App() {
       setActiveTab('Dashboard');
     }
   };
+
+  // If user is not authenticated with 2FA, render the Mandatory 2FA Login Gateway
+  if (!currentUser) {
+    return (
+      <>
+        <LoginModal
+          isOpen={true}
+          isMandatoryPage={true}
+          currentUser={null}
+          onLoginSuccess={(user) => {
+            setCurrentUser(user);
+          }}
+          onToast={addToast}
+        />
+        {/* Toast Notification Container for Login */}
+        <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none">
+          {toasts.map(toast => (
+            <div
+              key={toast.id}
+              className={`pointer-events-auto p-3.5 rounded-xl shadow-lg border text-xs font-medium flex items-start justify-between gap-3 animate-in slide-in-from-bottom-5 duration-200 ${
+                toast.type === 'success'
+                  ? 'bg-emerald-900 text-emerald-50 border-emerald-700'
+                  : toast.type === 'error'
+                  ? 'bg-rose-900 text-rose-50 border-rose-700'
+                  : 'bg-indigo-900 text-indigo-50 border-indigo-700'
+              }`}
+            >
+              <div className="flex items-start gap-2">
+                {toast.type === 'success' && <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />}
+                {toast.type === 'error' && <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />}
+                {toast.type === 'info' && <Info className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />}
+                <span className="leading-snug">{toast.message}</span>
+              </div>
+              <button
+                onClick={() => removeToast(toast.id)}
+                className="text-white/70 hover:text-white shrink-0 p-0.5"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ))}
+        </div>
+      </>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-slate-100 text-slate-900 font-sans antialiased overflow-hidden">
@@ -102,11 +140,13 @@ export default function App() {
           currentUser={currentUser}
           onSwitchUser={(user) => {
             setCurrentUser(user);
-            addToast(`Switched user profile to ${user.Full_Name} (${user.Role})`, 'info');
+            storage.setAuthenticatedSession(user);
+            addToast(`Switched active profile to ${user.Full_Name} (${user.Role})`, 'info');
           }}
           onOpenTaxGuide={() => setShowTaxGuide(true)}
           onQuickAction={handleQuickAction}
           onOpenLogin={() => setShowLoginModal(true)}
+          onLogout={handleLogout}
         />
 
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 space-y-6">

@@ -237,34 +237,58 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigateTab, onQuickActi
               <Building className="w-4 h-4 text-indigo-600" />
               Canadian Properties by Province
             </h3>
-            <div className="space-y-3">
-              {properties.map(p => {
-                const propUnits = units.filter(u => u.Property_ID === p.Property_ID);
-                const occupied = propUnits.filter(u => u.Current_Status === 'Occupied').length;
-                const occPercent = propUnits.length > 0 ? Math.round((occupied / propUnits.length) * 100) : 0;
+            {properties.length === 0 ? (
+              <div className="p-6 text-center bg-slate-50 rounded-xl border border-slate-200/60 space-y-3">
+                <Building className="w-8 h-8 text-slate-400 mx-auto" />
+                <div>
+                  <p className="text-xs font-bold text-slate-800">Clean Production Workspace</p>
+                  <p className="text-[11px] text-slate-500 mt-0.5">No properties created yet.</p>
+                </div>
+                <div className="flex flex-col gap-2 pt-1">
+                  <button
+                    onClick={() => onNavigateTab('Properties')}
+                    className="w-full py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-colors"
+                  >
+                    + Add First Property
+                  </button>
+                  <button
+                    onClick={() => onNavigateTab('Administration')}
+                    className="w-full py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-colors"
+                  >
+                    Or Load Demo Portfolio
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {properties.map(p => {
+                  const propUnits = units.filter(u => u.Property_ID === p.Property_ID);
+                  const occupied = propUnits.filter(u => u.Current_Status === 'Occupied').length;
+                  const occPercent = propUnits.length > 0 ? Math.round((occupied / propUnits.length) * 100) : 0;
 
-                return (
-                  <div key={p.Property_ID} className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-xs font-bold text-slate-900">{p.Property_Name}</span>
-                      <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700">
-                        {p.Province}
-                      </span>
+                  return (
+                    <div key={p.Property_ID} className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-xs font-bold text-slate-900">{p.Property_Name}</span>
+                        <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700">
+                          {p.Province}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
+                        <span>{occupied}/{propUnits.length} Units Occupied</span>
+                        <span className="font-semibold text-slate-700">{occPercent}%</span>
+                      </div>
+                      <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                        <div
+                          className="bg-indigo-600 h-full rounded-full"
+                          style={{ width: `${occPercent}%` }}
+                        />
+                      </div>
                     </div>
-                    <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
-                      <span>{occupied}/{propUnits.length} Units Occupied</span>
-                      <span className="font-semibold text-slate-700">{occPercent}%</span>
-                    </div>
-                    <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
-                      <div
-                        className="bg-indigo-600 h-full rounded-full"
-                        style={{ width: `${occPercent}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           <button

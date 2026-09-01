@@ -58,6 +58,127 @@ export const ALL_ERP_TABS = [
   'AppsScriptHub'
 ];
 
+export const DEFAULT_USERS: User[] = [
+  {
+    User_ID: 'USR-ADMIN',
+    Email: 'admin@dreamdwell.com',
+    Full_Name: 'Alexander Wright (Managing Broker)',
+    Role: 'Admin',
+    Is_Active: true,
+    Password: 'admin',
+    Phone: '(416) 555-0100',
+    Created_At: '2025-01-01',
+    Last_Login: new Date().toISOString(),
+    Assigned_Tabs: [...ALL_ERP_TABS]
+  },
+  {
+    User_ID: 'USR-FINANCE',
+    Email: 'priya.kapoor@dreamdwell.com',
+    Full_Name: 'Priya Kapoor (CPA / Controller)',
+    Role: 'Finance',
+    Is_Active: true,
+    Password: 'admin',
+    Phone: '(416) 555-0102',
+    Created_At: '2025-02-01',
+    Last_Login: '2025-08-28T14:30:00Z',
+    Assigned_Tabs: ['Dashboard', 'CollectionsBoard', 'LandlordPayments', 'Rent', 'Deposits', 'Utilities', 'Collections', 'Accounting', 'Reports']
+  },
+  {
+    User_ID: 'USR-OPS',
+    Email: 'marcus.leblanc@dreamdwell.com',
+    Full_Name: 'Marcus LeBlanc (Property Operations)',
+    Role: 'Operations',
+    Is_Active: true,
+    Password: 'admin',
+    Phone: '(604) 555-0105',
+    Created_At: '2025-03-01',
+    Last_Login: '2025-08-30T10:15:00Z',
+    Assigned_Tabs: ['Dashboard', 'CollectionsBoard', 'Properties', 'Units', 'Landlords', 'Tenants', 'Bookings', 'Leases', 'MoveIn', 'MoveOut']
+  }
+];
+
+export const DEFAULT_UTILITY_CATALOG: UtilityCatalogItem[] = [
+  {
+    Utility_ID: 'UTL-001',
+    Utility_Name: 'Hydro / Electricity',
+    Category: 'Electricity',
+    Default_Vendor: 'Toronto Hydro / BC Hydro',
+    Default_GL_Account: '5010',
+    Description: 'Standard residential & commercial power and electrical consumption',
+    Is_Active: true,
+    Created_At: '2025-01-01'
+  },
+  {
+    Utility_ID: 'UTL-002',
+    Utility_Name: 'Natural Gas (Enbridge)',
+    Category: 'Natural Gas',
+    Default_Vendor: 'Enbridge Gas',
+    Default_GL_Account: '5010',
+    Description: 'Central radiator heating, furnace and hot water gas pipeline billing',
+    Is_Active: true,
+    Created_At: '2025-01-01'
+  },
+  {
+    Utility_ID: 'UTL-003',
+    Utility_Name: 'Municipal Water & Sewage',
+    Category: 'Water & Sewage',
+    Default_Vendor: 'City Water & Sewerage Department',
+    Default_GL_Account: '5010',
+    Description: 'Quarterly municipal metered water supply, stormwater and wastewater services',
+    Is_Active: true,
+    Created_At: '2025-01-01'
+  },
+  {
+    Utility_ID: 'UTL-004',
+    Utility_Name: 'High-Speed Internet / Fiber',
+    Category: 'Internet & Telecom',
+    Default_Vendor: 'Rogers / Bell / Telus Gigabit',
+    Default_GL_Account: '5200',
+    Description: 'Shared building dedicated fiber optic internet and Wi-Fi mesh network',
+    Is_Active: true,
+    Created_At: '2025-01-01'
+  },
+  {
+    Utility_ID: 'UTL-005',
+    Utility_Name: 'Waste & Recycling Removal',
+    Category: 'Waste Management',
+    Default_Vendor: 'Municipal Solid Waste & Recycling Services',
+    Default_GL_Account: '5020',
+    Description: 'Weekly curbside organics, recycling, and commercial bin pickups',
+    Is_Active: true,
+    Created_At: '2025-01-01'
+  },
+  {
+    Utility_ID: 'UTL-006',
+    Utility_Name: 'Heating Oil & Bulk Fuel',
+    Category: 'Heating Oil',
+    Default_Vendor: 'Superior Propane / Ultramar Energy',
+    Default_GL_Account: '5010',
+    Description: 'Bulk fuel and heating oil tank refills for heritage and rural properties',
+    Is_Active: true,
+    Created_At: '2025-01-01'
+  }
+];
+
+export const DEFAULT_ACCOUNTING_PERIODS: AccountingPeriod[] = [
+  {
+    Period_ID: 'PER-2025',
+    Period_Name: 'Fiscal Year 2025',
+    Start_Date: '2025-01-01',
+    End_Date: '2025-12-31',
+    Status: 'OPEN'
+  },
+  {
+    Period_ID: 'PER-2024',
+    Period_Name: 'Fiscal Year 2024',
+    Start_Date: '2024-01-01',
+    End_Date: '2024-12-31',
+    Status: 'Closed',
+    Closed_By: 'priya.kapoor@dreamdwell.com',
+    Closed_At: '2025-01-15T18:00:00Z'
+  }
+];
+
 interface ERPDataStore {
   users: User[];
   properties: Property[];
@@ -85,47 +206,50 @@ interface ERPDataStore {
   auditLogs: AuditEntry[];
 }
 
-const STORAGE_KEY = 'canadian_lease_erp_v3_4';
+const STORAGE_KEY = 'canadian_lease_erp_v3_5';
+const AUTH_SESSION_KEY = 'canadian_lease_erp_auth_session_v3';
 
-function getInitialData(): ERPDataStore {
-  const users: User[] = [
-    {
-      User_ID: 'USR-ADMIN',
-      Email: 'admin@dreamdwell.com',
-      Full_Name: 'Alexander Wright (Managing Broker)',
-      Role: 'Admin',
-      Is_Active: true,
-      Password: 'admin',
-      Phone: '(416) 555-0100',
-      Created_At: '2025-01-01',
-      Last_Login: new Date().toISOString(),
-      Assigned_Tabs: [...ALL_ERP_TABS]
-    },
-    {
-      User_ID: 'USR-FINANCE',
-      Email: 'priya.kapoor@dreamdwell.com',
-      Full_Name: 'Priya Kapoor (CPA / Controller)',
-      Role: 'Finance',
-      Is_Active: true,
-      Password: 'admin',
-      Phone: '(416) 555-0102',
-      Created_At: '2025-02-01',
-      Last_Login: '2025-08-28T14:30:00Z',
-      Assigned_Tabs: ['Dashboard', 'CollectionsBoard', 'LandlordPayments', 'Rent', 'Deposits', 'Utilities', 'Collections', 'Accounting', 'Reports']
-    },
-    {
-      User_ID: 'USR-OPS',
-      Email: 'marcus.leblanc@dreamdwell.com',
-      Full_Name: 'Marcus LeBlanc (Property Operations)',
-      Role: 'Operations',
-      Is_Active: true,
-      Password: 'admin',
-      Phone: '(604) 555-0105',
-      Created_At: '2025-03-01',
-      Last_Login: '2025-08-30T10:15:00Z',
-      Assigned_Tabs: ['Dashboard', 'CollectionsBoard', 'Properties', 'Units', 'Landlords', 'Tenants', 'Bookings', 'Leases', 'MoveIn', 'MoveOut']
-    }
-  ];
+export function getCleanProductionData(): ERPDataStore {
+  return {
+    users: [...DEFAULT_USERS],
+    properties: [],
+    units: [],
+    landlords: [],
+    tenants: [],
+    tenantIDProofs: [],
+    bookings: [],
+    leases: [],
+    landlordPayments: [],
+    rentTransactions: [],
+    depositTransactions: [],
+    utilityBills: [],
+    utilitySplits: [],
+    utilityCatalog: [...DEFAULT_UTILITY_CATALOG],
+    collections: [],
+    excessPayments: [],
+    refunds: [],
+    moveIns: [],
+    moveOuts: [],
+    coa: [...DEFAULT_COA],
+    journalHeaders: [],
+    journalLines: [],
+    accountingPeriods: [...DEFAULT_ACCOUNTING_PERIODS],
+    auditLogs: [
+      {
+        Audit_ID: 'AUD-INIT-001',
+        Timestamp: new Date().toISOString(),
+        User_Email: 'admin@dreamdwell.com',
+        Action: 'CREATE',
+        Module: 'System',
+        Record_ID: 'CLEAN_WORKSPACE_INIT',
+        After_JSON: '{"status":"Clean Production Workspace Initialized - Ready for Real Client Data"}'
+      }
+    ]
+  };
+}
+
+export function getSampleDemoData(): ERPDataStore {
+  const users: User[] = [...DEFAULT_USERS];
 
   const landlords: Landlord[] = [
     {
@@ -1098,18 +1222,22 @@ function getInitialData(): ERPDataStore {
     depositTransactions,
     utilityBills,
     utilitySplits,
-    utilityCatalog,
+    utilityCatalog: [...DEFAULT_UTILITY_CATALOG],
     collections,
     excessPayments,
     refunds,
     moveIns,
     moveOuts,
-    coa: DEFAULT_COA,
+    coa: [...DEFAULT_COA],
     journalHeaders,
     journalLines,
-    accountingPeriods,
+    accountingPeriods: [...DEFAULT_ACCOUNTING_PERIODS],
     auditLogs
   };
+}
+
+function getInitialData(): ERPDataStore {
+  return getCleanProductionData();
 }
 
 class StorageService {
@@ -1155,12 +1283,165 @@ class StorageService {
   }
 
   public resetToDefault() {
-    this.data = getInitialData();
+    this.data = getCleanProductionData();
     this.save();
+  }
+
+  public resetToCleanSlate(userEmail: string = 'admin@dreamdwell.com') {
+    this.data = getCleanProductionData();
+    this.logAudit(userEmail, 'DELETE', 'System', 'RESET_CLEAN_SLATE', { message: 'Database reset to empty clean production state.' });
+    this.save();
+  }
+
+  public purgeAllSampleData(userEmail: string = 'admin@dreamdwell.com') {
+    this.data.properties = [];
+    this.data.units = [];
+    this.data.landlords = [];
+    this.data.tenants = [];
+    this.data.tenantIDProofs = [];
+    this.data.bookings = [];
+    this.data.leases = [];
+    this.data.landlordPayments = [];
+    this.data.rentTransactions = [];
+    this.data.depositTransactions = [];
+    this.data.utilityBills = [];
+    this.data.utilitySplits = [];
+    this.data.collections = [];
+    this.data.excessPayments = [];
+    this.data.refunds = [];
+    this.data.moveIns = [];
+    this.data.moveOuts = [];
+    this.data.journalHeaders = [];
+    this.data.journalLines = [];
+    this.logAudit(userEmail, 'DELETE', 'System', 'PURGE_ALL_DATA', { message: 'All operational records purged. Clean production state.' });
+    this.save();
+  }
+
+  public loadSampleDemoData(userEmail: string = 'admin@dreamdwell.com') {
+    const demo = getSampleDemoData();
+    this.data = {
+      ...demo,
+      users: this.data.users && this.data.users.length > 0 ? this.data.users : demo.users
+    };
+    this.logAudit(userEmail, 'CREATE', 'System', 'LOAD_DEMO_DATA', { message: 'Loaded Canadian demo portfolio dataset.' });
+    this.save();
+  }
+
+  public hasSampleData(): boolean {
+    return this.data.properties.length > 0 || this.data.tenants.length > 0 || this.data.leases.length > 0;
+  }
+
+  public exportToJSON(): string {
+    return JSON.stringify(this.data, null, 2);
+  }
+
+  public importFromJSON(jsonStr: string, userEmail: string = 'admin@dreamdwell.com'): boolean {
+    try {
+      const parsed = JSON.parse(jsonStr) as ERPDataStore;
+      if (!parsed.users || !parsed.properties) {
+        throw new Error('Invalid ERP Data Store schema');
+      }
+      this.data = parsed;
+      this.logAudit(userEmail, 'CREATE', 'System', 'IMPORT_DATABASE', { timestamp: new Date().toISOString() });
+      this.save();
+      return true;
+    } catch (e) {
+      console.error('Import failed:', e);
+      return false;
+    }
   }
 
   public getRawData(): ERPDataStore {
     return this.data;
+  }
+
+  // Authentication Session Management
+  public getAuthenticatedSession(): User | null {
+    try {
+      const stored = sessionStorage.getItem(AUTH_SESSION_KEY) || localStorage.getItem(AUTH_SESSION_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        const found = this.data.users.find(u =>
+          (parsed.User_ID && u.User_ID === parsed.User_ID) ||
+          (parsed.Email && u.Email.toLowerCase() === parsed.Email.toLowerCase())
+        );
+        if (found && found.Is_Active) {
+          return found;
+        }
+      }
+    } catch (e) {
+      console.warn('Error retrieving authenticated session:', e);
+    }
+    return null;
+  }
+
+  public setAuthenticatedSession(user: User | null, rememberMe: boolean = false) {
+    try {
+      if (user) {
+        sessionStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(user));
+        if (rememberMe) {
+          localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(user));
+        } else {
+          localStorage.removeItem(AUTH_SESSION_KEY);
+        }
+      } else {
+        sessionStorage.removeItem(AUTH_SESSION_KEY);
+        localStorage.removeItem(AUTH_SESSION_KEY);
+      }
+    } catch (e) {
+      console.warn('Error saving session:', e);
+    }
+  }
+
+  public logout(userEmail?: string) {
+    if (userEmail) {
+      this.logAudit(userEmail, 'LOGOUT', 'Authentication', 'SESSION_TERMINATED', { timestamp: new Date().toISOString() });
+    }
+    this.setAuthenticatedSession(null);
+  }
+
+  public registerOrUpdateUser(userData: {
+    Email: string;
+    Full_Name: string;
+    Password: string;
+    Role?: User['Role'];
+    Phone?: string;
+  }): User {
+    const emailLower = userData.Email.trim().toLowerCase();
+    const existingIdx = this.data.users.findIndex(u => u.Email.toLowerCase() === emailLower);
+
+    if (existingIdx >= 0) {
+      const updated: User = {
+        ...this.data.users[existingIdx],
+        Full_Name: userData.Full_Name || this.data.users[existingIdx].Full_Name,
+        Password: userData.Password,
+        Role: userData.Role || this.data.users[existingIdx].Role,
+        Phone: userData.Phone || this.data.users[existingIdx].Phone,
+        Is_Active: true,
+        Last_Login: new Date().toISOString()
+      };
+      this.data.users[existingIdx] = updated;
+      this.logAudit(updated.Email, 'UPDATE', 'Users', updated.User_ID, { action: 'Updated user credentials/password' });
+      this.save();
+      return updated;
+    } else {
+      const newUser: User = {
+        User_ID: 'USR-' + Date.now().toString().slice(-6),
+        Email: userData.Email.trim(),
+        Full_Name: userData.Full_Name || userData.Email.split('@')[0],
+        Password: userData.Password,
+        Role: userData.Role || 'Admin',
+        Phone: userData.Phone || '',
+        Is_Active: true,
+        Created_At: new Date().toISOString().slice(0, 10),
+        Last_Login: new Date().toISOString(),
+        Assigned_Tabs: [...ALL_ERP_TABS]
+      };
+      this.data.users.push(newUser);
+      this.logAudit(newUser.Email, 'CREATE', 'Users', newUser.User_ID, { action: 'Registered new user account' });
+      this.save();
+      return newUser;
+    }
   }
 
   // Getters

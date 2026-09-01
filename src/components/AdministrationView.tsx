@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   ShieldAlert, Users, Plus, Edit3, Trash2, Key, Check,
   X, CheckCircle2, AlertCircle, History, RotateCcw,
-  Sparkles, Lock, Eye, CheckSquare, Square, Search
+  Sparkles, Lock, Eye, CheckSquare, Square, Search,
+  Database, Download, Upload, Trash, RefreshCw, FileText
 } from 'lucide-react';
 import { storage, ALL_ERP_TABS } from '../services/storage';
 import { User, Role, AuditEntry } from '../types/erp';
@@ -21,19 +22,31 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
 }) => {
   const users = storage.getUsers();
   const auditLogs = storage.getAuditLogs();
+  const properties = storage.getProperties();
+  const units = storage.getUnits();
+  const landlords = storage.getLandlords();
+  const tenants = storage.getTenants();
+  const leases = storage.getLeases();
+  const rentTxns = storage.getRentTransactions();
+  const journals = storage.getJournalHeaders();
 
-  const [activeSubTab, setActiveSubTab] = useState<'USERS' | 'PERMISSIONS' | 'AUDIT'>('USERS');
+  const isCleanSlate = properties.length === 0 && tenants.length === 0 && leases.length === 0;
+
+  const [activeSubTab, setActiveSubTab] = useState<'USERS' | 'PERMISSIONS' | 'AUDIT' | 'STORAGE'>('USERS');
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
   const [selectedUserForPerms, setSelectedUserForPerms] = useState<User>(users[0] || currentUser);
   const [auditSearch, setAuditSearch] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form State
   const [formData, setFormData] = useState<{
     User_ID: string;
     Email: string;
     Full_Name: string;
+    Password: string;
+    Phone: string;
     Role: Role;
     Is_Active: boolean;
     Assigned_Tabs: string[];
@@ -41,6 +54,8 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
     User_ID: '',
     Email: '',
     Full_Name: '',
+    Password: '',
+    Phone: '',
     Role: 'Operations',
     Is_Active: true,
     Assigned_Tabs: ['Dashboard', 'CollectionsBoard', 'Properties', 'Units', 'Tenants', 'Leases']
@@ -52,6 +67,8 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
       User_ID: nextId,
       Email: '',
       Full_Name: '',
+      Password: 'admin',
+      Phone: '',
       Role: 'Operations',
       Is_Active: true,
       Assigned_Tabs: ['Dashboard', 'CollectionsBoard', 'Properties', 'Units', 'Tenants', 'Leases', 'MoveIn', 'MoveOut']
@@ -66,6 +83,8 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
       User_ID: user.User_ID,
       Email: user.Email,
       Full_Name: user.Full_Name,
+      Password: user.Password || 'admin',
+      Phone: user.Phone || '',
       Role: user.Role,
       Is_Active: user.Is_Active,
       Assigned_Tabs: user.Assigned_Tabs || ALL_ERP_TABS
@@ -82,8 +101,10 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
 
     const payload: User = {
       User_ID: formData.User_ID,
-      Email: formData.Email,
-      Full_Name: formData.Full_Name,
+      Email: formData.Email.trim(),
+      Full_Name: formData.Full_Name.trim(),
+      Password: formData.Password.trim() || 'admin',
+      Phone: formData.Phone.trim(),
       Role: formData.Role,
       Is_Active: formData.Is_Active,
       Created_At: editingUser ? editingUser.Created_At : new Date().toISOString().split('T')[0],
@@ -131,11 +152,50 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
     onToast(`Updated tab permissions for ${selectedUserForPerms.Full_Name}`, 'success');
   };
 
-  const handleResetDatabase = () => {
-    if (window.confirm('⚠️ Reset entire database to default Canadian portfolio seed state? All newly created records will be re-initialized.')) {
-      storage.resetToDefault();
-      onToast('Database re-initialized to standard Canadian multi-province seed state.', 'info');
+  const handlePurgeAllData = () => {
+    if (window.confirm('⚠️ PURGE ALL OPERATIONAL DATA?\n\nThis will remove all properties, units, landlords, tenants, leases, utility bills, rent transactions, and journal entries.\n\nYour user accounts, Chart of Accounts, and system configuration will remain intact. This cannot be undone.')) {
+      storage.purgeAllSampleData(currentUser.Email);
+      onToast('All sample & operational data purged! The database is now a clean production slate.', 'success');
     }
+  };
+
+  const handleLoadDemoData = () => {
+    if (window.confirm('Load Canadian sample demonstration portfolio? This will populate sample properties in Ontario, BC, and Quebec with demo leases and accounting records.')) {
+      storage.loadSampleDemoData(currentUser.Email);
+      onToast('Sample demonstration portfolio loaded successfully!', 'success');
+    }
+  };
+
+  const handleExportBackup = () => {
+    const json = storage.exportToJSON();
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `canadian-lease-erp-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    onToast('Database backup exported to JSON file', 'success');
+  };
+
+  const handleImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      if (content) {
+        const success = storage.importFromJSON(content, currentUser.Email);
+        if (success) {
+          onToast('Database successfully restored from JSON backup!', 'success');
+        } else {
+          onToast('Failed to import database. Please verify JSON file format.', 'error');
+        }
+      }
+    };
+    reader.readAsText(file);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const filteredAudit = auditLogs.filter(a => {
@@ -159,21 +219,45 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
               <ShieldAlert className="w-5 h-5" />
             </span>
             <div>
-              <h2 className="text-base font-bold text-slate-900">Access Control & Administration</h2>
-              <p className="text-xs text-slate-500">Manage user accounts, configure granular role permissions matrix, and review immutable audit compliance logs</p>
+              <div className="flex items-center gap-2">
+                <h2 className="text-base font-bold text-slate-900">Access Control & Administration</h2>
+                {isCleanSlate ? (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                    Clean Production Slate
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800 border border-amber-200">
+                    Sample / Active Data ({properties.length} Props)
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-slate-500">Manage user accounts, granular permissions, audit compliance logs, and database storage state</p>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handleResetDatabase}
-            className="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-rose-50 hover:text-rose-700 text-slate-700 transition-colors flex items-center gap-1.5"
-            title="Reset to initial seed state"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            Reset Data Store
-          </button>
+        <div className="flex items-center flex-wrap gap-2">
+          {!isCleanSlate && (
+            <button
+              onClick={handlePurgeAllData}
+              className="px-3.5 py-2 rounded-xl text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition-colors flex items-center gap-1.5"
+              title="Purge all operational data to clean production state"
+            >
+              <Trash className="w-3.5 h-3.5" />
+              Purge Sample Data
+            </button>
+          )}
+
+          {isCleanSlate && (
+            <button
+              onClick={handleLoadDemoData}
+              className="px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition-colors flex items-center gap-1.5"
+              title="Load Canadian sample demo portfolio"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+              Load Demo Data
+            </button>
+          )}
 
           <button
             onClick={handleOpenAdd}
@@ -186,10 +270,10 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
       </div>
 
       {/* Navigation Sub-Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+      <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto">
         <button
           onClick={() => setActiveSubTab('USERS')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
             activeSubTab === 'USERS'
               ? 'bg-slate-900 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100'
@@ -203,7 +287,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
 
         <button
           onClick={() => setActiveSubTab('PERMISSIONS')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
             activeSubTab === 'PERMISSIONS'
               ? 'bg-slate-900 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100'
@@ -217,7 +301,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
 
         <button
           onClick={() => setActiveSubTab('AUDIT')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
             activeSubTab === 'AUDIT'
               ? 'bg-slate-900 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100'
@@ -226,6 +310,20 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
           <div className="flex items-center gap-2">
             <History className="w-4 h-4" />
             <span>Audit Trail Logs ({auditLogs.length})</span>
+          </div>
+        </button>
+
+        <button
+          onClick={() => setActiveSubTab('STORAGE')}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
+            activeSubTab === 'STORAGE'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <Database className="w-4 h-4" />
+            <span>Storage & Sample Data</span>
           </div>
         </button>
       </div>
@@ -459,6 +557,163 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
         </div>
       )}
 
+      {/* Subtab 4: Storage & Sample Data Management */}
+      {activeSubTab === 'STORAGE' && (
+        <div className="space-y-6">
+          {/* Status Alert Card */}
+          <div className={`p-6 rounded-2xl border ${
+            isCleanSlate
+              ? 'bg-emerald-50/70 border-emerald-200 text-emerald-950'
+              : 'bg-amber-50/70 border-amber-200 text-amber-950'
+          }`}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className={`p-3 rounded-xl ${
+                  isCleanSlate ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+                }`}>
+                  <Database className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold">
+                      {isCleanSlate ? 'Clean Production Workspace Active' : 'Active Operational & Sample Dataset'}
+                    </h3>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
+                      isCleanSlate
+                        ? 'bg-emerald-200/60 text-emerald-900'
+                        : 'bg-amber-200/60 text-amber-900'
+                    }`}>
+                      {isCleanSlate ? 'READY FOR REAL DATA' : `${properties.length} PROPERTIES LOADED`}
+                    </span>
+                  </div>
+                  <p className="text-xs mt-1 text-slate-600">
+                    {isCleanSlate
+                      ? 'No operational records or sample data exist in this workspace. Any properties, landlords, tenants, or leases you create will be preserved in persistent browser storage.'
+                      : 'Operational records and demo portfolio data are currently loaded. You can purge all sample data with one click to start fresh with a clean production slate.'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                {!isCleanSlate ? (
+                  <button
+                    onClick={handlePurgeAllData}
+                    className="px-4 py-2.5 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-xs transition-colors flex items-center gap-2"
+                  >
+                    <Trash className="w-4 h-4" />
+                    Purge All Sample Data
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleLoadDemoData}
+                    className="px-4 py-2.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition-colors flex items-center gap-2"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    Load Sample Demo Portfolio
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Database Entities Metrics */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
+            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <FileText className="w-4 h-4 text-indigo-600" />
+              Live Database Entity Counts
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3 text-center">
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                <div className="text-xl font-bold text-slate-900">{properties.length}</div>
+                <div className="text-[10px] font-bold text-slate-500 uppercase mt-0.5">Properties</div>
+              </div>
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                <div className="text-xl font-bold text-slate-900">{units.length}</div>
+                <div className="text-[10px] font-bold text-slate-500 uppercase mt-0.5">Units</div>
+              </div>
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                <div className="text-xl font-bold text-slate-900">{landlords.length}</div>
+                <div className="text-[10px] font-bold text-slate-500 uppercase mt-0.5">Landlords</div>
+              </div>
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                <div className="text-xl font-bold text-slate-900">{tenants.length}</div>
+                <div className="text-[10px] font-bold text-slate-500 uppercase mt-0.5">Tenants</div>
+              </div>
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                <div className="text-xl font-bold text-slate-900">{leases.length}</div>
+                <div className="text-[10px] font-bold text-slate-500 uppercase mt-0.5">Leases</div>
+              </div>
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                <div className="text-xl font-bold text-slate-900">{rentTxns.length}</div>
+                <div className="text-[10px] font-bold text-slate-500 uppercase mt-0.5">Rent Txns</div>
+              </div>
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                <div className="text-xl font-bold text-slate-900">{journals.length}</div>
+                <div className="text-[10px] font-bold text-slate-500 uppercase mt-0.5">Journals</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Backup & Data Actions */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Backup Export */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
+                  <Download className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900">Export JSON Backup</h4>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Download a full snapshot of your current database including properties, tenants, leases, and accounting journals as a JSON file.
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={handleExportBackup}
+                className="w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2"
+              >
+                <Download className="w-4 h-4" />
+                Download JSON Backup
+              </button>
+            </div>
+
+            {/* Backup Import */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="p-2.5 bg-purple-50 text-purple-600 rounded-xl">
+                  <Upload className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900">Restore / Import Database</h4>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Upload a previously exported JSON backup file to restore all ERP entities, user roles, and ledger journal history.
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImportFile}
+                  accept=".json"
+                  className="hidden"
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full py-2.5 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2 shadow-xs"
+                >
+                  <Upload className="w-4 h-4" />
+                  Select & Import JSON File
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Add / Edit User Modal */}
       {showAddUserModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in duration-150">
@@ -498,6 +753,30 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500"
                   required
                 />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Account Password *</label>
+                  <input
+                    type="password"
+                    value={formData.Password}
+                    onChange={(e) => setFormData({ ...formData, Password: e.target.value })}
+                    placeholder="••••••••••••"
+                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 font-semibold"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Phone Number</label>
+                  <input
+                    type="text"
+                    value={formData.Phone}
+                    onChange={(e) => setFormData({ ...formData, Phone: e.target.value })}
+                    placeholder="(416) 555-0100"
+                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">

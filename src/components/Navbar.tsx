@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import {
   Menu, Shield, DollarSign, Plus, Sparkles, HelpCircle,
-  FileSpreadsheet, ArrowUpRight, CheckCircle2, Building, RefreshCw
+  FileSpreadsheet, ArrowUpRight, CheckCircle2, Building, RefreshCw,
+  LogOut, ShieldCheck, User as UserIcon
 } from 'lucide-react';
 import { User, CanadianProvince, CANADIAN_PROVINCE_TAX } from '../types/erp';
 import { storage } from '../services/storage';
@@ -14,6 +15,7 @@ interface NavbarProps {
   onOpenTaxGuide: () => void;
   onQuickAction: (action: string) => void;
   onOpenLogin: () => void;
+  onLogout: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -23,7 +25,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSwitchUser,
   onOpenTaxGuide,
   onQuickAction,
-  onOpenLogin
+  onOpenLogin,
+  onLogout
 }) => {
   const users = storage.getUsers();
   const [selectedProvince, setSelectedProvince] = useState<CanadianProvince>('ON');
@@ -100,31 +103,31 @@ export const Navbar: React.FC<NavbarProps> = ({
           <span className="hidden sm:inline">New</span> Lease
         </button>
 
-        {/* User Role Switcher & 2FA Login Button */}
+        {/* User Profile, 2FA Verified Badge & Logout */}
         <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
+          <div className="hidden lg:flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+            <span>2FA Verified</span>
+          </div>
+
           <button
             onClick={onOpenLogin}
             className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
-            title="Open 2FA Login / Security Verification Portal"
+            title="Switch User / 2FA Verification Portal"
           >
-            <Shield className="w-3.5 h-3.5 text-indigo-600" />
-            <span className="hidden md:inline">2FA Login</span>
+            <UserIcon className="w-3.5 h-3.5 text-indigo-600" />
+            <span className="max-w-[100px] truncate">{currentUser.Full_Name.split(' ')[0]}</span>
+            <span className="text-[10px] text-slate-500 font-normal">({currentUser.Role})</span>
           </button>
 
-          <select
-            value={currentUser.User_ID}
-            onChange={(e) => {
-              const u = users.find(x => x.User_ID === e.target.value);
-              if (u) onSwitchUser(u);
-            }}
-            className="text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 border-none rounded-lg px-2.5 py-1.5 outline-none cursor-pointer"
+          <button
+            onClick={onLogout}
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition-colors"
+            title="Log Out (Locks session and returns to 2FA Login)"
           >
-            {users.map(u => (
-              <option key={u.User_ID} value={u.User_ID}>
-                {u.Full_Name.split(' ')[0]} ({u.Role})
-              </option>
-            ))}
-          </select>
+            <LogOut className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Log Out</span>
+          </button>
         </div>
       </div>
     </header>
