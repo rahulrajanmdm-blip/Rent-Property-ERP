@@ -199,6 +199,10 @@ export interface User {
   Assigned_Tabs?: string[];
   Password?: string;
   Phone?: string;
+  TwoFactorSecret?: string;
+  TwoFactorEnabled?: boolean;
+  TwoFactorMethod?: 'TOTP_AUTHENTICATOR' | 'EMAIL_OTP';
+  EmergencyBackupCode?: string;
 }
 
 export type UtilityCategory = 'Electricity' | 'Natural Gas' | 'Water & Sewage' | 'Internet & Telecom' | 'Waste Management' | 'Heating Oil' | 'Other';

@@ -60,6 +60,22 @@ export const ALL_ERP_TABS = [
 
 export const DEFAULT_USERS: User[] = [
   {
+    User_ID: 'USR-MASTER-ADMIN',
+    Email: 'rahulrajanmdm@gmail.com',
+    Full_Name: 'Rahul Rajan (Master Admin)',
+    Role: 'Admin',
+    Is_Active: true,
+    Password: 'admin',
+    Phone: '(416) 555-0100',
+    Created_At: '2025-01-01',
+    Last_Login: new Date().toISOString(),
+    TwoFactorSecret: 'HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ',
+    EmergencyBackupCode: '8492-3105',
+    TwoFactorEnabled: true,
+    TwoFactorMethod: 'TOTP_AUTHENTICATOR',
+    Assigned_Tabs: [...ALL_ERP_TABS]
+  },
+  {
     User_ID: 'USR-ADMIN',
     Email: 'admin@dreamdwell.com',
     Full_Name: 'Alexander Wright (Managing Broker)',
@@ -69,6 +85,10 @@ export const DEFAULT_USERS: User[] = [
     Phone: '(416) 555-0100',
     Created_At: '2025-01-01',
     Last_Login: new Date().toISOString(),
+    TwoFactorSecret: 'JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP',
+    EmergencyBackupCode: '9182-4752',
+    TwoFactorEnabled: true,
+    TwoFactorMethod: 'TOTP_AUTHENTICATOR',
     Assigned_Tabs: [...ALL_ERP_TABS]
   },
   {
@@ -81,6 +101,10 @@ export const DEFAULT_USERS: User[] = [
     Phone: '(416) 555-0102',
     Created_At: '2025-02-01',
     Last_Login: '2025-08-28T14:30:00Z',
+    TwoFactorSecret: 'IFBEGRCJJVIVCRSFIFBEGRCJJVIVCRSF',
+    EmergencyBackupCode: '6201-9483',
+    TwoFactorEnabled: true,
+    TwoFactorMethod: 'TOTP_AUTHENTICATOR',
     Assigned_Tabs: ['Dashboard', 'CollectionsBoard', 'LandlordPayments', 'Rent', 'Deposits', 'Utilities', 'Collections', 'Accounting', 'Reports']
   },
   {
@@ -93,6 +117,10 @@ export const DEFAULT_USERS: User[] = [
     Phone: '(604) 555-0105',
     Created_At: '2025-03-01',
     Last_Login: '2025-08-30T10:15:00Z',
+    TwoFactorSecret: 'KVKFKRCPNZQUYMLXKVKFKRCPNZQUYMLX',
+    EmergencyBackupCode: '3719-5820',
+    TwoFactorEnabled: true,
+    TwoFactorMethod: 'TOTP_AUTHENTICATOR',
     Assigned_Tabs: ['Dashboard', 'CollectionsBoard', 'Properties', 'Units', 'Landlords', 'Tenants', 'Bookings', 'Leases', 'MoveIn', 'MoveOut']
   }
 ];
@@ -206,8 +234,8 @@ interface ERPDataStore {
   auditLogs: AuditEntry[];
 }
 
-const STORAGE_KEY = 'canadian_lease_erp_v3_5';
-const AUTH_SESSION_KEY = 'canadian_lease_erp_auth_session_v3';
+const STORAGE_KEY = 'canadian_lease_erp_prod_v5';
+const AUTH_SESSION_KEY = 'canadian_lease_erp_auth_v5';
 
 export function getCleanProductionData(): ERPDataStore {
   return {

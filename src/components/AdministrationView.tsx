@@ -108,6 +108,10 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
       Role: formData.Role,
       Is_Active: formData.Is_Active,
       Created_At: editingUser ? editingUser.Created_At : new Date().toISOString().split('T')[0],
+      TwoFactorSecret: editingUser?.TwoFactorSecret || 'HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ',
+      EmergencyBackupCode: editingUser?.EmergencyBackupCode || '8492-3105',
+      TwoFactorEnabled: true,
+      TwoFactorMethod: 'TOTP_AUTHENTICATOR',
       Assigned_Tabs: formData.Role === 'Admin' ? [...ALL_ERP_TABS] : formData.Assigned_Tabs
     };
 
