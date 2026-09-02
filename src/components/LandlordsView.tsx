@@ -127,7 +127,7 @@ export const LandlordsView: React.FC<LandlordsViewProps> = ({ currentUser, onToa
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
           <p className="text-[11px] font-bold uppercase tracking-wider text-indigo-600">Properties Under Management</p>
           <p className="text-xl font-black text-indigo-700 mt-1">{properties.length} Portfolios</p>
-          <span className="text-[10px] text-slate-500">Across Canada</span>
+          <span className="text-[10px] text-slate-500">Across all regions</span>
         </div>
 
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">

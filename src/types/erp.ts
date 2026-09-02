@@ -1,9 +1,10 @@
 export type Role = 'Admin' | 'Finance' | 'Operations';
 
-export type CanadianProvince = 'ON' | 'BC' | 'AB' | 'QC' | 'MB' | 'SK' | 'NS' | 'NB' | 'NL' | 'PE' | 'NT' | 'YT' | 'NU';
+export type RegionalProvince = 'ON' | 'BC' | 'AB' | 'QC' | 'MB' | 'SK' | 'NS' | 'NB' | 'NL' | 'PE' | 'NT' | 'YT' | 'NU';
+export type CanadianProvince = RegionalProvince;
 
-export interface CanadianTaxConfig {
-  province: CanadianProvince;
+export interface RegionalTaxConfig {
+  province: RegionalProvince;
   name: string;
   taxType: string;
   depositRule: string;
@@ -14,8 +15,9 @@ export interface CanadianTaxConfig {
   qstRate: number;
   totalTaxRate: number;
 }
+export type CanadianTaxConfig = RegionalTaxConfig;
 
-export const CANADIAN_PROVINCE_TAX: Record<CanadianProvince, CanadianTaxConfig> = {
+export const REGIONAL_PROVINCE_TAX: Record<RegionalProvince, RegionalTaxConfig> = {
   ON: {
     province: 'ON',
     name: 'Ontario',
@@ -173,8 +175,18 @@ export const CANADIAN_PROVINCE_TAX: Record<CanadianProvince, CanadianTaxConfig> 
     totalTaxRate: 0.05
   },
 };
+export const CANADIAN_PROVINCE_TAX = REGIONAL_PROVINCE_TAX;
 
-export type TenantIdType = 'Driver License' | 'Passport' | 'Provincial Photo ID' | 'PR Card' | 'Work Permit' | 'National ID' | 'Other';
+export type TenantIdType = 
+  | 'Driver License' 
+  | 'Passport' 
+  | 'State / Regional Photo ID' 
+  | 'Provincial Photo ID' 
+  | 'Permanent Resident Card' 
+  | 'PR Card' 
+  | 'Work Permit' 
+  | 'National ID' 
+  | 'Other';
 
 export interface TenantIDProof {
   ID_Proof_ID: string;
@@ -241,7 +253,7 @@ export interface Property {
   Property_Name: string;
   Address: string;
   City: string;
-  Province: CanadianProvince;
+  Province: RegionalProvince;
   Postal_Code: string;
   Landlord_ID: string;
   Property_Status?: 'Active' | 'Inactive';

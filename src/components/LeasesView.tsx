@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { storage } from '../services/storage';
 import { AccountingEngine } from '../services/accountingEngine';
-import { Lease, User, CanadianProvince } from '../types/erp';
+import { Lease, User, RegionalProvince } from '../types/erp';
 import { ConfirmDeleteModal } from './ConfirmDeleteModal';
 
 interface LeasesViewProps {
@@ -47,7 +47,7 @@ export const LeasesView: React.FC<LeasesViewProps> = ({ currentUser, onToast }) 
     const firstUnit = propUnits[0];
     const targetRent = firstUnit?.Target_Rent || 2000;
     
-    // Auto adapt Canadian deposit rules:
+    // Auto adapt regional deposit rules:
     const province = properties.find(p => p.Property_ID === propId)?.Province || 'ON';
     let depReq = 0;
     let lmrReq = 0;
@@ -175,7 +175,7 @@ export const LeasesView: React.FC<LeasesViewProps> = ({ currentUser, onToast }) 
         <div>
           <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <FileSignature className="w-5 h-5 text-indigo-600" />
-            Canadian Lease Agreements Register
+            Lease Agreements Register
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">Automated First + Last Month Rent (LMR) receivables and provincial tenancy compliance</p>
         </div>
@@ -290,7 +290,7 @@ export const LeasesView: React.FC<LeasesViewProps> = ({ currentUser, onToast }) 
             <div className="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
               <div>
                 <h3 className="text-sm font-bold text-slate-900">
-                  {editingLease ? `Edit Tenancy Agreement: ${editingLease.Lease_ID}` : 'Create Canadian Tenancy Agreement'}
+                  {editingLease ? `Edit Tenancy Agreement: ${editingLease.Lease_ID}` : 'Create Tenancy Agreement'}
                 </h3>
                 <p className="text-xs text-slate-500">Auto-posts First Month Rent & LMR / Security Deposit to GL</p>
               </div>
@@ -414,9 +414,9 @@ export const LeasesView: React.FC<LeasesViewProps> = ({ currentUser, onToast }) 
               </div>
 
               <div className="p-3 bg-indigo-50/70 border border-indigo-100 rounded-xl text-[11px] text-indigo-900 space-y-1">
-                <p className="font-bold">Canadian Provincial Compliance Applied:</p>
+                <p className="font-bold">Regional Tenancy Compliance Applied:</p>
                 <p>
-                  • {selectedProp?.Province === 'ON' ? 'Ontario RTA: Last Month Rent (LMR) collected. Security deposits prohibited, key deposit allowed.' : selectedProp?.Province === 'BC' ? 'BC RTB: Security deposit capped at 50% of monthly rent.' : selectedProp?.Province === 'QC' ? 'Quebec TAL: Deposits prohibited by Civil Code; first month rent only.' : 'Standard Canadian commercial / residential tenancy rules apply.'}
+                  • {selectedProp?.Province === 'ON' ? 'Ontario: Last Month Rent (LMR) collected. Security deposits prohibited, key deposit allowed.' : selectedProp?.Province === 'BC' ? 'British Columbia: Security deposit capped at 50% of monthly rent.' : selectedProp?.Province === 'QC' ? 'Quebec: Deposits prohibited by Civil Code; first month rent only.' : 'Standard commercial / residential tenancy rules apply.'}
                 </p>
               </div>
 

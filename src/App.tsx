@@ -22,7 +22,7 @@ import { AdministrationView } from './components/AdministrationView';
 import { AppScriptExportView } from './components/AppScriptExportView';
 import { LoginModal } from './components/LoginModal';
 import { storage } from './services/storage';
-import { User, CanadianProvince, CANADIAN_PROVINCE_TAX } from './types/erp';
+import { User, RegionalProvince, REGIONAL_PROVINCE_TAX } from './types/erp';
 import { CheckCircle2, AlertCircle, Info, X, Building, ShieldCheck, Scale, FileText } from 'lucide-react';
 
 interface Toast {
@@ -238,7 +238,7 @@ export default function App() {
         </main>
       </div>
 
-      {/* Canadian Provincial Tenancy & Tax Guide Modal */}
+      {/* Regional Tenancy & Tax Guide Modal */}
       {showTaxGuide && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in duration-150">
           <div className="bg-white rounded-2xl border border-slate-200 max-w-2xl w-full p-6 shadow-2xl space-y-5 max-h-[85vh] overflow-y-auto">
@@ -248,7 +248,7 @@ export default function App() {
                   <Building className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-900">Canadian Provincial Tax & Tenancy Guide</h3>
+                  <h3 className="text-base font-bold text-slate-900">Regional Tax & Tenancy Guide</h3>
                   <p className="text-xs text-slate-500">Statutory rules for rent, security deposits, and sales taxes</p>
                 </div>
               </div>
@@ -261,8 +261,8 @@ export default function App() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {(Object.keys(CANADIAN_PROVINCE_TAX) as CanadianProvince[]).map(prov => {
-                const info = CANADIAN_PROVINCE_TAX[prov];
+              {(Object.keys(REGIONAL_PROVINCE_TAX) as RegionalProvince[]).map(prov => {
+                const info = REGIONAL_PROVINCE_TAX[prov];
                 return (
                   <div key={prov} className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
                     <div className="flex items-center justify-between">
@@ -289,7 +289,7 @@ export default function App() {
             <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-900 flex items-start gap-2">
               <AlertCircle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
               <p>
-                <b>Note:</b> In Canada, long-term residential leases are exempt from GST/HST. Commercial leases, short-term bookings, utility recoveries, and property management fees are taxable under the respective provincial rates above.
+                <b>Note:</b> Standard residential leases are generally exempt from sales tax. Commercial leases, short-term bookings, utility recoveries, and property management fees are taxable under the respective regional rates above.
               </p>
             </div>
 

@@ -1,7 +1,7 @@
 import { storage } from './storage';
 import {
   JournalHeader, JournalLine, Lease, LandlordPayment, RentTransaction,
-  DepositTransaction, CollectionRecord, CanadianProvince, CANADIAN_PROVINCE_TAX,
+  DepositTransaction, CollectionRecord, RegionalProvince, REGIONAL_PROVINCE_TAX,
   UtilitySplit
 } from '../types/erp';
 
@@ -1131,9 +1131,9 @@ export class AccountingEngine {
     return { moveOutId, depositRefund, journalId: jId };
   }
 
-  // Tax calculation helper for Canadian operations
-  public static getTaxRate(province: CanadianProvince): number {
-    return CANADIAN_PROVINCE_TAX[province]?.totalTaxRate || 0.13;
+  // Tax calculation helper for regional operations
+  public static getTaxRate(province: RegionalProvince): number {
+    return REGIONAL_PROVINCE_TAX[province]?.totalTaxRate || 0.13;
   }
 }
 

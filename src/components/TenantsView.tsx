@@ -293,7 +293,7 @@ export const TenantsView: React.FC<TenantsViewProps> = ({ currentUser, onToast }
           </div>
         </div>
 
-        {/* Tenant ID Proof & Canadian KYC Vault */}
+        {/* Tenant ID Proof & KYC Vault */}
         <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
@@ -339,7 +339,7 @@ export const TenantsView: React.FC<TenantsViewProps> = ({ currentUser, onToast }
                   <div className="p-6 text-center bg-slate-50/70 rounded-xl border border-dashed border-slate-200">
                     <CreditCard className="w-7 h-7 text-slate-400 mx-auto mb-2" />
                     <p className="text-xs font-bold text-slate-700">No ID Proof on File</p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">Upload Canadian Driver's License, Passport, or PR Card.</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">Upload Driver's License, Passport, or PR Card.</p>
                   </div>
                 ) : (
                   <div className="space-y-2.5">
@@ -513,11 +513,11 @@ export const TenantsView: React.FC<TenantsViewProps> = ({ currentUser, onToast }
                   onChange={(e) => setIdForm({ ...idForm, idType: e.target.value as TenantIdType })}
                   className="w-full text-xs rounded-xl border border-slate-200 p-2.5 outline-none focus:border-indigo-600 bg-white"
                 >
-                  <option value="Driver License">Driver's License (Provincial)</option>
-                  <option value="Passport">Canadian / Foreign Passport</option>
-                  <option value="Provincial Photo ID">Provincial Photo ID Card (Ontario/BC/QC)</option>
+                  <option value="Driver License">Driver's License (Regional/State/Provincial)</option>
+                  <option value="Passport">Passport (Domestic / Foreign)</option>
+                  <option value="Provincial Photo ID">Regional Photo ID Card</option>
                   <option value="PR Card">Permanent Resident (PR) Card</option>
-                  <option value="Work Permit">Canadian Work Permit</option>
+                  <option value="Work Permit">Work Permit / Visa</option>
                   <option value="National ID">National Identity Card</option>
                   <option value="Other">Other Government Document</option>
                 </select>

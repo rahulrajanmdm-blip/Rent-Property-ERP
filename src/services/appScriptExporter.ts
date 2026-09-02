@@ -2,7 +2,7 @@
 
 export const APPS_SCRIPT_CODE_GS_V3_1 = `// ============================================================================
 // Dream Dwell ERP v3.1 — Production Google Apps Script (Code.gs)
-// Canadian Lease & Property Management with Double-Entry Accounting
+// Property & Lease Management with Double-Entry Accounting
 // ============================================================================
 
 const API_VERSION = '3.1';
@@ -11,7 +11,7 @@ const CACHE = CacheService.getScriptCache();
 
 function doGet(e) {
   return HtmlService.createHtmlOutputFromFile('Index')
-    .setTitle('Dream Dwell ERP — Canadian Property & Lease Management')
+    .setTitle('Dream Dwell ERP — Property & Lease Management')
     .setWidth(1280).setHeight(850)
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
@@ -85,8 +85,8 @@ function setupDatabase() {
 
   const M_Settings = SHEET_DB.getSheetByName('M_Settings');
   M_Settings.appendRow(['Setting_Key', 'Setting_Value']);
-  M_Settings.appendRow(['Company_Name', 'Dream Dwell Properties Canada']);
-  M_Settings.appendRow(['Currency', 'CAD']);
+  M_Settings.appendRow(['Company_Name', 'Dream Dwell Properties']);
+  M_Settings.appendRow(['Currency', 'USD']);
   M_Settings.appendRow(['Fiscal_Year_Start', '01-01']);
   M_Settings.appendRow(['Default_Bank_Account', '1010']);
   M_Settings.appendRow(['Default_Cash_Account', '1000']);

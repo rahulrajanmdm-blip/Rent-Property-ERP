@@ -138,7 +138,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ currentUser, onToast }
             <FileSpreadsheet className="w-5 h-5 text-indigo-600" />
             Financial & Operational Report Center
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">Generate and download standard CSV/Excel reports compatible with Canadian accounting software</p>
+          <p className="text-xs text-slate-500 mt-0.5">Generate and download standard CSV/Excel reports compatible with standard accounting software</p>
         </div>
       </div>
 

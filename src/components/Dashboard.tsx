@@ -48,7 +48,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigateTab, onQuickActi
     alerts.push({
       type: 'urgent',
       title: `${overdueRents.length} Outstanding Rent Balances`,
-      message: `Totaling ${AccountingEngine.formatCurrency(totalOutstanding)} across active Canadian leases.`,
+      message: `Totaling ${AccountingEngine.formatCurrency(totalOutstanding)} across active leases.`,
       actionTab: 'Rent'
     });
   }
@@ -82,7 +82,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigateTab, onQuickActi
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold uppercase tracking-wider text-indigo-300 bg-indigo-950/80 px-2.5 py-1 rounded-full border border-indigo-700/50">
-                Canadian Portfolio Operations
+                Portfolio Operations
               </span>
               <span className="text-xs text-slate-300">Period: {currentMonth}</span>
             </div>
@@ -90,7 +90,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigateTab, onQuickActi
               {properties.length} Properties · {units.length} Units · {tenants.length} Active Leases
             </h2>
             <p className="text-slate-300 text-sm mt-1">
-              Double-entry Canadian lease accounting with automated provincial rent rolls & landlord payouts.
+              Double-entry lease accounting with automated rent rolls & landlord payouts.
             </p>
           </div>
 
@@ -235,7 +235,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigateTab, onQuickActi
           <div>
             <h3 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
               <Building className="w-4 h-4 text-indigo-600" />
-              Canadian Properties by Province
+              Properties by Region
             </h3>
             {properties.length === 0 ? (
               <div className="p-6 text-center bg-slate-50 rounded-xl border border-slate-200/60 space-y-3">

@@ -189,7 +189,7 @@ export const CollectionsView: React.FC<CollectionsViewProps> = ({ currentUser, o
             </span>
             <div>
               <h2 className="text-base font-bold text-slate-900">Collections Ledger & Arrears Aging</h2>
-              <p className="text-xs text-slate-500">Track outstanding rent balances, manage payment plans, and generate statutory Canadian late notices (Ontario N4 / BC 10-Day / AB 14-Day)</p>
+              <p className="text-xs text-slate-500">Track outstanding rent balances, manage payment plans, and generate statutory late notices (Notice to Vacate / Eviction for Non-Payment)</p>
             </div>
           </div>
         </div>
@@ -427,9 +427,9 @@ export const CollectionsView: React.FC<CollectionsViewProps> = ({ currentUser, o
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-slate-900">
-                    Canadian Statutory Rent Notice — {activeNoticeData.noticeType}
+                    Statutory Rent Notice — {activeNoticeData.noticeType}
                   </h3>
-                  <p className="text-xs text-slate-500">Official legal template under provincial tenancy legislation</p>
+                  <p className="text-xs text-slate-500">Official legal template under tenancy legislation</p>
                 </div>
               </div>
               <button

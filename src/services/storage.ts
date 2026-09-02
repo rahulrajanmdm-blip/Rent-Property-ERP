@@ -74,6 +74,25 @@ export const DEFAULT_USERS: User[] = [
     TwoFactorEnabled: true,
     TwoFactorMethod: 'EMAIL_OTP',
     Assigned_Tabs: [...ALL_ERP_TABS]
+  }
+];
+
+export const DEMO_SAMPLE_USERS: User[] = [
+  {
+    User_ID: 'USR-MASTER-ADMIN',
+    Email: 'rahulrajanmdm@gmail.com',
+    Full_Name: 'Rahul Rajan (Master Admin)',
+    Role: 'Admin',
+    Is_Active: true,
+    Password: 'admin',
+    Phone: '(416) 555-0100',
+    Created_At: '2025-01-01',
+    Last_Login: new Date().toISOString(),
+    TwoFactorSecret: 'HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ',
+    EmergencyBackupCode: '8492-3105',
+    TwoFactorEnabled: true,
+    TwoFactorMethod: 'EMAIL_OTP',
+    Assigned_Tabs: [...ALL_ERP_TABS]
   },
   {
     User_ID: 'USR-ADMIN',
@@ -234,8 +253,10 @@ interface ERPDataStore {
   auditLogs: AuditEntry[];
 }
 
-const STORAGE_KEY = 'canadian_lease_erp_prod_v5';
-const AUTH_SESSION_KEY = 'canadian_lease_erp_auth_v5';
+const STORAGE_KEY = 'dreamdwell_lease_erp_prod_v5';
+const LEGACY_STORAGE_KEY = 'canadian_lease_erp_prod_v5';
+const AUTH_SESSION_KEY = 'dreamdwell_lease_erp_auth_v5';
+const LEGACY_AUTH_SESSION_KEY = 'canadian_lease_erp_auth_v5';
 
 export function getCleanProductionData(): ERPDataStore {
   return {
@@ -298,7 +319,7 @@ export function getSampleDemoData(): ERPDataStore {
       Phone: '(604) 555-0842',
       Address: '1055 W Georgia St, Vancouver, BC V6E 3P3',
       Payment_Method: 'EFT / Direct Deposit',
-      Bank_Reference: 'TD Canada Trust Transit #90123 Acct #5839201',
+      Bank_Reference: 'TD Bank Transit #90123 Acct #5839201',
       Status: 'Active',
       Notes: 'Commercial & Multi-residential portfolio in Downtown Vancouver.'
     },
@@ -574,7 +595,7 @@ export function getSampleDemoData(): ERPDataStore {
       Quoted_Rent: 1750,
       Deposit_Required: 1750,
       Status: 'Pending',
-      Notes: 'Application under credit review with Equifax Canada.',
+      Notes: 'Application under credit review with Equifax.',
       Created_By: 'admin@dreamdwell.com',
       Created_At: '2025-08-15'
     }
@@ -1271,14 +1292,69 @@ function getInitialData(): ERPDataStore {
 class StorageService {
   private data: ERPDataStore;
   private listeners: (() => void)[] = [];
+  private isSyncing: boolean = false;
 
   constructor() {
     this.data = this.load();
+    this.syncFromServer();
+  }
+
+  public async syncFromServer(): Promise<boolean> {
+    if (typeof window === 'undefined' || this.isSyncing) return false;
+    try {
+      this.isSyncing = true;
+      const res = await fetch('/api/erp/data');
+      if (res.ok) {
+        const serverData = await res.json();
+        if (serverData && serverData.users && Array.isArray(serverData.users)) {
+          // Merge users so any user registered on another device/browser is present
+          const localUsers = this.data.users || [];
+          const userMap = new Map<string, User>();
+          
+          serverData.users.forEach((u: User) => {
+            if (u && u.Email) userMap.set(u.Email.toLowerCase(), u);
+          });
+          localUsers.forEach(u => {
+            if (u && u.Email && !userMap.has(u.Email.toLowerCase())) {
+              userMap.set(u.Email.toLowerCase(), u);
+            }
+          });
+
+          this.data.users = Array.from(userMap.values());
+          
+          // Merge properties, units, leases, tenants, etc if present
+          if (serverData.properties && Array.isArray(serverData.properties) && serverData.properties.length > 0 && this.data.properties.length === 0) {
+            this.data.properties = serverData.properties;
+          }
+          if (serverData.units && Array.isArray(serverData.units) && serverData.units.length > 0 && this.data.units.length === 0) {
+            this.data.units = serverData.units;
+          }
+          if (serverData.leases && Array.isArray(serverData.leases) && serverData.leases.length > 0 && this.data.leases.length === 0) {
+            this.data.leases = serverData.leases;
+          }
+          if (serverData.tenants && Array.isArray(serverData.tenants) && serverData.tenants.length > 0 && this.data.tenants.length === 0) {
+            this.data.tenants = serverData.tenants;
+          }
+          if (serverData.landlords && Array.isArray(serverData.landlords) && serverData.landlords.length > 0 && this.data.landlords.length === 0) {
+            this.data.landlords = serverData.landlords;
+          }
+          
+          this.saveDirect(this.data);
+          this.listeners.forEach(fn => fn());
+          return true;
+        }
+      }
+    } catch (e) {
+      console.warn('[Storage] Server sync unavailable, using local cache:', e);
+    } finally {
+      this.isSyncing = false;
+    }
+    return false;
   }
 
   private load(): ERPDataStore {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      const stored = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
       if (stored) {
         return JSON.parse(stored);
       }
@@ -1301,6 +1377,15 @@ class StorageService {
   public save() {
     this.saveDirect(this.data);
     this.listeners.forEach(fn => fn());
+    
+    // Async background sync to central server
+    if (typeof window !== 'undefined') {
+      fetch('/api/erp/data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(this.data)
+      }).catch(err => console.warn('[Storage] Background server backup failed:', err));
+    }
   }
 
   public subscribe(fn: () => void) {
@@ -1351,7 +1436,7 @@ class StorageService {
       ...demo,
       users: this.data.users && this.data.users.length > 0 ? this.data.users : demo.users
     };
-    this.logAudit(userEmail, 'CREATE', 'System', 'LOAD_DEMO_DATA', { message: 'Loaded Canadian demo portfolio dataset.' });
+    this.logAudit(userEmail, 'CREATE', 'System', 'LOAD_DEMO_DATA', { message: 'Loaded sample demo portfolio dataset.' });
     this.save();
   }
 
@@ -1386,7 +1471,10 @@ class StorageService {
   // Authentication Session Management
   public getAuthenticatedSession(): User | null {
     try {
-      const stored = sessionStorage.getItem(AUTH_SESSION_KEY) || localStorage.getItem(AUTH_SESSION_KEY);
+      const stored = sessionStorage.getItem(AUTH_SESSION_KEY) || 
+        localStorage.getItem(AUTH_SESSION_KEY) || 
+        sessionStorage.getItem(LEGACY_AUTH_SESSION_KEY) || 
+        localStorage.getItem(LEGACY_AUTH_SESSION_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
         const found = this.data.users.find(u =>

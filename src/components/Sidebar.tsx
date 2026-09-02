@@ -89,9 +89,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div>
             <div className="flex items-center gap-1.5">
               <span className="font-bold text-white tracking-tight text-sm">Dream Dwell</span>
-              <span className="text-[10px] bg-red-600 text-white font-extrabold px-1.5 py-0.2 rounded tracking-wider uppercase">CA</span>
+              <span className="text-[10px] bg-indigo-600 text-white font-extrabold px-1.5 py-0.2 rounded tracking-wider uppercase">ERP</span>
             </div>
-            <p className="text-[11px] text-indigo-400 font-medium">ERP v3.1 · Multi-Province</p>
+            <p className="text-[11px] text-indigo-400 font-medium">Property & Lease Management</p>
           </div>
         </div>
       </div>

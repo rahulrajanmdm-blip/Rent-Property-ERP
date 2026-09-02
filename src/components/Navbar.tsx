@@ -4,7 +4,7 @@ import {
   FileSpreadsheet, ArrowUpRight, CheckCircle2, Building, RefreshCw,
   LogOut, ShieldCheck, User as UserIcon
 } from 'lucide-react';
-import { User, CanadianProvince, CANADIAN_PROVINCE_TAX } from '../types/erp';
+import { User, RegionalProvince, REGIONAL_PROVINCE_TAX } from '../types/erp';
 import { storage } from '../services/storage';
 
 interface NavbarProps {
@@ -29,18 +29,18 @@ export const Navbar: React.FC<NavbarProps> = ({
   onLogout
 }) => {
   const users = storage.getUsers();
-  const [selectedProvince, setSelectedProvince] = useState<CanadianProvince>('ON');
+  const [selectedProvince, setSelectedProvince] = useState<RegionalProvince>('ON');
 
   const tabTitles: Record<string, { title: string; subtitle: string }> = {
     Dashboard: { title: 'Executive Overview', subtitle: 'Portfolio performance, cash flows & key lease vitals' },
     CollectionsBoard: { title: 'Collections & Vacancy Board', subtitle: 'Property collection efficiency & unit occupancy tracking' },
-    Properties: { title: 'Properties & Portfolios', subtitle: 'Canadian real estate assets across ON, BC, QC & AB' },
+    Properties: { title: 'Properties & Portfolios', subtitle: 'Real estate assets and building portfolios' },
     Units: { title: 'Units & Inventory', subtitle: 'Individual residential suites, target rents & live occupancy' },
     Landlords: { title: 'Landlord Directory', subtitle: 'Property owners, banking info & payout preferences' },
     LandlordPayments: { title: 'Landlord Rent Payouts', subtitle: 'Disbursements after management fee & utility deductions' },
-    Tenants: { title: 'Tenants & ID Proof Vault', subtitle: 'Resident directory, contact records & verified Canadian IDs' },
+    Tenants: { title: 'Tenants & ID Proof Vault', subtitle: 'Resident directory, contact records & verified tenant IDs' },
     Bookings: { title: 'Applicant Bookings', subtitle: 'Prospective tenant pipeline & application deposits' },
-    Leases: { title: 'Lease Agreements', subtitle: 'First & Last month rent, security deposits & provincial agreements' },
+    Leases: { title: 'Lease Agreements', subtitle: 'First & Last month rent, security deposits & tenancy agreements' },
     MoveIn: { title: 'Move-In Inspection', subtitle: 'Key handover checklists & utility meter baseline readings' },
     MoveOut: { title: 'Move-Out & Deposit Refunds', subtitle: 'Damage assessments, final reconciliations & refund payouts' },
     Rent: { title: 'Rent Ledger & Billing', subtitle: 'Automated idempotent billing runs & payment allocation' },
@@ -53,8 +53,8 @@ export const Navbar: React.FC<NavbarProps> = ({
     AppsScriptHub: { title: 'Apps Script Deployment Hub', subtitle: 'Google Apps Script Code.gs v3.1 and Index.html source code' }
   };
 
-  const currentInfo = tabTitles[currentTab] || { title: currentTab, subtitle: 'Canadian Lease & Property ERP' };
-  const currentTax = CANADIAN_PROVINCE_TAX[selectedProvince];
+  const currentInfo = tabTitles[currentTab] || { title: currentTab, subtitle: 'Property & Lease ERP' };
+  const currentTax = REGIONAL_PROVINCE_TAX[selectedProvince];
 
   return (
     <header className="h-16 bg-white border-b border-slate-200 px-4 lg:px-6 flex items-center justify-between z-10 shrink-0 shadow-xs">
@@ -72,7 +72,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               {currentInfo.title}
             </h1>
             <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 border border-indigo-200/60 px-2 py-0.5 rounded-full">
-              CAD $
+              USD $
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-0.5 hidden md:block">
@@ -82,11 +82,11 @@ export const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       <div className="flex items-center gap-2.5">
-        {/* Canadian Province & Tax Rate Chip */}
+        {/* Regional Province & Tax Rate Chip */}
         <button
           onClick={onOpenTaxGuide}
           className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 transition-colors"
-          title="Click to view Canadian provincial tenancy & tax guide"
+          title="Click to view regional tenancy & tax guide"
         >
           <Building className="w-3.5 h-3.5 text-indigo-600" />
           <span>{currentTax.name} ({currentTax.province}):</span>

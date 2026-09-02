@@ -1,9 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   ShieldAlert, Users, Plus, Edit3, Trash2, Key, Check,
   X, CheckCircle2, AlertCircle, History, RotateCcw,
   Sparkles, Lock, Eye, CheckSquare, Square, Search,
-  Database, Download, Upload, Trash, RefreshCw, FileText
+  Database, Download, Upload, Trash, RefreshCw, FileText,
+  Mail, Send, Server, ShieldCheck
 } from 'lucide-react';
 import { storage, ALL_ERP_TABS } from '../services/storage';
 import { User, Role, AuditEntry } from '../types/erp';
@@ -20,6 +21,15 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
   onToast,
   onSwitchUser
 }) => {
+  const [version, setVersion] = useState(0);
+
+  useEffect(() => {
+    const unsub = storage.subscribe(() => {
+      setVersion(v => v + 1);
+    });
+    return unsub;
+  }, []);
+
   const users = storage.getUsers();
   const auditLogs = storage.getAuditLogs();
   const properties = storage.getProperties();
@@ -32,13 +42,24 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
 
   const isCleanSlate = properties.length === 0 && tenants.length === 0 && leases.length === 0;
 
-  const [activeSubTab, setActiveSubTab] = useState<'USERS' | 'PERMISSIONS' | 'AUDIT' | 'STORAGE'>('USERS');
+  const [activeSubTab, setActiveSubTab] = useState<'USERS' | 'PERMISSIONS' | 'AUDIT' | 'STORAGE' | 'EMAIL_CONFIG'>('USERS');
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
   const [selectedUserForPerms, setSelectedUserForPerms] = useState<User>(users[0] || currentUser);
   const [auditSearch, setAuditSearch] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // SMTP Configuration State
+  const [smtpHost, setSmtpHost] = useState('smtp.gmail.com');
+  const [smtpPort, setSmtpPort] = useState('587');
+  const [smtpSecure, setSmtpSecure] = useState(false);
+  const [smtpUser, setSmtpUser] = useState('');
+  const [smtpPass, setSmtpPass] = useState('');
+  const [smtpFrom, setSmtpFrom] = useState('Dream Dwell <no-reply@dreamdwell.com>');
+  const [testEmailTarget, setTestEmailTarget] = useState(currentUser.Email);
+  const [isTestingSmtp, setIsTestingSmtp] = useState(false);
+  const [smtpStatusMessage, setSmtpStatusMessage] = useState<string | null>(null);
 
   // Form State
   const [formData, setFormData] = useState<{
@@ -108,10 +129,9 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
       Role: formData.Role,
       Is_Active: formData.Is_Active,
       Created_At: editingUser ? editingUser.Created_At : new Date().toISOString().split('T')[0],
-      TwoFactorSecret: editingUser?.TwoFactorSecret || 'HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ',
       EmergencyBackupCode: editingUser?.EmergencyBackupCode || '8492-3105',
       TwoFactorEnabled: true,
-      TwoFactorMethod: 'TOTP_AUTHENTICATOR',
+      TwoFactorMethod: 'EMAIL_OTP',
       Assigned_Tabs: formData.Role === 'Admin' ? [...ALL_ERP_TABS] : formData.Assigned_Tabs
     };
 
@@ -122,7 +142,59 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
       storage.addUser(payload, currentUser.Email);
       onToast(`New user ${payload.Full_Name} created with ${payload.Role} permissions`, 'success');
     }
+
+    // Direct background sync to server API
+    fetch('/api/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).catch(err => console.warn('Server user sync error:', err));
+
     setShowAddUserModal(false);
+  };
+
+  const handleTestSmtp = async () => {
+    if (!testEmailTarget) {
+      onToast('Please enter a target email address for test message', 'error');
+      return;
+    }
+    setIsTestingSmtp(true);
+    setSmtpStatusMessage(null);
+    try {
+      // First save configuration
+      await fetch('/api/auth/smtp-config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          host: smtpHost,
+          port: smtpPort,
+          secure: smtpSecure,
+          user: smtpUser,
+          pass: smtpPass,
+          from: smtpFrom
+        })
+      });
+
+      const res = await fetch('/api/auth/test-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetEmail: testEmailTarget })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setSmtpStatusMessage(`✅ Test email successfully delivered to ${testEmailTarget}! (Message ID: ${data.messageId})`);
+        onToast(`Test email successfully delivered to ${testEmailTarget}!`, 'success');
+      } else {
+        setSmtpStatusMessage(`❌ SMTP Error: ${data.error || 'Failed to dispatch test email'}`);
+        onToast(`SMTP Error: ${data.error || 'Failed to send'}`, 'error');
+      }
+    } catch (err: any) {
+      setSmtpStatusMessage(`❌ Network / Server Error: ${err.message}`);
+      onToast(`Connection error: ${err.message}`, 'error');
+    } finally {
+      setIsTestingSmtp(false);
+    }
   };
 
   const handleDeleteUserConfirm = () => {
@@ -133,6 +205,10 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
       return;
     }
     storage.deleteUser(deletingUser.User_ID, currentUser.Email);
+    fetch(`/api/users/${encodeURIComponent(deletingUser.User_ID)}`, {
+      method: 'DELETE'
+    }).catch(err => console.warn('Server user delete sync error:', err));
+
     onToast(`User ${deletingUser.Full_Name} deleted`, 'info');
     setDeletingUser(null);
   };
@@ -164,7 +240,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
   };
 
   const handleLoadDemoData = () => {
-    if (window.confirm('Load Canadian sample demonstration portfolio? This will populate sample properties in Ontario, BC, and Quebec with demo leases and accounting records.')) {
+    if (window.confirm('Load sample demonstration portfolio? This will populate sample properties with demo leases and accounting records.')) {
       storage.loadSampleDemoData(currentUser.Email);
       onToast('Sample demonstration portfolio loaded successfully!', 'success');
     }
@@ -176,7 +252,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `canadian-lease-erp-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `lease-erp-backup-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
     onToast('Database backup exported to JSON file', 'success');
@@ -256,7 +332,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
             <button
               onClick={handleLoadDemoData}
               className="px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition-colors flex items-center gap-1.5"
-              title="Load Canadian sample demo portfolio"
+              title="Load sample demo portfolio"
             >
               <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
               Load Demo Data
@@ -328,6 +404,20 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
           <div className="flex items-center gap-2">
             <Database className="w-4 h-4" />
             <span>Storage & Sample Data</span>
+          </div>
+        </button>
+
+        <button
+          onClick={() => setActiveSubTab('EMAIL_CONFIG')}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
+            activeSubTab === 'EMAIL_CONFIG'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <Mail className="w-4 h-4" />
+            <span>2FA Email & SMTP Gateway</span>
           </div>
         </button>
       </div>
@@ -712,6 +802,167 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
                   <Upload className="w-4 h-4" />
                   Select & Import JSON File
                 </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Subtab 5: 2FA Email & SMTP Gateway Configuration */}
+      {activeSubTab === 'EMAIL_CONFIG' && (
+        <div className="space-y-6">
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-indigo-50 text-indigo-600 rounded-2xl">
+                  <Mail className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">Live 2FA Email Dispatch & SMTP Gateway</h3>
+                  <p className="text-xs text-slate-500">Configure your production SMTP server (Gmail, Outlook, SendGrid, Resend, or AWS SES) to deliver real 2FA verification passcodes to users' inboxes.</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <ShieldCheck className="w-4 h-4" />
+                  Email OTP Mode Active
+                </span>
+              </div>
+            </div>
+
+            {smtpStatusMessage && (
+              <div className={`p-4 rounded-xl text-xs font-medium border flex items-start gap-3 ${
+                smtpStatusMessage.includes('✅')
+                  ? 'bg-emerald-50 text-emerald-900 border-emerald-200'
+                  : 'bg-rose-50 text-rose-900 border-rose-200'
+              }`}>
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                <span className="leading-relaxed">{smtpStatusMessage}</span>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Left Column: Form Settings */}
+              <div className="lg:col-span-2 space-y-4 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="sm:col-span-2">
+                    <label className="block font-bold text-slate-700 mb-1">SMTP Server Host</label>
+                    <input
+                      type="text"
+                      value={smtpHost}
+                      onChange={(e) => setSmtpHost(e.target.value)}
+                      placeholder="e.g. smtp.gmail.com or smtp.sendgrid.net"
+                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 font-mono text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Port</label>
+                    <input
+                      type="text"
+                      value={smtpPort}
+                      onChange={(e) => setSmtpPort(e.target.value)}
+                      placeholder="587"
+                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 font-mono text-xs"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">SMTP Username / Email</label>
+                    <input
+                      type="text"
+                      value={smtpUser}
+                      onChange={(e) => setSmtpUser(e.target.value)}
+                      placeholder="e.g. notifications@dreamdwell.com"
+                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">SMTP Password / App Password</label>
+                    <input
+                      type="password"
+                      value={smtpPass}
+                      onChange={(e) => setSmtpPass(e.target.value)}
+                      placeholder="••••••••••••••••"
+                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 text-xs font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">From Sender Header</label>
+                    <input
+                      type="text"
+                      value={smtpFrom}
+                      onChange={(e) => setSmtpFrom(e.target.value)}
+                      placeholder="Dream Dwell <no-reply@dreamdwell.com>"
+                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 text-xs"
+                    />
+                  </div>
+                  <div className="flex items-center pt-6">
+                    <label className="flex items-center gap-2 cursor-pointer text-slate-700 font-semibold">
+                      <input
+                        type="checkbox"
+                        checked={smtpSecure}
+                        onChange={(e) => setSmtpSecure(e.target.checked)}
+                        className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                      />
+                      <span>Use SSL/TLS (Port 465)</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+                  <h4 className="font-bold text-slate-800 flex items-center gap-2">
+                    <Send className="w-4 h-4 text-indigo-600" />
+                    Test Live Email Dispatch
+                  </h4>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <input
+                      type="email"
+                      value={testEmailTarget}
+                      onChange={(e) => setTestEmailTarget(e.target.value)}
+                      placeholder="Enter recipient email (e.g. your email)"
+                      className="flex-1 p-2 bg-white border border-slate-200 rounded-xl text-xs"
+                    />
+                    <button
+                      type="button"
+                      disabled={isTestingSmtp}
+                      onClick={handleTestSmtp}
+                      className={`px-4 py-2 rounded-xl text-xs font-bold text-white transition-colors flex items-center justify-center gap-1.5 shrink-0 ${
+                        isTestingSmtp ? 'bg-indigo-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 shadow-xs cursor-pointer'
+                      }`}
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 ${isTestingSmtp ? 'animate-spin' : ''}`} />
+                      <span>{isTestingSmtp ? 'Sending Test...' : 'Send Live Test Email'}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Guide */}
+              <div className="p-5 bg-indigo-50/50 border border-indigo-100 rounded-2xl space-y-3 text-xs">
+                <h4 className="font-bold text-indigo-950 flex items-center gap-2">
+                  <Server className="w-4 h-4 text-indigo-600" />
+                  Quick Provider Setup Guides
+                </h4>
+                <div className="space-y-2.5 text-slate-600 text-[11px] leading-relaxed">
+                  <div>
+                    <strong className="text-slate-800 block">Google Gmail / Workspace:</strong>
+                    Host: <code className="text-indigo-700 font-mono">smtp.gmail.com</code>, Port: <code className="text-indigo-700 font-mono">587</code>. Use your Gmail address and a 16-character <em>Google App Password</em> (Google Account → Security → 2-Step Verification → App passwords).
+                  </div>
+                  <div>
+                    <strong className="text-slate-800 block">Microsoft 365 / Outlook:</strong>
+                    Host: <code className="text-indigo-700 font-mono">smtp.office365.com</code>, Port: <code className="text-indigo-700 font-mono">587</code>.
+                  </div>
+                  <div>
+                    <strong className="text-slate-800 block">SendGrid / Resend / AWS SES:</strong>
+                    Host: <code className="text-indigo-700 font-mono">smtp.sendgrid.net</code> or <code className="text-indigo-700 font-mono">smtp.resend.com</code>, User: <code className="text-indigo-700 font-mono">apikey</code> / <code className="text-indigo-700 font-mono">resend</code>, Password: your API key.
+                  </div>
+                </div>
               </div>
             </div>
           </div>

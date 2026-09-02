@@ -525,7 +525,7 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
             </div>
             <div>
               <h2 className="text-base font-bold text-slate-900 tracking-tight">
-                Canadian Utility Master Billing & Manual Split Engine
+                Utility Master Billing & Manual Split Engine
               </h2>
               <p className="text-xs text-slate-500">
                 Manual custom splits, divided properties (Main Floor vs Basement), multi-property bills, past tenant allocations & deposit set-offs
@@ -877,7 +877,7 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
 
                   <div>
                     <h3 className="text-sm font-bold text-slate-900">{item.Utility_Name}</h3>
-                    <p className="text-xs text-slate-500 mt-0.5">{item.Description || 'Standard recurring Canadian property utility service'}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">{item.Description || 'Standard recurring property utility service'}</p>
                   </div>
 
                   <div className="pt-2 border-t border-slate-100 text-xs space-y-1.5">
@@ -924,7 +924,7 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
                   Divided Property Single-Bill Meter Apportionment (Main Floor & Basement Suites)
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  In Canada, many detached properties (e.g. single triplex or house) have a single shared utility meter (Toronto Hydro, Enbridge Gas, City Water) that must be split between Main Floor and Basement suites with customized split ratios (e.g. 60% / 40%).
+                  In many detached and multi-suite properties (e.g. single triplex or house), there is a single shared utility meter (Electric, Gas, Water) that must be split between Main Floor and Basement suites with customized split ratios (e.g. 60% / 40%).
                 </p>
               </div>
             </div>
@@ -1058,7 +1058,7 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
                   </div>
 
                   <div>
-                    <label className="font-semibold text-slate-700 block mb-1">Total Bill Amount ($ CAD)</label>
+                    <label className="font-semibold text-slate-700 block mb-1">Total Bill Amount ($)</label>
                     <input
                       type="number"
                       step="0.01"

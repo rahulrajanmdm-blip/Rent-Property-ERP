@@ -341,7 +341,7 @@ export const RentManagementView: React.FC<RentManagementViewProps> = ({ currentU
                   onChange={(e) => setGenPropFilter(e.target.value)}
                   className="w-full text-xs rounded-xl border border-slate-200 p-2.5 outline-none focus:border-indigo-600 bg-white"
                 >
-                  <option value="">All Canadian Properties (Global Run)</option>
+                  <option value="">All Properties (Global Run)</option>
                   {properties.map(p => (
                     <option key={p.Property_ID} value={p.Property_ID}>{p.Property_Name} ({p.Province})</option>
                   ))}

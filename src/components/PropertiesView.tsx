@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { storage } from '../services/storage';
 import { AccountingEngine } from '../services/accountingEngine';
-import { Property, Unit, CanadianProvince, User } from '../types/erp';
+import { Property, Unit, RegionalProvince, User } from '../types/erp';
 import { ConfirmDeleteModal } from './ConfirmDeleteModal';
 
 interface PropertiesViewProps {
@@ -34,7 +34,7 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ currentUser, onT
     Property_Name: string;
     Address: string;
     City: string;
-    Province: CanadianProvince;
+    Province: RegionalProvince;
     Postal_Code: string;
     Landlord_ID: string;
     Master_Rent_Amount: number;
@@ -132,7 +132,6 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ currentUser, onT
         City: propForm.City,
         Province: propForm.Province,
         Postal_Code: propForm.Postal_Code,
-        Country: 'Canada',
         Landlord_ID: propForm.Landlord_ID,
         Master_Rent_Amount: Number(propForm.Master_Rent_Amount) || 0,
         Division_Type: propForm.Division_Type,
@@ -444,7 +443,7 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ currentUser, onT
           <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             <div className="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
               <h3 className="text-sm font-bold text-slate-900">
-                {editingProperty ? `Edit Property: ${editingProperty.Property_Name}` : 'Register Canadian Property'}
+                {editingProperty ? `Edit Property: ${editingProperty.Property_Name}` : 'Register Property'}
               </h3>
               <button onClick={() => setShowPropertyModal(false)} className="text-slate-400 hover:text-slate-600">✕</button>
             </div>
@@ -488,7 +487,7 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ currentUser, onT
                   <label className="text-xs font-semibold text-slate-700 block mb-1">Province</label>
                   <select
                     value={propForm.Province}
-                    onChange={(e) => setPropForm({ ...propForm, Province: e.target.value as CanadianProvince })}
+                    onChange={(e) => setPropForm({ ...propForm, Province: e.target.value as RegionalProvince })}
                     className="w-full text-xs rounded-xl border border-slate-200 p-2.5 outline-none focus:border-indigo-600 bg-white"
                   >
                     <option value="ON">ON (13% HST)</option>

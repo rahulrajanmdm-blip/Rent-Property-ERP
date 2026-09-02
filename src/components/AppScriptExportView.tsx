@@ -42,14 +42,14 @@ export const AppScriptExportView: React.FC<AppScriptExportViewProps> = ({ curren
     setTestOutput('Initiating Google Apps Script ERP simulation engine...\n');
 
     setTimeout(() => {
-      let logs = '[INFO] Initializing Canadian Lease ERP Schema validation...\n';
+      let logs = '[INFO] Initializing Lease ERP Schema validation...\n';
       logs += '[PASS] 12 Sheet structures verified (Properties, Units, Tenants, Tenant_ID_Proof, Leases, Rent_Transactions, Landlord_Payments, Utilities, MoveOut, COA, Journal_Header, Journal_Lines).\n';
       logs += '[INFO] Simulating double-entry idempotent rent run for current month...\n';
       logs += '[PASS] Rent generation succeeded. Debit AR (1200) $5,100.00 = Credit Rental Income (4000) $5,100.00. (0.00 Variance).\n';
       logs += '[INFO] Testing Landlord Payout calculations (8% management fee deduction)...\n';
       logs += '[PASS] Net payout calculation validated: $5,100.00 - $408.00 = $4,692.00 net payout to owner.\n';
-      logs += '[INFO] Verifying Canadian Provincial Tax & PIPEDA Compliance Rules...\n';
-      logs += '[PASS] Ontario LMR & BC 50% security deposit caps enforced successfully.\n';
+      logs += '[INFO] Verifying Regional Tax & Privacy Compliance Rules...\n';
+      logs += '[PASS] Deposit caps and rent rules enforced successfully.\n';
       logs += '[PASS] All 6 Apps Script macro entry points (onOpen, generateMonthlyRentBatch, exportRentPending, exportUtilityPending, etc.) tested successfully with 0 errors.';
       setTestOutput(logs);
       setTesting(false);
@@ -125,7 +125,7 @@ export const AppScriptExportView: React.FC<AppScriptExportViewProps> = ({ curren
           <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-800 text-xs">
             <span className="text-slate-400 font-mono flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-              Code.gs — Canadian Lease ERP Engine
+              Code.gs — Lease ERP Engine
             </span>
             <span className="text-[11px] text-slate-500 font-mono">{gsCode.split('\n').length} lines of code</span>
           </div>
@@ -149,7 +149,7 @@ export const AppScriptExportView: React.FC<AppScriptExportViewProps> = ({ curren
               <span className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center shrink-0">1</span>
               <div>
                 <p className="font-bold text-slate-900">Open or Create Google Spreadsheet</p>
-                <p className="text-slate-500 mt-0.5">Go to Google Drive and create a new Google Sheet named "Canadian Property & Lease ERP".</p>
+                <p className="text-slate-500 mt-0.5">Go to Google Drive and create a new Google Sheet named "Property & Lease ERP".</p>
               </div>
             </div>
 
@@ -174,7 +174,7 @@ export const AppScriptExportView: React.FC<AppScriptExportViewProps> = ({ curren
               <div>
                 <p className="font-bold text-slate-900">Reload Sheet & Initialize</p>
                 <p className="text-slate-500 mt-0.5">
-                  Reload your spreadsheet tab. You will see a new custom menu <b>🍁 Canadian Lease ERP</b> appear. Click <b>🍁 Canadian Lease ERP &gt; Initialize All ERP Sheets</b> to auto-create all tabs, headers, and Chart of Accounts!
+                  Reload your spreadsheet tab. You will see a new custom menu <b>Lease ERP</b> appear. Click <b>Lease ERP &gt; Initialize All ERP Sheets</b> to auto-create all tabs, headers, and Chart of Accounts!
                 </p>
               </div>
             </div>
