@@ -4,16 +4,92 @@ import fs from 'fs';
 import { createServer as createViteServer } from 'vite';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import { GoogleGenAI } from '@google/genai';
 
 dotenv.config();
 
 const PORT = 3000;
 const DATA_DIR = path.join(process.cwd(), 'data');
 const DATA_FILE = path.join(DATA_DIR, 'erp_store.json');
+const AI_METRICS_FILE = path.join(DATA_DIR, 'ai_usage_metrics.json');
 
 // Ensure data directory exists
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+
+// Lazy-initialized Google Gen AI client
+let genAIClient: GoogleGenAI | null = null;
+function getGenAIClient(): GoogleGenAI {
+  if (!genAIClient) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error('GEMINI_API_KEY environment variable is not configured');
+    }
+    genAIClient = new GoogleGenAI({
+      apiKey,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build'
+        }
+      }
+    });
+  }
+  return genAIClient;
+}
+
+// AI Daily Usage Metrics Interface & Helpers
+interface AiDailyMetrics {
+  date: string; // YYYY-MM-DD in UTC
+  requestsCount: number;
+  promptTokens: number;
+  candidatesTokens: number;
+  totalTokens: number;
+  lastUsedAt: string | null;
+  history: Array<{
+    id: string;
+    timestamp: string;
+    task: string;
+    promptPreview: string;
+    tokens: number;
+    model: string;
+  }>;
+}
+
+function getTodayUtcString(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function loadAiMetrics(): AiDailyMetrics {
+  const today = getTodayUtcString();
+  try {
+    if (fs.existsSync(AI_METRICS_FILE)) {
+      const raw = fs.readFileSync(AI_METRICS_FILE, 'utf-8');
+      const data = JSON.parse(raw);
+      if (data && data.date === today) {
+        return data;
+      }
+    }
+  } catch (e) {
+    console.error('Error reading AI metrics store:', e);
+  }
+  return {
+    date: today,
+    requestsCount: 0,
+    promptTokens: 0,
+    candidatesTokens: 0,
+    totalTokens: 0,
+    lastUsedAt: null,
+    history: []
+  };
+}
+
+function saveAiMetrics(metrics: AiDailyMetrics) {
+  try {
+    fs.writeFileSync(AI_METRICS_FILE, JSON.stringify(metrics, null, 2), 'utf-8');
+  } catch (e) {
+    console.error('Error writing AI metrics store:', e);
+  }
 }
 
 // In-memory OTP storage: email -> { code: string, expiresAt: number, attempts: number }
@@ -427,6 +503,151 @@ async function startServer() {
     } catch (err: any) {
       res.status(500).json({ error: err.message || 'Failed to dispatch test email' });
     }
+  });
+
+  // --- AI API & QUOTA METRICS ---
+
+  // Get AI Key Quota & Utilization Metrics
+  app.get('/api/ai/usage', (req, res) => {
+    const metrics = loadAiMetrics();
+    const dailyLimit = 1500; // Gemini Free Tier: 1,500 Requests Per Day (RPD)
+    const rpmLimit = 15;     // Gemini Free Tier: 15 Requests Per Minute (RPM)
+    const tpmLimit = 1000000; // Gemini Free Tier: 1,000,000 Tokens Per Minute (TPM)
+    const balanceRequests = Math.max(0, dailyLimit - metrics.requestsCount);
+    const usedPercentage = Number(((metrics.requestsCount / dailyLimit) * 100).toFixed(2));
+
+    // Calculate time until midnight UTC reset
+    const now = new Date();
+    const midnightUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0, 0, 0));
+    const msUntilReset = Math.max(0, midnightUtc.getTime() - now.getTime());
+    const hoursUntilReset = Math.floor(msUntilReset / (1000 * 60 * 60));
+    const minutesUntilReset = Math.floor((msUntilReset % (1000 * 60 * 60)) / (1000 * 60));
+
+    res.json({
+      date: metrics.date,
+      dailyLimit,
+      requestsUsed: metrics.requestsCount,
+      balanceRequests,
+      usedPercentage,
+      rpmLimit,
+      tpmLimit,
+      promptTokens: metrics.promptTokens,
+      candidatesTokens: metrics.candidatesTokens,
+      totalTokens: metrics.totalTokens,
+      lastUsedAt: metrics.lastUsedAt,
+      resetsIn: `${hoursUntilReset}h ${minutesUntilReset}m`,
+      history: metrics.history.slice(0, 20),
+      hasApiKey: Boolean(process.env.GEMINI_API_KEY)
+    });
+  });
+
+  // Execute AI Request with Automatic Usage Tracking
+  app.post('/api/ai/assist', async (req, res) => {
+    const { prompt, task = 'general', systemInstruction } = req.body;
+    if (!prompt || typeof prompt !== 'string') {
+      res.status(400).json({ error: 'Valid prompt string is required' });
+      return;
+    }
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      res.status(500).json({
+        error: 'GEMINI_API_KEY is not configured in server environment.',
+        help: 'You can configure your API key in AI Studio Settings.'
+      });
+      return;
+    }
+
+    try {
+      const ai = getGenAIClient();
+      let response: any;
+      let usedModel = 'gemini-flash-latest';
+
+      try {
+        response = await ai.models.generateContent({
+          model: 'gemini-flash-latest',
+          contents: prompt,
+          config: systemInstruction ? { systemInstruction } : undefined
+        });
+      } catch (primaryErr: any) {
+        console.warn('[AI Assist] Primary model attempt failed, falling back to gemini-3.8-flash:', primaryErr.message);
+        usedModel = 'gemini-3.8-flash';
+        response = await ai.models.generateContent({
+          model: 'gemini-3.8-flash',
+          contents: prompt,
+          config: systemInstruction ? { systemInstruction } : undefined
+        });
+      }
+
+      const generatedText = response.text || '';
+      const usage = response.usageMetadata || {};
+      const pTokens = usage.promptTokenCount || 0;
+      const cTokens = usage.candidatesTokenCount || 0;
+      const tTokens = usage.totalTokenCount || (pTokens + cTokens);
+
+      // Update and persist metrics
+      const metrics = loadAiMetrics();
+      metrics.requestsCount += 1;
+      metrics.promptTokens += pTokens;
+      metrics.candidatesTokens += cTokens;
+      metrics.totalTokens += tTokens;
+      metrics.lastUsedAt = new Date().toISOString();
+      metrics.history.unshift({
+        id: 'AI-' + Date.now(),
+        timestamp: metrics.lastUsedAt,
+        task,
+        promptPreview: prompt.slice(0, 80) + (prompt.length > 80 ? '...' : ''),
+        tokens: tTokens,
+        model: usedModel
+      });
+      if (metrics.history.length > 50) {
+        metrics.history = metrics.history.slice(0, 50);
+      }
+      saveAiMetrics(metrics);
+
+      const dailyLimit = 1500;
+      const balanceRequests = Math.max(0, dailyLimit - metrics.requestsCount);
+
+      res.json({
+        success: true,
+        text: generatedText,
+        model: usedModel,
+        usage: {
+          promptTokens: pTokens,
+          candidatesTokens: cTokens,
+          totalTokens: tTokens
+        },
+        quota: {
+          requestsUsedToday: metrics.requestsCount,
+          dailyLimit,
+          balanceRequests,
+          usedPercentage: Number(((metrics.requestsCount / dailyLimit) * 100).toFixed(2)),
+          totalTokensToday: metrics.totalTokens
+        }
+      });
+    } catch (err: any) {
+      console.error('[AI Assist Error]:', err);
+      res.status(500).json({
+        error: err.message || 'Failed to generate AI response',
+        code: err.status || 500
+      });
+    }
+  });
+
+  // Reset Today's AI Metrics (For testing / verification)
+  app.post('/api/ai/reset-metrics', (req, res) => {
+    const today = getTodayUtcString();
+    const fresh: AiDailyMetrics = {
+      date: today,
+      requestsCount: 0,
+      promptTokens: 0,
+      candidatesTokens: 0,
+      totalTokens: 0,
+      lastUsedAt: null,
+      history: []
+    };
+    saveAiMetrics(fresh);
+    res.json({ success: true, metrics: fresh });
   });
 
   // --- VITE / STATIC SERVING ---

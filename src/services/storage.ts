@@ -226,7 +226,7 @@ export const DEFAULT_ACCOUNTING_PERIODS: AccountingPeriod[] = [
   }
 ];
 
-interface ERPDataStore {
+export interface ERPDataStore {
   users: User[];
   properties: Property[];
   units: Unit[];
@@ -1466,6 +1466,13 @@ class StorageService {
 
   public getRawData(): ERPDataStore {
     return this.data;
+  }
+
+  public applyCloudData(cloudData: ERPDataStore) {
+    if (!cloudData || !Array.isArray(cloudData.properties)) return;
+    this.data = cloudData;
+    this.saveDirect(this.data);
+    this.listeners.forEach(fn => fn());
   }
 
   // Authentication Session Management

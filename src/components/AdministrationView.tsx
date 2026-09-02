@@ -4,22 +4,26 @@ import {
   X, CheckCircle2, AlertCircle, History, RotateCcw,
   Sparkles, Lock, Eye, CheckSquare, Square, Search,
   Database, Download, Upload, Trash, RefreshCw, FileText,
-  Mail, Send, Server, ShieldCheck
+  Mail, Send, Server, ShieldCheck, Cloud, UploadCloud, DownloadCloud, Zap
 } from 'lucide-react';
 import { storage, ALL_ERP_TABS } from '../services/storage';
+import { firestoreSync, CloudSyncInfo } from '../services/firestoreSync';
 import { User, Role, AuditEntry } from '../types/erp';
 import { ConfirmDeleteModal } from './ConfirmDeleteModal';
+import { CloudQuotaMonitor } from './CloudQuotaMonitor';
 
 interface AdministrationViewProps {
   currentUser: User;
   onToast: (msg: string, type?: 'success' | 'error' | 'info') => void;
   onSwitchUser?: (user: User) => void;
+  initialSubTab?: 'USERS' | 'PERMISSIONS' | 'AUDIT' | 'STORAGE' | 'EMAIL_CONFIG' | 'QUOTA_MONITOR';
 }
 
 export const AdministrationView: React.FC<AdministrationViewProps> = ({
   currentUser,
   onToast,
-  onSwitchUser
+  onSwitchUser,
+  initialSubTab = 'USERS'
 }) => {
   const [version, setVersion] = useState(0);
 
@@ -42,7 +46,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
 
   const isCleanSlate = properties.length === 0 && tenants.length === 0 && leases.length === 0;
 
-  const [activeSubTab, setActiveSubTab] = useState<'USERS' | 'PERMISSIONS' | 'AUDIT' | 'STORAGE' | 'EMAIL_CONFIG'>('USERS');
+  const [activeSubTab, setActiveSubTab] = useState<'USERS' | 'PERMISSIONS' | 'AUDIT' | 'STORAGE' | 'EMAIL_CONFIG' | 'QUOTA_MONITOR'>(initialSubTab);
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
@@ -60,6 +64,55 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
   const [testEmailTarget, setTestEmailTarget] = useState(currentUser.Email);
   const [isTestingSmtp, setIsTestingSmtp] = useState(false);
   const [smtpStatusMessage, setSmtpStatusMessage] = useState<string | null>(null);
+
+  // Cloud Sync State
+  const [cloudInfo, setCloudInfo] = useState<CloudSyncInfo>(() => firestoreSync.getInfo());
+  const [isCloudSyncing, setIsCloudSyncing] = useState(false);
+  const [cloudMessage, setCloudMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    return firestoreSync.subscribeStatus((newInfo) => {
+      setCloudInfo(newInfo);
+    });
+  }, []);
+
+  const handlePushToCloud = async () => {
+    setIsCloudSyncing(true);
+    setCloudMessage('Pushing local portfolio state to Google Cloud Firestore...');
+    try {
+      const ok = await firestoreSync.pushToCloud(storage.getRawData(), true);
+      if (ok) {
+        onToast('Successfully pushed all records to Firestore Cloud Database!', 'success');
+        setCloudMessage('Successfully synchronized to Firestore!');
+      } else {
+        onToast('Failed to push to cloud database', 'error');
+      }
+    } catch (e: any) {
+      onToast(`Cloud sync error: ${e.message}`, 'error');
+    } finally {
+      setIsCloudSyncing(false);
+      setTimeout(() => setCloudMessage(null), 5000);
+    }
+  };
+
+  const handlePullFromCloud = async () => {
+    setIsCloudSyncing(true);
+    setCloudMessage('Retrieving latest portfolio state from Google Cloud Firestore...');
+    try {
+      const ok = await firestoreSync.forcePull();
+      if (ok) {
+        onToast('Database refreshed with latest Firestore cloud records!', 'success');
+        setCloudMessage('Database updated with latest cloud records.');
+      } else {
+        onToast('Could not retrieve cloud data', 'error');
+      }
+    } catch (e: any) {
+      onToast(`Pull error: ${e.message}`, 'error');
+    } finally {
+      setIsCloudSyncing(false);
+      setTimeout(() => setCloudMessage(null), 5000);
+    }
+  };
 
   // Form State
   const [formData, setFormData] = useState<{
@@ -390,6 +443,21 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
           <div className="flex items-center gap-2">
             <History className="w-4 h-4" />
             <span>Audit Trail Logs ({auditLogs.length})</span>
+          </div>
+        </button>
+
+        <button
+          onClick={() => setActiveSubTab('QUOTA_MONITOR')}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
+            activeSubTab === 'QUOTA_MONITOR'
+              ? 'bg-indigo-600 text-white shadow-xs'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <Zap className="w-4 h-4 text-amber-300 fill-current" />
+            <span>Cloud Storage & AI Quotas</span>
+            <span className="px-1.5 py-0.5 rounded-full text-[9px] font-black bg-emerald-500 text-white">LIVE</span>
           </div>
         </button>
 
@@ -748,6 +816,81 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
             </div>
           </div>
 
+          {/* Google Cloud Firestore Persistent Cloud Sync Card */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3.5">
+                <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
+                  <Cloud className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="text-sm font-bold text-slate-900">Google Cloud Firestore (Live Sync)</h3>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                      Spark Free Tier ($0/mo)
+                    </span>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 capitalize">
+                      Status: {cloudInfo.status}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Permanent real-time cloud persistence. When you republish the app or open it from another device, all portfolio properties, leases, payments, and accounting entries remain safe and synchronized.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={handlePushToCloud}
+                  disabled={isCloudSyncing}
+                  className="px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white transition-colors flex items-center gap-2 shadow-xs"
+                >
+                  <UploadCloud className="w-4 h-4" />
+                  <span>Push to Cloud</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handlePullFromCloud}
+                  disabled={isCloudSyncing}
+                  className="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 disabled:opacity-50 text-slate-700 border border-slate-200 transition-colors flex items-center gap-2"
+                >
+                  <DownloadCloud className="w-4 h-4" />
+                  <span>Pull from Cloud</span>
+                </button>
+              </div>
+            </div>
+
+            {cloudMessage && (
+              <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-xs font-medium text-indigo-900 flex items-center justify-between">
+                <span>{cloudMessage}</span>
+                <span className="text-[10px] text-indigo-600 font-mono">
+                  {new Date().toLocaleTimeString()}
+                </span>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 text-xs">
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+                <span className="text-slate-500 block text-[11px]">Firebase Project ID</span>
+                <span className="font-mono font-bold text-slate-800">{cloudInfo.projectId}</span>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+                <span className="text-slate-500 block text-[11px]">Firestore Database ID</span>
+                <span className="font-mono font-bold text-slate-800 truncate block" title={cloudInfo.databaseId}>
+                  {cloudInfo.databaseId}
+                </span>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+                <span className="text-slate-500 block text-[11px]">Last Cloud Synchronization</span>
+                <span className="font-bold text-slate-800">
+                  {cloudInfo.lastSyncedAt ? cloudInfo.lastSyncedAt.toLocaleString() : 'Connected & Active'}
+                </span>
+              </div>
+            </div>
+          </div>
+
           {/* Backup & Data Actions */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Backup Export */}
@@ -967,6 +1110,11 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Subtab 6: Live Cloud Storage & AI Quotas Telemetry */}
+      {activeSubTab === 'QUOTA_MONITOR' && (
+        <CloudQuotaMonitor onToast={onToast} />
       )}
 
       {/* Add / Edit User Modal */}

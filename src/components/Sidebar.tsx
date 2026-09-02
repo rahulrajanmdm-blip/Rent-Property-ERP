@@ -73,6 +73,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       label: 'System & Deployment',
       items: [
         { id: 'Administration', label: 'User Roles & Access', icon: ShieldAlert },
+        { id: 'CloudQuotas', label: 'Storage & AI Quotas', icon: Zap, badge: 'Live Free' },
         { id: 'AppsScriptHub', label: 'Apps Script Code.gs', icon: Code2, badge: 'v3.1 Export' }
       ]
     }

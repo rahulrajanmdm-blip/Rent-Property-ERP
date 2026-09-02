@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { User, RegionalProvince, REGIONAL_PROVINCE_TAX } from '../types/erp';
 import { storage } from '../services/storage';
+import { CloudSyncBadge } from './CloudSyncBadge';
 
 interface NavbarProps {
   currentTab: string;
@@ -16,6 +17,7 @@ interface NavbarProps {
   onQuickAction: (action: string) => void;
   onOpenLogin: () => void;
   onLogout: () => void;
+  onOpenCloudQuota?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -26,7 +28,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenTaxGuide,
   onQuickAction,
   onOpenLogin,
-  onLogout
+  onLogout,
+  onOpenCloudQuota
 }) => {
   const users = storage.getUsers();
   const [selectedProvince, setSelectedProvince] = useState<RegionalProvince>('ON');
@@ -82,6 +85,9 @@ export const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       <div className="flex items-center gap-2.5">
+        {/* Firebase Firestore Cloud Sync Badge */}
+        <CloudSyncBadge onOpenQuota={onOpenCloudQuota} />
+
         {/* Regional Province & Tax Rate Chip */}
         <button
           onClick={onOpenTaxGuide}

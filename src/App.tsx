@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Navbar } from './components/Navbar';
 import { Dashboard } from './components/Dashboard';
@@ -22,6 +22,7 @@ import { AdministrationView } from './components/AdministrationView';
 import { AppScriptExportView } from './components/AppScriptExportView';
 import { LoginModal } from './components/LoginModal';
 import { storage } from './services/storage';
+import { firestoreSync } from './services/firestoreSync';
 import { User, RegionalProvince, REGIONAL_PROVINCE_TAX } from './types/erp';
 import { CheckCircle2, AlertCircle, Info, X, Building, ShieldCheck, Scale, FileText } from 'lucide-react';
 
@@ -34,10 +35,20 @@ interface Toast {
 export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(() => storage.getAuthenticatedSession());
   const [activeTab, setActiveTab] = useState<string>('Dashboard');
+  const [adminSubTab, setAdminSubTab] = useState<'USERS' | 'PERMISSIONS' | 'AUDIT' | 'STORAGE' | 'EMAIL_CONFIG' | 'QUOTA_MONITOR'>('USERS');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showTaxGuide, setShowTaxGuide] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
+
+  useEffect(() => {
+    firestoreSync.init();
+  }, []);
+
+  const handleOpenCloudQuota = () => {
+    setAdminSubTab('QUOTA_MONITOR');
+    setActiveTab('Administration');
+  };
 
   const addToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
     const id = Date.now().toString();
@@ -125,7 +136,14 @@ export default function App() {
       {/* Sidebar */}
       <Sidebar
         currentTab={activeTab}
-        onSelectTab={setActiveTab}
+        onSelectTab={(tab) => {
+          if (tab === 'CloudQuotas') {
+            setAdminSubTab('QUOTA_MONITOR');
+            setActiveTab('Administration');
+          } else {
+            setActiveTab(tab);
+          }
+        }}
         currentUser={currentUser}
         onLogout={handleLogout}
         isOpenMobile={sidebarOpen}
@@ -147,6 +165,7 @@ export default function App() {
           onQuickAction={handleQuickAction}
           onOpenLogin={() => setShowLoginModal(true)}
           onLogout={handleLogout}
+          onOpenCloudQuota={handleOpenCloudQuota}
         />
 
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 space-y-6">
@@ -225,6 +244,7 @@ export default function App() {
             <AdministrationView
               currentUser={currentUser}
               onToast={addToast}
+              initialSubTab={adminSubTab}
               onSwitchUser={(user) => {
                 setCurrentUser(user);
                 addToast(`Switched user profile to ${user.Full_Name} (${user.Role})`, 'info');

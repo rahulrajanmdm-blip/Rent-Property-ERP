@@ -1,0 +1,40 @@
+{
+  "entities": {
+    "ERPState": {
+      "title": "ERPState",
+      "description": "Complete synchronized ERP portfolio database state",
+      "type": "object",
+      "properties": {
+        "updatedAt": { "type": "string" },
+        "updatedBy": { "type": "string" },
+        "payload": { "type": "string" }
+      },
+      "required": ["updatedAt"]
+    },
+    "Property": {
+      "title": "Property",
+      "description": "Real estate property asset",
+      "type": "object",
+      "properties": {
+        "Property_ID": { "type": "string" },
+        "Property_Name": { "type": "string" },
+        "Address": { "type": "string" },
+        "City": { "type": "string" },
+        "Province": { "type": "string" },
+        "Postal_Code": { "type": "string" },
+        "Landlord_ID": { "type": "string" }
+      },
+      "required": ["Property_ID", "Property_Name", "Landlord_ID"]
+    }
+  },
+  "firestore": {
+    "/erp_state/{docId}": {
+      "schema": "ERPState",
+      "description": "Primary synchronized cloud database for Dream Dwell ERP"
+    },
+    "/properties/{propertyId}": {
+      "schema": "Property",
+      "description": "Property assets"
+    }
+  }
+}
