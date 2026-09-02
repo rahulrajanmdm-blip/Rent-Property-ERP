@@ -2000,7 +2000,56 @@ class StorageService {
     if (idx >= 0) {
       this.data.users[idx] = user;
       this.logAudit(userEmail, 'UPDATE', 'Users', user.User_ID, user);
+      
+      // If current session is this user, refresh stored session
+      const currentSession = this.getAuthenticatedSession();
+      if (currentSession && currentSession.User_ID === user.User_ID) {
+        this.setAuthenticatedSession(user);
+      }
+      this.save();
     }
+  }
+
+  public updateUser2FaEmail(userIdOrEmail: string, newOtpEmail: string, updatePrimary: boolean = false, adminAuditEmail: string = 'System'): User | null {
+    const cleanEmail = newOtpEmail.trim();
+    const identLower = userIdOrEmail.trim().toLowerCase();
+    const idx = this.data.users.findIndex(u => u.User_ID.toLowerCase() === identLower || u.Email.toLowerCase() === identLower);
+    if (idx >= 0) {
+      const oldOtpEmail = this.data.users[idx].TwoFactorOtpEmail || this.data.users[idx].Email;
+      this.data.users[idx].TwoFactorOtpEmail = cleanEmail;
+      if (updatePrimary) {
+        this.data.users[idx].Email = cleanEmail;
+      }
+      this.logAudit(adminAuditEmail, 'UPDATE', 'Users', this.data.users[idx].User_ID, {
+        action: 'UPDATE_2FA_EMAIL',
+        oldOtpEmail,
+        newOtpEmail: cleanEmail,
+        updatePrimary
+      });
+      
+      // Also update authenticated session if this is the active user
+      const currentSession = this.getAuthenticatedSession();
+      if (currentSession && (currentSession.User_ID === this.data.users[idx].User_ID || currentSession.Email.toLowerCase() === identLower)) {
+        this.setAuthenticatedSession(this.data.users[idx]);
+      }
+      
+      this.save();
+      
+      // Async sync with server
+      if (typeof window !== 'undefined') {
+        fetch('/api/auth/update-otp-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            identifier: userIdOrEmail,
+            newOtpEmail: cleanEmail,
+            updatePrimaryEmail: updatePrimary
+          })
+        }).catch(err => console.warn('Failed to sync OTP email to server API:', err));
+      }
+      return this.data.users[idx];
+    }
+    return null;
   }
 
   public deleteUser(userId: string, userEmail: string) {

@@ -105,9 +105,13 @@ let smtpConfig = {
   host: process.env.SMTP_HOST || '',
   port: parseInt(process.env.SMTP_PORT || '587', 10),
   secure: process.env.SMTP_SECURE === 'true',
+  auth: {
+    user: process.env.SMTP_USER || '',
+    pass: process.env.SMTP_PASS || '',
+  },
   user: process.env.SMTP_USER || '',
   pass: process.env.SMTP_PASS || '',
-  from: process.env.SMTP_FROM || 'Dream Dwell <no-reply@dreamdwell.com>'
+  from: process.env.SMTP_FROM || 'Dream Dwell Security <no-reply@dreamdwell.com>'
 };
 
 // Helper: Get or initialize mail transport
@@ -177,6 +181,23 @@ function saveServerData(data: any) {
   } catch (err) {
     console.error('Error writing server data store:', err);
   }
+}
+
+// Restore saved SMTP & sender configuration if available
+try {
+  const initialStore = loadServerData();
+  if (initialStore && initialStore.smtpConfig) {
+    smtpConfig = {
+      ...smtpConfig,
+      ...initialStore.smtpConfig,
+      auth: {
+        user: initialStore.smtpConfig.user || '',
+        pass: initialStore.smtpConfig.pass || ''
+      }
+    };
+  }
+} catch (err) {
+  console.warn('Could not restore initial smtpConfig:', err);
 }
 
 async function startServer() {
@@ -308,6 +329,9 @@ async function startServer() {
       return;
     }
 
+    // Destination OTP mailbox
+    const otpTargetEmail = (user.TwoFactorOtpEmail && user.TwoFactorOtpEmail.trim()) ? user.TwoFactorOtpEmail.trim() : user.Email;
+
     // Generate 6-digit OTP passcode
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes valid
@@ -319,7 +343,8 @@ async function startServer() {
     });
 
     console.log(`\n========================================`);
-    console.log(`[2FA SECURITY DISPATCH] Passcode for ${user.Email}`);
+    console.log(`[2FA SECURITY DISPATCH] Account: ${user.Email}`);
+    console.log(`[2FA DESTINATION MAIL] To: ${otpTargetEmail}`);
     console.log(`OTP Passcode: ${otpCode}`);
     console.log(`Expires in: 10 minutes`);
     console.log(`========================================\n`);
@@ -332,7 +357,7 @@ async function startServer() {
       try {
         const mailOptions = {
           from: smtpConfig.from,
-          to: user.Email,
+          to: otpTargetEmail,
           subject: `Your 2FA Passcode: ${otpCode} - Dream Dwell ERP`,
           text: `Hello ${user.Full_Name},\n\nYour Two-Factor Authentication (2FA) verification code is: ${otpCode}\n\nThis code expires in 10 minutes. If you did not request this code, please immediately alert your administrator.\n\nDream Dwell Property Management ERP`,
           html: `
@@ -361,26 +386,61 @@ async function startServer() {
         };
 
         const info = await transporter.sendMail(mailOptions);
-        console.log(`[SMTP SUCCESS] Message sent to ${user.Email}: ${info.messageId}`);
+        console.log(`[SMTP SUCCESS] Message sent to ${otpTargetEmail}: ${info.messageId}`);
         emailDelivered = true;
-        deliveryMessage = `Verification passcode dispatched to ${user.Email} via SMTP.`;
+        deliveryMessage = `Verification passcode dispatched to ${otpTargetEmail} via SMTP.`;
       } catch (mailErr: any) {
         console.error('[SMTP ERROR] Failed to send email:', mailErr.message);
         deliveryMessage = `SMTP connection attempt failed: ${mailErr.message}.`;
       }
     } else {
-      deliveryMessage = `Passcode generated and logged for ${user.Email}.`;
+      deliveryMessage = `Passcode generated and dispatched for ${otpTargetEmail}.`;
     }
 
     res.json({
       success: true,
       email: user.Email,
+      targetEmail: otpTargetEmail,
       fullName: user.Full_Name,
       delivered: emailDelivered,
       smtpConfigured: Boolean(transporter),
       message: deliveryMessage,
       // For immediate usability in test/dev setups without requiring pre-configured SMTP
       fallbackCode: otpCode
+    });
+  });
+
+  // Update 2FA OTP Mail ID Endpoint
+  app.post('/api/auth/update-otp-email', (req, res) => {
+    const { identifier, newOtpEmail, updatePrimaryEmail } = req.body;
+    if (!identifier || !newOtpEmail) {
+      res.status(400).json({ error: 'User identifier and new 2FA email address are required' });
+      return;
+    }
+
+    const data = loadServerData();
+    let users = data.users || [...DEFAULT_SYSTEM_USERS];
+    const identLower = identifier.trim().toLowerCase();
+    const idx = users.findIndex((u: any) => u.Email.toLowerCase() === identLower || u.User_ID.toLowerCase() === identLower);
+
+    if (idx < 0) {
+      res.status(404).json({ error: 'User account not found' });
+      return;
+    }
+
+    const cleanNewEmail = newOtpEmail.trim();
+    users[idx].TwoFactorOtpEmail = cleanNewEmail;
+    if (updatePrimaryEmail) {
+      users[idx].Email = cleanNewEmail;
+    }
+
+    data.users = users;
+    saveServerData(data);
+
+    res.json({
+      success: true,
+      user: users[idx],
+      message: `2FA OTP email successfully set to ${cleanNewEmail}`
     });
   });
 
@@ -455,22 +515,61 @@ async function startServer() {
     res.status(400).json({ error: 'Invalid 6-digit verification code. Please try again or request a new passcode.' });
   });
 
-  // Save Dynamic SMTP Configuration
+  // Get Dynamic SMTP & Outgoing Sender Configuration
+  app.get('/api/auth/smtp-config', (req, res) => {
+    res.json({
+      success: true,
+      host: smtpConfig.host,
+      port: smtpConfig.port,
+      secure: smtpConfig.secure,
+      user: smtpConfig.user,
+      from: smtpConfig.from,
+      hasPassword: Boolean(smtpConfig.pass),
+      smtpConfigured: Boolean(smtpConfig.host && smtpConfig.user)
+    });
+  });
+
+  // Save Dynamic SMTP & Outgoing Sender Configuration
   app.post('/api/auth/smtp-config', (req, res) => {
     const { host, port, secure, user, pass, from } = req.body;
+    const updatedUser = user !== undefined ? user.trim() : smtpConfig.user;
+    const updatedPass = pass ? pass.trim() : smtpConfig.pass;
+
     smtpConfig = {
-      host: host || '',
-      port: parseInt(port || '587', 10),
-      secure: Boolean(secure),
-      user: user || '',
-      pass: pass || '',
-      from: from || 'Dream Dwell <no-reply@dreamdwell.com>'
+      host: host !== undefined ? host.trim() : smtpConfig.host,
+      port: port ? parseInt(port, 10) : smtpConfig.port,
+      secure: secure !== undefined ? Boolean(secure) : smtpConfig.secure,
+      user: updatedUser,
+      pass: updatedPass,
+      auth: {
+        user: updatedUser,
+        pass: updatedPass
+      },
+      from: from !== undefined && from.trim() ? from.trim() : smtpConfig.from
     };
+
+    // Persist to central file store
+    try {
+      const data = loadServerData();
+      data.smtpConfig = {
+        host: smtpConfig.host,
+        port: smtpConfig.port,
+        secure: smtpConfig.secure,
+        user: smtpConfig.user,
+        pass: smtpConfig.pass,
+        from: smtpConfig.from
+      };
+      saveServerData(data);
+    } catch (err) {
+      console.warn('Could not persist smtpConfig to file:', err);
+    }
+
     res.json({
       success: true,
       smtpConfigured: Boolean(smtpConfig.host && smtpConfig.user),
       host: smtpConfig.host,
       port: smtpConfig.port,
+      user: smtpConfig.user,
       from: smtpConfig.from
     });
   });

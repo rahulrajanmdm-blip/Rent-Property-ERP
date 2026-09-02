@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import {
   ShieldCheck, Lock, Mail, KeyRound, CheckCircle2,
   AlertCircle, RefreshCw, X, Eye, EyeOff, Key, Send, Inbox,
-  Server, Sparkles, Check, ArrowRight
+  Server, Sparkles, Check, ArrowRight, Edit3
 } from 'lucide-react';
 import { storage } from '../services/storage';
 import { User } from '../types/erp';
+import { Change2FaEmailModal } from './Change2FaEmailModal';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -38,6 +39,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   const [serverDelivered, setServerDelivered] = useState(false);
   const [smtpConfigured, setSmtpConfigured] = useState(false);
   const [pendingUser, setPendingUser] = useState<User | null>(null);
+  const [showChange2FaModal, setShowChange2FaModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const [isSendingOtp, setIsSendingOtp] = useState(false);
@@ -73,6 +75,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     setCooldown(60);
     setTimerActive(true);
 
+    const targetMailbox = user.TwoFactorOtpEmail?.trim() || user.Email;
+
     try {
       const res = await fetch('/api/auth/send-otp', {
         method: 'POST',
@@ -85,24 +89,25 @@ export const LoginModal: React.FC<LoginModalProps> = ({
         setActiveGeneratedOtp(result.fallbackCode || '');
         setServerDelivered(Boolean(result.delivered));
         setSmtpConfigured(Boolean(result.smtpConfigured));
+        const finalTarget = result.targetEmail || targetMailbox;
         
         if (result.delivered) {
-          onToast(`2FA verification code dispatched to ${user.Email} via SMTP!`, 'success');
+          onToast(`2FA verification code dispatched to ${finalTarget} via SMTP!`, 'success');
         } else {
-          onToast(`Security verification code generated for ${user.Email}`, 'info');
+          onToast(`Security verification code generated for ${finalTarget}`, 'info');
         }
       } else {
         // Fallback to local client code generation if server is temporarily unreachable
         const fallback = Math.floor(100000 + Math.random() * 900000).toString();
         setActiveGeneratedOtp(fallback);
         setServerDelivered(false);
-        onToast(`Passcode generated for ${user.Email}`, 'info');
+        onToast(`Passcode generated for ${targetMailbox}`, 'info');
       }
     } catch (err) {
       const fallback = Math.floor(100000 + Math.random() * 900000).toString();
       setActiveGeneratedOtp(fallback);
       setServerDelivered(false);
-      onToast(`Passcode generated for ${user.Email}`, 'info');
+      onToast(`Passcode generated for ${targetMailbox}`, 'info');
     } finally {
       setIsSendingOtp(false);
     }
@@ -374,9 +379,20 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                     </span>
                   )}
                 </div>
-                <p className="text-slate-600 leading-relaxed text-[11px]">
-                  A 6-digit one-time passcode was dispatched to <b className="text-indigo-950 font-semibold">{pendingUser?.Email}</b>.
-                </p>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 pt-0.5">
+                  <p className="text-slate-600 leading-relaxed text-[11px]">
+                    Passcode dispatched to: <b className="text-indigo-950 font-semibold">{pendingUser?.TwoFactorOtpEmail?.trim() || pendingUser?.Email}</b>
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setShowChange2FaModal(true)}
+                    className="shrink-0 text-[11px] text-indigo-600 hover:text-indigo-800 font-bold hover:underline flex items-center gap-1 cursor-pointer w-fit"
+                    title="Change destination email address for 2FA OTP"
+                  >
+                    <Edit3 className="w-3 h-3" />
+                    Change 2FA Mail ID
+                  </button>
+                </div>
 
                 {/* Instant development / demo OTP helper if SMTP is not set up */}
                 {activeGeneratedOtp && !serverDelivered && (
@@ -527,6 +543,21 @@ export const LoginModal: React.FC<LoginModalProps> = ({
             Property Management & Lease ERP · Centralized Multi-User Authentication
           </p>
         </div>
+
+        {showChange2FaModal && pendingUser && (
+          <Change2FaEmailModal
+            user={pendingUser}
+            isOpen={showChange2FaModal}
+            onClose={() => setShowChange2FaModal(false)}
+            onSuccess={(updated) => {
+              setPendingUser(updated);
+              if (updated.Email !== pendingUser.Email) {
+                setEmail(updated.Email);
+              }
+              dispatchEmailOtp(updated);
+            }}
+          />
+        )}
       </div>
     );
   }
@@ -535,6 +566,21 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-xs animate-in fade-in duration-150">
       {cardContent}
+
+      {showChange2FaModal && pendingUser && (
+        <Change2FaEmailModal
+          user={pendingUser}
+          isOpen={showChange2FaModal}
+          onClose={() => setShowChange2FaModal(false)}
+          onSuccess={(updated) => {
+            setPendingUser(updated);
+            if (updated.Email !== pendingUser.Email) {
+              setEmail(updated.Email);
+            }
+            dispatchEmailOtp(updated);
+          }}
+        />
+      )}
     </div>
   );
 };

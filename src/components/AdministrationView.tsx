@@ -4,13 +4,14 @@ import {
   X, CheckCircle2, AlertCircle, History, RotateCcw,
   Sparkles, Lock, Eye, CheckSquare, Square, Search,
   Database, Download, Upload, Trash, RefreshCw, FileText,
-  Mail, Send, Server, ShieldCheck, Cloud, UploadCloud, DownloadCloud, Zap
+  Mail, Send, Server, ShieldCheck, Cloud, UploadCloud, DownloadCloud, Zap, KeyRound
 } from 'lucide-react';
 import { storage, ALL_ERP_TABS } from '../services/storage';
 import { firestoreSync, CloudSyncInfo } from '../services/firestoreSync';
 import { User, Role, AuditEntry } from '../types/erp';
 import { ConfirmDeleteModal } from './ConfirmDeleteModal';
 import { CloudQuotaMonitor } from './CloudQuotaMonitor';
+import { Change2FaEmailModal } from './Change2FaEmailModal';
 
 interface AdministrationViewProps {
   currentUser: User;
@@ -63,7 +64,22 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
   const [smtpFrom, setSmtpFrom] = useState('Dream Dwell <no-reply@dreamdwell.com>');
   const [testEmailTarget, setTestEmailTarget] = useState(currentUser.Email);
   const [isTestingSmtp, setIsTestingSmtp] = useState(false);
+  const [isSavingSmtp, setIsSavingSmtp] = useState(false);
   const [smtpStatusMessage, setSmtpStatusMessage] = useState<string | null>(null);
+
+  // Load existing SMTP / Sender configuration on mount
+  useEffect(() => {
+    fetch('/api/auth/smtp-config')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.host) setSmtpHost(data.host);
+        if (data.port) setSmtpPort(String(data.port));
+        if (data.secure !== undefined) setSmtpSecure(Boolean(data.secure));
+        if (data.user) setSmtpUser(data.user);
+        if (data.from) setSmtpFrom(data.from);
+      })
+      .catch((err) => console.warn('Could not load SMTP config:', err));
+  }, []);
 
   // Cloud Sync State
   const [cloudInfo, setCloudInfo] = useState<CloudSyncInfo>(() => firestoreSync.getInfo());
@@ -114,10 +130,14 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
     }
   };
 
+  // 2FA Management Modal State
+  const [managing2FaUser, setManaging2FaUser] = useState<User | null>(null);
+
   // Form State
   const [formData, setFormData] = useState<{
     User_ID: string;
     Email: string;
+    TwoFactorOtpEmail: string;
     Full_Name: string;
     Password: string;
     Phone: string;
@@ -127,6 +147,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
   }>({
     User_ID: '',
     Email: '',
+    TwoFactorOtpEmail: '',
     Full_Name: '',
     Password: '',
     Phone: '',
@@ -140,6 +161,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
     setFormData({
       User_ID: nextId,
       Email: '',
+      TwoFactorOtpEmail: '',
       Full_Name: '',
       Password: 'admin',
       Phone: '',
@@ -156,6 +178,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
     setFormData({
       User_ID: user.User_ID,
       Email: user.Email,
+      TwoFactorOtpEmail: user.TwoFactorOtpEmail || '',
       Full_Name: user.Full_Name,
       Password: user.Password || 'admin',
       Phone: user.Phone || '',
@@ -176,6 +199,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
     const payload: User = {
       User_ID: formData.User_ID,
       Email: formData.Email.trim(),
+      TwoFactorOtpEmail: formData.TwoFactorOtpEmail.trim() || undefined,
       Full_Name: formData.Full_Name.trim(),
       Password: formData.Password.trim() || 'admin',
       Phone: formData.Phone.trim(),
@@ -204,6 +228,38 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
     }).catch(err => console.warn('Server user sync error:', err));
 
     setShowAddUserModal(false);
+  };
+
+  const handleSaveSmtp = async () => {
+    setIsSavingSmtp(true);
+    setSmtpStatusMessage(null);
+    try {
+      const res = await fetch('/api/auth/smtp-config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          host: smtpHost,
+          port: smtpPort,
+          secure: smtpSecure,
+          user: smtpUser,
+          pass: smtpPass,
+          from: smtpFrom
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setSmtpStatusMessage(`✅ Outgoing Sender Email & SMTP settings saved successfully! OTPs will be dispatched from: ${data.from || smtpFrom}`);
+        onToast(`Sender Mail ID saved! Outgoing OTPs dispatched from: ${data.from || smtpFrom}`, 'success');
+      } else {
+        setSmtpStatusMessage(`❌ Error saving settings: ${data.error || 'Server rejected changes'}`);
+        onToast('Failed to save SMTP settings', 'error');
+      }
+    } catch (err: any) {
+      setSmtpStatusMessage(`❌ Network error: ${err.message}`);
+      onToast(`Error saving: ${err.message}`, 'error');
+    } finally {
+      setIsSavingSmtp(false);
+    }
   };
 
   const handleTestSmtp = async () => {
@@ -560,27 +616,52 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
                       {u.Is_Active ? 'Active & Enabled' : 'Suspended'}
                     </span>
                   </div>
+                  <div className="flex items-center justify-between pt-1 border-t border-slate-200/60">
+                    <span className="text-slate-500 font-medium flex items-center gap-1">
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                      2FA OTP Mail ID:
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setManaging2FaUser(u)}
+                      className="group flex items-center gap-1 text-[11px] font-mono font-bold text-indigo-700 hover:text-indigo-900 bg-white hover:bg-indigo-50 px-2 py-0.5 rounded border border-slate-200 hover:border-indigo-300 transition-colors max-w-[170px] truncate cursor-pointer"
+                      title="Click to update 2FA OTP recipient email"
+                    >
+                      <span className="truncate">{u.TwoFactorOtpEmail || u.Email}</span>
+                      <Edit3 className="w-3 h-3 text-slate-400 group-hover:text-indigo-600 shrink-0" />
+                    </button>
+                  </div>
                 </div>
 
-                <div className="flex gap-2 pt-1 border-t border-slate-100">
-                  {onSwitchUser && !isCurrent && (
-                    <button
-                      onClick={() => onSwitchUser(u)}
-                      className="w-full py-1.5 bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-700 rounded-xl text-xs font-bold transition-colors"
-                    >
-                      Switch to Profile
-                    </button>
-                  )}
+                <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-100">
+                  <button
+                    onClick={() => setManaging2FaUser(u)}
+                    className="py-1.5 px-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1 cursor-pointer"
+                    title="Change 2FA OTP Mail ID"
+                  >
+                    <KeyRound className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span className="truncate">2FA OTP Mail</span>
+                  </button>
+
                   <button
                     onClick={() => {
                       setSelectedUserForPerms(u);
                       setActiveSubTab('PERMISSIONS');
                     }}
-                    className="w-full py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl text-xs font-bold transition-colors"
+                    className="py-1.5 px-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1 cursor-pointer"
                   >
-                    Configure Matrix
+                    <span className="truncate">Permissions</span>
                   </button>
                 </div>
+
+                {onSwitchUser && !isCurrent && (
+                  <button
+                    onClick={() => onSwitchUser(u)}
+                    className="w-full py-1.5 bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-700 rounded-xl text-xs font-bold transition-colors cursor-pointer"
+                  >
+                    Switch to Profile
+                  </button>
+                )}
               </div>
             );
           })}
@@ -985,9 +1066,59 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
               </div>
             )}
 
+            {/* Active Sender Mailbox Banner */}
+            <div className="p-4 bg-gradient-to-r from-indigo-50/80 via-purple-50/50 to-slate-50 border border-indigo-100 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white border border-indigo-200 flex items-center justify-center text-indigo-600 shadow-xs shrink-0">
+                  <Send className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-slate-900 text-sm">Active Sender Mail ID (Where OTP is Sent From)</span>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-800">
+                      Outgoing Gateway
+                    </span>
+                  </div>
+                  <p className="text-slate-600 mt-0.5 font-mono text-[11px]">
+                    {smtpFrom}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleSaveSmtp}
+                disabled={isSavingSmtp}
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-xs transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer self-start sm:self-auto"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                <span>{isSavingSmtp ? 'Saving Changes...' : 'Save Sender & SMTP Settings'}</span>
+              </button>
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Left Column: Form Settings */}
               <div className="lg:col-span-2 space-y-4 text-xs">
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block font-bold text-slate-800">
+                      Sender Mail ID & Display Name (Where OTP is Sent From) *
+                    </label>
+                    <span className="text-[10px] text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded">
+                      Outgoing "From:" Header
+                    </span>
+                  </div>
+                  <input
+                    type="text"
+                    value={smtpFrom}
+                    onChange={(e) => setSmtpFrom(e.target.value)}
+                    placeholder="e.g. Dream Dwell Security <security@dreamdwell.com> or yourname@gmail.com"
+                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 text-xs font-mono"
+                  />
+                  <p className="text-[11px] text-slate-500 mt-1">
+                    This is the exact address displayed in the user's inbox when they receive 2FA verification codes.
+                  </p>
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="sm:col-span-2">
                     <label className="block font-bold text-slate-700 mb-1">SMTP Server Host</label>
@@ -1013,7 +1144,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block font-bold text-slate-700 mb-1">SMTP Username / Email</label>
+                    <label className="block font-bold text-slate-700 mb-1">SMTP Username / Sending Email</label>
                     <input
                       type="text"
                       value={smtpUser}
@@ -1034,28 +1165,28 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">From Sender Header</label>
+                <div className="flex items-center">
+                  <label className="flex items-center gap-2 cursor-pointer text-slate-700 font-semibold">
                     <input
-                      type="text"
-                      value={smtpFrom}
-                      onChange={(e) => setSmtpFrom(e.target.value)}
-                      placeholder="Dream Dwell <no-reply@dreamdwell.com>"
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 text-xs"
+                      type="checkbox"
+                      checked={smtpSecure}
+                      onChange={(e) => setSmtpSecure(e.target.checked)}
+                      className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
                     />
-                  </div>
-                  <div className="flex items-center pt-6">
-                    <label className="flex items-center gap-2 cursor-pointer text-slate-700 font-semibold">
-                      <input
-                        type="checkbox"
-                        checked={smtpSecure}
-                        onChange={(e) => setSmtpSecure(e.target.checked)}
-                        className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
-                      />
-                      <span>Use SSL/TLS (Port 465)</span>
-                    </label>
-                  </div>
+                    <span>Use SSL/TLS (Port 465)</span>
+                  </label>
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={handleSaveSmtp}
+                    disabled={isSavingSmtp}
+                    className="flex-1 py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>{isSavingSmtp ? 'Saving Configuration...' : 'Save Sender & SMTP Settings'}</span>
+                  </button>
                 </div>
 
                 <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
@@ -1158,6 +1289,23 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
                 />
               </div>
 
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block font-bold text-slate-700">2FA OTP Delivery Mail ID</label>
+                  <span className="text-[10px] text-indigo-700 bg-indigo-50 font-bold px-1.5 py-0.5 rounded">Security OTP</span>
+                </div>
+                <input
+                  type="email"
+                  value={formData.TwoFactorOtpEmail}
+                  onChange={(e) => setFormData({ ...formData, TwoFactorOtpEmail: e.target.value })}
+                  placeholder={`Optional (Defaults to ${formData.Email || 'Work Email'})`}
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 font-mono text-xs"
+                />
+                <p className="text-[10px] text-slate-500 mt-1">
+                  6-digit 2FA login verification codes will be delivered to this email address. If blank, it defaults to the work email.
+                </p>
+              </div>
+
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">Account Password *</label>
@@ -1240,6 +1388,19 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
         onConfirm={handleDeleteUserConfirm}
         onCancel={() => setDeletingUser(null)}
       />
+
+      {/* Change 2FA OTP Mail ID Modal */}
+      {managing2FaUser && (
+        <Change2FaEmailModal
+          user={managing2FaUser}
+          isOpen={!!managing2FaUser}
+          onClose={() => setManaging2FaUser(null)}
+          onSuccess={(updated) => {
+            onToast(`2FA OTP email for ${updated.Full_Name} updated to ${updated.TwoFactorOtpEmail || updated.Email}`, 'success');
+            setManaging2FaUser(null);
+          }}
+        />
+      )}
     </div>
   );
 };

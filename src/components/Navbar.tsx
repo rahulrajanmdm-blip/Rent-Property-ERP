@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   Menu, Shield, DollarSign, Plus, Sparkles, HelpCircle,
   FileSpreadsheet, ArrowUpRight, CheckCircle2, Building, RefreshCw,
-  LogOut, ShieldCheck, User as UserIcon
+  LogOut, User as UserIcon
 } from 'lucide-react';
 import { User, RegionalProvince, REGIONAL_PROVINCE_TAX } from '../types/erp';
 import { storage } from '../services/storage';
@@ -109,13 +109,8 @@ export const Navbar: React.FC<NavbarProps> = ({
           <span className="hidden sm:inline">New</span> Lease
         </button>
 
-        {/* User Profile, 2FA Verified Badge & Logout */}
+        {/* User Profile & Logout */}
         <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
-          <div className="hidden lg:flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-            <span>2FA Verified</span>
-          </div>
-
           <button
             onClick={onOpenLogin}
             className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"

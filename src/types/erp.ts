@@ -215,6 +215,7 @@ export interface User {
   TwoFactorEnabled?: boolean;
   TwoFactorMethod?: 'TOTP_AUTHENTICATOR' | 'EMAIL_OTP';
   EmergencyBackupCode?: string;
+  TwoFactorOtpEmail?: string;
 }
 
 export type UtilityCategory = 'Electricity' | 'Natural Gas' | 'Water & Sewage' | 'Internet & Telecom' | 'Waste Management' | 'Heating Oil' | 'Other';
