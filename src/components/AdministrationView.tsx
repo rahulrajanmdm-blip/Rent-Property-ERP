@@ -4,7 +4,8 @@ import {
   X, CheckCircle2, AlertCircle, History, RotateCcw,
   Sparkles, Lock, Eye, CheckSquare, Square, Search,
   Database, Download, Upload, Trash, RefreshCw, FileText,
-  Mail, Send, Server, ShieldCheck, Cloud, UploadCloud, DownloadCloud, Zap, KeyRound
+  Mail, Send, Server, ShieldCheck, Cloud, UploadCloud, DownloadCloud, Zap, KeyRound,
+  Wrench, AlertTriangle
 } from 'lucide-react';
 import { storage, ALL_ERP_TABS } from '../services/storage';
 import { firestoreSync, CloudSyncInfo } from '../services/firestoreSync';
@@ -54,6 +55,12 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
   const [selectedUserForPerms, setSelectedUserForPerms] = useState<User>(users[0] || currentUser);
   const [auditSearch, setAuditSearch] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Database Management Modal States
+  const [showClearDbModal, setShowClearDbModal] = useState(false);
+  const [confirmClearText, setConfirmClearText] = useState('');
+  const [showLoadDemoModal, setShowLoadDemoModal] = useState(false);
+  const [isRunningIntegrity, setIsRunningIntegrity] = useState(false);
 
   // SMTP Configuration State
   const [smtpHost, setSmtpHost] = useState('smtp.gmail.com');
@@ -342,17 +349,42 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
   };
 
   const handlePurgeAllData = () => {
-    if (window.confirm('⚠️ PURGE ALL OPERATIONAL DATA?\n\nThis will remove all properties, units, landlords, tenants, leases, utility bills, rent transactions, and journal entries.\n\nYour user accounts, Chart of Accounts, and system configuration will remain intact. This cannot be undone.')) {
-      storage.purgeAllSampleData(currentUser.Email);
-      onToast('All sample & operational data purged! The database is now a clean production slate.', 'success');
+    setConfirmClearText('');
+    setShowClearDbModal(true);
+  };
+
+  const handleExecuteClearDatabase = () => {
+    storage.clearEntireDatabase(currentUser.Email);
+    firestoreSync.triggerImmediateSync();
+    setShowClearDbModal(false);
+    setConfirmClearText('');
+    setVersion(v => v + 1);
+    onToast('All operational records, properties, leases, deposits, and transactions have been completely purged! Clean production slate active.', 'success');
+  };
+
+  const handleRunIntegrityCleanup = () => {
+    setIsRunningIntegrity(true);
+    const result = storage.cleanOrphanRecords(currentUser.Email);
+    firestoreSync.triggerImmediateSync();
+    setIsRunningIntegrity(false);
+    setVersion(v => v + 1);
+    if (result.removedDepositsCount > 0 || result.removedRentTxnsCount > 0 || result.removedSplitsCount > 0 || result.syncedUnitsCount > 0) {
+      onToast(`Integrity check complete: Purged ${result.removedDepositsCount} orphaned deposit records, ${result.removedRentTxnsCount} rent records, and synchronized ${result.syncedUnitsCount} units.`, 'success');
+    } else {
+      onToast('Database integrity verified: 0 orphaned records found and all unit/lease ledgers are 100% in sync.', 'info');
     }
   };
 
   const handleLoadDemoData = () => {
-    if (window.confirm('Load sample demonstration portfolio? This will populate sample properties with demo leases and accounting records.')) {
-      storage.loadSampleDemoData(currentUser.Email);
-      onToast('Sample demonstration portfolio loaded successfully!', 'success');
-    }
+    setShowLoadDemoModal(true);
+  };
+
+  const handleExecuteLoadDemo = () => {
+    storage.loadSampleDemoData(currentUser.Email);
+    firestoreSync.triggerImmediateSync();
+    setShowLoadDemoModal(false);
+    setVersion(v => v + 1);
+    onToast('Sample demonstration portfolio loaded successfully!', 'success');
   };
 
   const handleExportBackup = () => {
@@ -837,22 +869,31 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
-                {!isCleanSlate ? (
-                  <button
-                    onClick={handlePurgeAllData}
-                    className="px-4 py-2.5 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-xs transition-colors flex items-center gap-2"
-                  >
-                    <Trash className="w-4 h-4" />
-                    Purge All Sample Data
-                  </button>
-                ) : (
+              <div className="flex flex-wrap items-center gap-2 shrink-0">
+                <button
+                  onClick={handleRunIntegrityCleanup}
+                  disabled={isRunningIntegrity}
+                  className="px-3.5 py-2.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 shadow-xs transition-colors flex items-center gap-1.5 border border-slate-300"
+                  title="Scrub orphan records, delete phantom deposits, and sync unit occupancy states"
+                >
+                  <Wrench className={`w-3.5 h-3.5 text-indigo-600 ${isRunningIntegrity ? 'animate-spin' : ''}`} />
+                  {isRunningIntegrity ? 'Checking...' : 'Check & Fix Integrity'}
+                </button>
+                <button
+                  onClick={handlePurgeAllData}
+                  className="px-3.5 py-2.5 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-xs transition-colors flex items-center gap-1.5"
+                  title="Permanently wipe all operational data and reset database to clean slate"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  Clear Database
+                </button>
+                {isCleanSlate && (
                   <button
                     onClick={handleLoadDemoData}
-                    className="px-4 py-2.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition-colors flex items-center gap-2"
+                    className="px-3.5 py-2.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition-colors flex items-center gap-1.5"
                   >
-                    <Sparkles className="w-4 h-4" />
-                    Load Sample Demo Portfolio
+                    <Sparkles className="w-3.5 h-3.5" />
+                    Load Demo Portfolio
                   </button>
                 )}
               </div>
@@ -1400,6 +1441,114 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
             setManaging2FaUser(null);
           }}
         />
+      )}
+
+      {/* Clear Entire Database Modal */}
+      {showClearDbModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-rose-200 animate-in fade-in zoom-in-95">
+            <div className="flex items-center gap-3 text-rose-600 mb-3">
+              <div className="p-3 bg-rose-100 rounded-xl">
+                <AlertTriangle className="w-6 h-6 text-rose-600" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-slate-900">Purge & Reset Database</h3>
+                <p className="text-xs text-slate-500">Irreversible operational wipe</p>
+              </div>
+            </div>
+
+            <div className="space-y-3 text-xs text-slate-600 my-4 bg-rose-50/70 p-3.5 rounded-xl border border-rose-100 leading-relaxed">
+              <p className="font-semibold text-rose-900">
+                This will completely remove:
+              </p>
+              <ul className="list-disc list-inside space-y-1 text-rose-800">
+                <li>All Properties, Units, and Space Allocations</li>
+                <li>All Leases, Move-In / Move-Out Records</li>
+                <li>All Rent Transactions and Receivables</li>
+                <li>All Security Deposit & Last Month Rent Ledgers</li>
+                <li>All Utility Bills and Expense Splits</li>
+                <li>All Posted Journal Entries & Landlord Payouts</li>
+              </ul>
+              <p className="text-[11px] text-slate-500 pt-1">
+                Your Admin user logins, Chart of Accounts, and system email settings will remain preserved.
+              </p>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                Type <span className="text-rose-600 font-mono">CLEAR</span> to confirm:
+              </label>
+              <input
+                type="text"
+                value={confirmClearText}
+                onChange={(e) => setConfirmClearText(e.target.value)}
+                placeholder="CLEAR"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm font-bold uppercase focus:ring-2 focus:ring-rose-500"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowClearDbModal(false);
+                  setConfirmClearText('');
+                }}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={confirmClearText.trim().toUpperCase() !== 'CLEAR'}
+                onClick={handleExecuteClearDatabase}
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors shadow-xs"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                Confirm & Wipe Database
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Load Demo Data Modal */}
+      {showLoadDemoModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-indigo-200 animate-in fade-in zoom-in-95">
+            <div className="flex items-center gap-3 text-indigo-600 mb-3">
+              <div className="p-3 bg-indigo-100 rounded-xl">
+                <Sparkles className="w-6 h-6 text-indigo-600" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-slate-900">Load Demo Portfolio</h3>
+                <p className="text-xs text-slate-500">Sample Canadian rental dataset</p>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-600 my-4 leading-relaxed">
+              This will populate sample multi-unit properties in Toronto and Vancouver, along with sample leases, tenant balances, utility splits, and security deposit ledgers for demonstration and testing purposes.
+            </p>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setShowLoadDemoModal(false)}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleExecuteLoadDemo}
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors shadow-xs"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                Load Sample Data
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

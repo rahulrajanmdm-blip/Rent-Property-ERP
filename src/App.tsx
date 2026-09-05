@@ -21,6 +21,7 @@ import { CollectionsView } from './components/CollectionsView';
 import { AdministrationView } from './components/AdministrationView';
 import { AppScriptExportView } from './components/AppScriptExportView';
 import { LoginModal } from './components/LoginModal';
+import { BankPaymentAllocationModal } from './components/BankPaymentAllocationModal';
 import { storage } from './services/storage';
 import { firestoreSync } from './services/firestoreSync';
 import { User, RegionalProvince, REGIONAL_PROVINCE_TAX } from './types/erp';
@@ -39,6 +40,7 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showTaxGuide, setShowTaxGuide] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [isGlobalAllocationOpen, setIsGlobalAllocationOpen] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   useEffect(() => {
@@ -81,6 +83,8 @@ export default function App() {
     } else if (action === 'NEW_TENANT') {
       setActiveTab('Tenants');
       addToast('Navigated to Tenants & ID Proof Vault.', 'info');
+    } else if (action === 'ALLOCATE_BANK_PAYMENT') {
+      setIsGlobalAllocationOpen(true);
     } else {
       setActiveTab('Dashboard');
     }
@@ -323,6 +327,20 @@ export default function App() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Global Bank Payment Allocation Modal */}
+      {isGlobalAllocationOpen && currentUser && (
+        <BankPaymentAllocationModal
+          isOpen={isGlobalAllocationOpen}
+          onClose={() => setIsGlobalAllocationOpen(false)}
+          onSuccess={() => {
+            setIsGlobalAllocationOpen(false);
+            addToast('Payment successfully recorded and allocated across selected pendings!', 'success');
+          }}
+          onToast={addToast}
+          currentUser={currentUser}
+        />
       )}
 
       {/* Login & 2FA Modal */}

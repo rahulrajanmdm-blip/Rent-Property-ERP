@@ -46,10 +46,17 @@ export const MoveOutView: React.FC<MoveOutViewProps> = ({ currentUser, onToast }
         .reduce((s, r) => s + (r.Amount_Billed - r.Amount_Paid), 0)
     : 0;
 
-  const tenantDepositAvailable = selectedLease
-    ? deposits.filter(d => d.Tenant_ID === selectedLease.Tenant_ID && d.Status === 'Received')
+  const tenantSecurityDepositAvailable = selectedLease
+    ? deposits.filter(d => d.Tenant_ID === selectedLease.Tenant_ID && d.Deposit_Type === 'Security Deposit' && d.Status === 'Received')
         .reduce((s, d) => s + d.Paid_Amount, 0)
     : 0;
+
+  const tenantLMRAvailable = selectedLease
+    ? deposits.filter(d => d.Tenant_ID === selectedLease.Tenant_ID && d.Deposit_Type === 'Last Month Rent' && d.Status === 'Received')
+        .reduce((s, d) => s + d.Paid_Amount, 0)
+    : 0;
+
+  const tenantDepositAvailable = tenantSecurityDepositAvailable + tenantLMRAvailable;
 
   const estimatedRefund = Math.max(0, tenantDepositAvailable - (Number(form.damageAmount) || 0) - tenantRentDue);
 
@@ -266,8 +273,12 @@ export const MoveOutView: React.FC<MoveOutViewProps> = ({ currentUser, onToast }
               <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5 text-xs">
                 <p className="font-bold text-slate-900">Reconciliation Breakdown:</p>
                 <div className="flex justify-between text-slate-600">
-                  <span>Deposit on File:</span>
-                  <span className="font-semibold">{AccountingEngine.formatCurrency(tenantDepositAvailable)}</span>
+                  <span>Security / Key Deposit (GL 2200):</span>
+                  <span className="font-semibold">{AccountingEngine.formatCurrency(tenantSecurityDepositAvailable)}</span>
+                </div>
+                <div className="flex justify-between text-slate-600">
+                  <span>Last Month Rent (LMR) Held (GL 2210):</span>
+                  <span className="font-semibold">{AccountingEngine.formatCurrency(tenantLMRAvailable)}</span>
                 </div>
                 <div className="flex justify-between text-slate-600">
                   <span>Less Damage Repairs:</span>

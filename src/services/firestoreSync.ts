@@ -383,6 +383,10 @@ class FirestoreSyncService {
     }, 600);
   }
 
+  public triggerImmediateSync() {
+    this.pushToCloud(storage.getRawData(), true);
+  }
+
   public async pushToCloud(data: ERPDataStore, force: boolean = false): Promise<boolean> {
     if (!this.db) {
       this.updateStatus('offline', 'Database not connected');

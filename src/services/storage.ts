@@ -3,27 +3,31 @@ import {
   LandlordPayment, RentTransaction, DepositTransaction, UtilityBill, UtilitySplit,
   CollectionRecord, ExcessPayment, RefundRecord, MoveInRecord, MoveOutRecord,
   ChartOfAccount, JournalHeader, JournalLine, AccountingPeriod, User, AuditEntry,
-  UtilityCatalogItem
+  UtilityCatalogItem, ParkingSpot, BedroomAllocation, UnitSpace,
+  RoomOccupant, IndividualExpenseCharge
 } from '../types/erp';
 
 export const DEFAULT_COA: ChartOfAccount[] = [
   { Account_Code: '1000', Account_Name: 'Cash on Hand', Account_Type: 'Asset', Account_Group: 'Current Assets', Normal_Balance: 'Debit', Is_Control_Account: true, Is_Active: true },
   { Account_Code: '1010', Account_Name: 'Operating Bank (TD / RBC)', Account_Type: 'Asset', Account_Group: 'Current Assets', Normal_Balance: 'Debit', Is_Control_Account: true, Is_Active: true },
-  { Account_Code: '1020', Account_Name: 'Savings / Trust Account', Account_Type: 'Asset', Account_Group: 'Current Assets', Normal_Balance: 'Debit', Is_Control_Account: true, Is_Active: true },
+  { Account_Code: '1020', Account_Name: 'Savings / Deposit Account', Account_Type: 'Asset', Account_Group: 'Current Assets', Normal_Balance: 'Debit', Is_Control_Account: true, Is_Active: true },
   { Account_Code: '1100', Account_Name: 'Accounts Receivable - Rent', Account_Type: 'Asset', Account_Group: 'Current Assets', Normal_Balance: 'Debit', Is_Control_Account: true, Is_Active: true },
   { Account_Code: '1110', Account_Name: 'Accounts Receivable - Utilities', Account_Type: 'Asset', Account_Group: 'Current Assets', Normal_Balance: 'Debit', Is_Control_Account: true, Is_Active: true },
-  { Account_Code: '1120', Account_Name: 'Deposit Receivable', Account_Type: 'Asset', Account_Group: 'Current Assets', Normal_Balance: 'Debit', Is_Control_Account: true, Is_Active: true },
+  { Account_Code: '1120', Account_Name: 'Security Deposit Receivable', Account_Type: 'Asset', Account_Group: 'Current Assets', Normal_Balance: 'Debit', Is_Control_Account: true, Is_Active: true },
+  { Account_Code: '1125', Account_Name: 'Last Month Rent (LMR) Receivable', Account_Type: 'Asset', Account_Group: 'Current Assets', Normal_Balance: 'Debit', Is_Control_Account: true, Is_Active: true },
   { Account_Code: '1200', Account_Name: 'Prepaid Expenses & Insurance', Account_Type: 'Asset', Account_Group: 'Current Assets', Normal_Balance: 'Debit', Is_Control_Account: true, Is_Active: true },
   { Account_Code: '1300', Account_Name: 'Property Maintenance Inventory', Account_Type: 'Asset', Account_Group: 'Current Assets', Normal_Balance: 'Debit', Is_Control_Account: false, Is_Active: true },
   { Account_Code: '1500', Account_Name: 'Property Improvements & CapEx', Account_Type: 'Asset', Account_Group: 'Fixed Assets', Normal_Balance: 'Debit', Is_Control_Account: false, Is_Active: true },
   { Account_Code: '2000', Account_Name: 'Accounts Payable - Vendors', Account_Type: 'Liability', Account_Group: 'Current Liabilities', Normal_Balance: 'Credit', Is_Control_Account: true, Is_Active: true },
   { Account_Code: '2100', Account_Name: 'Landlord Payable (Net Rent Payouts)', Account_Type: 'Liability', Account_Group: 'Current Liabilities', Normal_Balance: 'Credit', Is_Control_Account: true, Is_Active: true },
-  { Account_Code: '2200', Account_Name: 'Tenant Deposits Held (Security/LMR)', Account_Type: 'Liability', Account_Group: 'Current Liabilities', Normal_Balance: 'Credit', Is_Control_Account: true, Is_Active: true },
+  { Account_Code: '2200', Account_Name: 'Tenant Security Deposits Held Liability', Account_Type: 'Liability', Account_Group: 'Current Liabilities', Normal_Balance: 'Credit', Is_Control_Account: true, Is_Active: true },
+  { Account_Code: '2210', Account_Name: 'Last Month Rent (LMR) Held Liability', Account_Type: 'Liability', Account_Group: 'Current Liabilities', Normal_Balance: 'Credit', Is_Control_Account: true, Is_Active: true },
   { Account_Code: '2300', Account_Name: 'Unearned Revenue / Excess Payments', Account_Type: 'Liability', Account_Group: 'Current Liabilities', Normal_Balance: 'Credit', Is_Control_Account: true, Is_Active: true },
   { Account_Code: '2400', Account_Name: 'GST / HST Payable (Commercial/Ops)', Account_Type: 'Liability', Account_Group: 'Current Liabilities', Normal_Balance: 'Credit', Is_Control_Account: true, Is_Active: true },
   { Account_Code: '3000', Account_Name: 'Owner Capital & Equity', Account_Type: 'Equity', Account_Group: 'Capital', Normal_Balance: 'Credit', Is_Control_Account: false, Is_Active: true },
   { Account_Code: '3100', Account_Name: 'Retained Earnings', Account_Type: 'Equity', Account_Group: 'Retained Earnings', Normal_Balance: 'Credit', Is_Control_Account: true, Is_Active: true },
   { Account_Code: '4000', Account_Name: 'Gross Rent Revenue', Account_Type: 'Revenue', Account_Group: 'Operating Revenue', Normal_Balance: 'Credit', Is_Control_Account: true, Is_Active: true },
+  { Account_Code: '4005', Account_Name: 'Rent Discounts & Concessions', Account_Type: 'Revenue', Account_Group: 'Operating Revenue', Normal_Balance: 'Debit', Is_Control_Account: false, Is_Active: true },
   { Account_Code: '4010', Account_Name: 'Utility Recovery Revenue', Account_Type: 'Revenue', Account_Group: 'Operating Revenue', Normal_Balance: 'Credit', Is_Control_Account: true, Is_Active: true },
   { Account_Code: '4020', Account_Name: 'Late Fees & Parking Income', Account_Type: 'Revenue', Account_Group: 'Other Revenue', Normal_Balance: 'Credit', Is_Control_Account: false, Is_Active: true },
   { Account_Code: '5000', Account_Name: 'Master Lease / Landlord Expense', Account_Type: 'Expense', Account_Group: 'Direct Property Costs', Normal_Balance: 'Debit', Is_Control_Account: false, Is_Active: true },
@@ -146,42 +150,62 @@ export const DEMO_SAMPLE_USERS: User[] = [
 
 export const DEFAULT_UTILITY_CATALOG: UtilityCatalogItem[] = [
   {
-    Utility_ID: 'UTL-001',
-    Utility_Name: 'Hydro / Electricity',
-    Category: 'Electricity',
-    Default_Vendor: 'Toronto Hydro / BC Hydro',
-    Default_GL_Account: '5010',
-    Description: 'Standard residential & commercial power and electrical consumption',
-    Is_Active: true,
-    Created_At: '2025-01-01'
-  },
-  {
-    Utility_ID: 'UTL-002',
-    Utility_Name: 'Natural Gas (Enbridge)',
+    Utility_ID: 'UTL-ENBRIDGE',
+    Utility_Name: 'Enbridge (Natural Gas)',
     Category: 'Natural Gas',
-    Default_Vendor: 'Enbridge Gas',
+    Default_Vendor: 'Enbridge Gas Inc.',
     Default_GL_Account: '5010',
-    Description: 'Central radiator heating, furnace and hot water gas pipeline billing',
+    Description: 'Central radiator heating, furnace, and natural gas pipeline billing',
     Is_Active: true,
     Created_At: '2025-01-01'
   },
   {
-    Utility_ID: 'UTL-003',
+    Utility_ID: 'UTL-ALECTRA',
+    Utility_Name: 'Alectra (Electricity / Hydro)',
+    Category: 'Electricity',
+    Default_Vendor: 'Alectra Utilities Corporation',
+    Default_GL_Account: '5010',
+    Description: 'Alectra electric grid power and residential hydro consumption',
+    Is_Active: true,
+    Created_At: '2025-01-01'
+  },
+  {
+    Utility_ID: 'UTL-HOTWATER',
+    Utility_Name: 'Hot Water Tank Rental',
+    Category: 'Hot Water Tank',
+    Default_Vendor: 'Reliance Home Comfort / Enercare',
+    Default_GL_Account: '5010',
+    Description: 'Hot water heater tank rental, maintenance, and gas/electric heating unit lease',
+    Is_Active: true,
+    Created_At: '2025-01-01'
+  },
+  {
+    Utility_ID: 'UTL-WATER',
     Utility_Name: 'Municipal Water & Sewage',
     Category: 'Water & Sewage',
-    Default_Vendor: 'City Water & Sewerage Department',
+    Default_Vendor: 'City / Municipal Water Department',
     Default_GL_Account: '5010',
-    Description: 'Quarterly municipal metered water supply, stormwater and wastewater services',
+    Description: 'Quarterly municipal metered water supply, stormwater, and wastewater services',
     Is_Active: true,
     Created_At: '2025-01-01'
   },
   {
-    Utility_ID: 'UTL-004',
-    Utility_Name: 'High-Speed Internet / Fiber',
+    Utility_ID: 'UTL-WIFI',
+    Utility_Name: 'WiFi / High-Speed Internet',
     Category: 'Internet & Telecom',
-    Default_Vendor: 'Rogers / Bell / Telus Gigabit',
+    Default_Vendor: 'Rogers / Bell / Telus / Cogeco',
     Default_GL_Account: '5200',
-    Description: 'Shared building dedicated fiber optic internet and Wi-Fi mesh network',
+    Description: 'High-speed wireless broadband WiFi and fiber optic internet network',
+    Is_Active: true,
+    Created_At: '2025-01-01'
+  },
+  {
+    Utility_ID: 'UTL-001',
+    Utility_Name: 'Hydro / Electricity (General)',
+    Category: 'Electricity',
+    Default_Vendor: 'Toronto Hydro / Hydro One / BC Hydro',
+    Default_GL_Account: '5010',
+    Description: 'Standard residential & commercial power and electrical consumption',
     Is_Active: true,
     Created_At: '2025-01-01'
   },
@@ -391,49 +415,133 @@ export function getSampleDemoData(): ERPDataStore {
     },
     {
       Property_ID: 'PROP-005',
-      Property_Name: '148 Spruce St - Main Floor',
-      Address: '148 Spruce Street (Main Level)',
+      Property_Name: '148 Spruce Street',
+      Address: '148 Spruce Street',
       City: 'Toronto',
       Province: 'ON',
       Postal_Code: 'M5A 2J5',
       Landlord_ID: 'LAND-001',
       Property_Status: 'Active',
-      Master_Rent_Amount: 2400,
-      Parent_Property_ID: 'PROP-005-PARENT',
-      Division_Type: 'Main Floor',
+      Master_Rent_Amount: 4000,
+      Has_Divisions: true,
+      Division_Structure: 'Main_And_Basement',
+      Default_Main_Share_Pct: 60,
+      Default_Basement_Share_Pct: 40,
       Meter_Tag: 'Shared Gas & Hydro Meter #148',
-      Notes: 'Upper two levels of Victorian semi-detached. Shares main utility meter with basement suite.',
-      Created_At: '2025-02-01'
-    },
-    {
-      Property_ID: 'PROP-006',
-      Property_Name: '148 Spruce St - Basement Suite',
-      Address: '148 Spruce Street (Lower Suite)',
-      City: 'Toronto',
-      Province: 'ON',
-      Postal_Code: 'M5A 2J5',
-      Landlord_ID: 'LAND-001',
-      Property_Status: 'Active',
-      Master_Rent_Amount: 1600,
-      Parent_Property_ID: 'PROP-005-PARENT',
-      Division_Type: 'Basement Suite',
-      Meter_Tag: 'Shared Gas & Hydro Meter #148',
-      Notes: 'Separate entrance basement apartment. Shares master gas/water/hydro bills with main floor.',
+      Total_Parking_Spots: 3,
+      Parking_Spots: [
+        { Spot_ID: 'PRK-501', Spot_Number_Name: 'Driveway Left (Spot 1)', Spot_Type: 'Driveway', Monthly_Fee: 0, Status: 'Assigned', Assigned_Tenant_ID: 'TEN-006', Assigned_Tenant_Name: 'Lucas Vance', Assigned_Unit_ID: 'UNIT-501', Vehicle_Plate: 'BXYZ 491', Notes: 'Allocated to Main Floor tenant' },
+        { Spot_ID: 'PRK-502', Spot_Number_Name: 'Driveway Right (Spot 2)', Spot_Type: 'Driveway', Monthly_Fee: 0, Status: 'Available', Notes: 'Shared driveway spot' },
+        { Spot_ID: 'PRK-503', Spot_Number_Name: 'Rear Garage Stall A', Spot_Type: 'Garage', Monthly_Fee: 75, Status: 'Available', Notes: 'Secure enclosed garage spot' }
+      ],
+      Notes: 'Victorian home divided into Main Floor & Basement Suite. Single unified property with master rent of $4,000 paid to landlord on full property.',
       Created_At: '2025-02-01'
     }
   ];
 
   const units: Unit[] = [
-    { Unit_ID: 'UNIT-101', Property_ID: 'PROP-001', Unit_Number_Name: 'Suite 101', Unit_Type: '1BR + Den', Target_Rent: 2250, Current_Status: 'Occupied', Bedrooms: 1, Bathrooms: 1, Notes: 'Renovated quartz kitchen, balcony facing South.' },
-    { Unit_ID: 'UNIT-102', Property_ID: 'PROP-001', Unit_Number_Name: 'Suite 102', Unit_Type: '2BR / 2BA', Target_Rent: 2850, Current_Status: 'Occupied', Bedrooms: 2, Bathrooms: 2, Notes: 'Corner unit with in-suite laundry.' },
-    { Unit_ID: 'UNIT-103', Property_ID: 'PROP-001', Unit_Number_Name: 'Suite 103', Unit_Type: 'Studio Deluxe', Target_Rent: 1750, Current_Status: 'Vacant', Bedrooms: 0, Bathrooms: 1, Notes: 'Freshly painted, available for immediate lease.' },
-    { Unit_ID: 'UNIT-201', Property_ID: 'PROP-002', Unit_Number_Name: 'Suite 2405', Unit_Type: '2BR Luxury Suite', Target_Rent: 3600, Current_Status: 'Occupied', Bedrooms: 2, Bathrooms: 2, Notes: 'Lake Ontario view, 1 underground parking stall.' },
-    { Unit_ID: 'UNIT-202', Property_ID: 'PROP-002', Unit_Number_Name: 'Penthouse 02', Unit_Type: '3BR Executive Penthouse', Target_Rent: 5400, Current_Status: 'Vacant', Bedrooms: 3, Bathrooms: 3, Notes: 'Wrap-around terrace, private elevator access.' },
-    { Unit_ID: 'UNIT-301', Property_ID: 'PROP-003', Unit_Number_Name: 'Suite 408', Unit_Type: '1BR West End', Target_Rent: 2400, Current_Status: 'Occupied', Bedrooms: 1, Bathrooms: 1, Notes: 'Minutes to Stanley Park and English Bay.' },
-    { Unit_ID: 'UNIT-302', Property_ID: 'PROP-003', Unit_Number_Name: 'Suite 602', Unit_Type: '2BR Penthouse', Target_Rent: 3950, Current_Status: 'Maintenance', Bedrooms: 2, Bathrooms: 2, Notes: 'Bathroom regrouting and heat pump servicing in progress.' },
-    { Unit_ID: 'UNIT-401', Property_ID: 'PROP-004', Unit_Number_Name: 'Appartement 3A', Unit_Type: '2BR Plateau Loft', Target_Rent: 2100, Current_Status: 'Occupied', Bedrooms: 2, Bathrooms: 1, Notes: 'High ceilings, exposed brick, original hardwood.' },
-    { Unit_ID: 'UNIT-501', Property_ID: 'PROP-005', Unit_Number_Name: 'Main Floor Living Unit', Unit_Type: '2BR Upper Suite', Target_Rent: 2400, Current_Status: 'Occupied', Bedrooms: 2, Bathrooms: 1, Notes: 'Main & upper floors of 148 Spruce.' },
-    { Unit_ID: 'UNIT-601', Property_ID: 'PROP-006', Unit_Number_Name: 'Basement Apartment', Unit_Type: '1BR Basement Suite', Target_Rent: 1600, Current_Status: 'Occupied', Bedrooms: 1, Bathrooms: 1, Notes: 'Lower level suite with separate side entry.' }
+    { Unit_ID: 'UNIT-101', Property_ID: 'PROP-001', Unit_Number_Name: 'Suite 101', Unit_Type: '1BR + Den', Target_Rent: 2250, Current_Status: 'Occupied', Bedrooms: 1, Bathrooms: 1, Kitchens: 1, Kitchen_Type: 'Full Kitchen', Has_Den: true, Dens_Count: 1, Den_Details: 'Private study den with French doors', Utilities_Included: true, Included_Utilities: ['Hydro / Electricity', 'Heat / Natural Gas', 'Municipal Water & Sewage'], Utility_Billing_Type: 'All-Inclusive', Notes: 'Renovated quartz kitchen, balcony facing South.' },
+    { Unit_ID: 'UNIT-102', Property_ID: 'PROP-001', Unit_Number_Name: 'Suite 102', Unit_Type: '2BR / 2BA', Target_Rent: 2850, Current_Status: 'Occupied', Bedrooms: 2, Bathrooms: 2, Kitchens: 1, Kitchen_Type: 'Full Kitchen', Has_Den: false, Dens_Count: 0, Utilities_Included: false, Utility_Billing_Type: 'Tenant Metered', Notes: 'Corner unit with in-suite laundry.' },
+    { Unit_ID: 'UNIT-103', Property_ID: 'PROP-001', Unit_Number_Name: 'Suite 103', Unit_Type: 'Studio Deluxe', Target_Rent: 1750, Current_Status: 'Vacant', Bedrooms: 0, Bathrooms: 1, Kitchens: 1, Kitchen_Type: 'Kitchenette', Has_Den: false, Dens_Count: 0, Utilities_Included: true, Included_Utilities: ['Hydro / Electricity', 'Water & Sewage'], Utility_Billing_Type: 'All-Inclusive', Notes: 'Freshly painted, available for immediate lease.' },
+    { Unit_ID: 'UNIT-201', Property_ID: 'PROP-002', Unit_Number_Name: 'Suite 2405', Unit_Type: '2BR Luxury Suite', Target_Rent: 3600, Current_Status: 'Occupied', Bedrooms: 2, Bathrooms: 2, Kitchens: 1, Kitchen_Type: 'Full Kitchen', Has_Den: true, Dens_Count: 1, Den_Details: 'Lakeview office den', Utilities_Included: false, Utility_Billing_Type: 'Tenant Metered', Notes: 'Lake Ontario view, 1 underground parking stall.' },
+    { Unit_ID: 'UNIT-202', Property_ID: 'PROP-002', Unit_Number_Name: 'Penthouse 02', Unit_Type: '3BR Executive Penthouse', Target_Rent: 5400, Current_Status: 'Vacant', Bedrooms: 3, Bathrooms: 3, Kitchens: 1, Kitchen_Type: 'Full Kitchen', Has_Den: true, Dens_Count: 2, Den_Details: 'Double executive den / library suite', Utilities_Included: true, Included_Utilities: ['Hydro / Electricity', 'Heat / Natural Gas', 'Municipal Water & Sewage', 'High-Speed Internet / Fiber'], Utility_Billing_Type: 'All-Inclusive', Notes: 'Wrap-around terrace, private elevator access.' },
+    { Unit_ID: 'UNIT-301', Property_ID: 'PROP-003', Unit_Number_Name: 'Suite 408', Unit_Type: '1BR West End', Target_Rent: 2400, Current_Status: 'Occupied', Bedrooms: 1, Bathrooms: 1, Kitchens: 1, Kitchen_Type: 'Full Kitchen', Has_Den: false, Dens_Count: 0, Utilities_Included: true, Included_Utilities: ['Heat / Natural Gas', 'Water & Sewage'], Utility_Billing_Type: 'All-Inclusive', Notes: 'Minutes to Stanley Park and English Bay.' },
+    { Unit_ID: 'UNIT-302', Property_ID: 'PROP-003', Unit_Number_Name: 'Suite 602', Unit_Type: '2BR Penthouse', Target_Rent: 3950, Current_Status: 'Maintenance', Bedrooms: 2, Bathrooms: 2, Kitchens: 1, Kitchen_Type: 'Full Kitchen', Has_Den: false, Dens_Count: 0, Utilities_Included: false, Utility_Billing_Type: 'Tenant Metered', Notes: 'Bathroom regrouting and heat pump servicing in progress.' },
+    { Unit_ID: 'UNIT-401', Property_ID: 'PROP-004', Unit_Number_Name: 'Appartement 3A', Unit_Type: '2BR Plateau Loft', Target_Rent: 2100, Current_Status: 'Occupied', Bedrooms: 2, Bathrooms: 1, Kitchens: 1, Kitchen_Type: 'Full Kitchen', Has_Den: true, Dens_Count: 1, Den_Details: 'Heritage brick artist den/studio', Utilities_Included: true, Included_Utilities: ['Heat / Natural Gas', 'Water & Sewage'], Utility_Billing_Type: 'All-Inclusive', Notes: 'High ceilings, exposed brick, original hardwood.' },
+    {
+      Unit_ID: 'UNIT-501',
+      Property_ID: 'PROP-005',
+      Unit_Number_Name: 'Main Floor (6 Spaces)',
+      Unit_Type: 'Main Floor Multi-Space Suite',
+      Division_Level: 'Main Floor',
+      Target_Rent: 3900,
+      Full_Room_Rent: 3600,
+      Allow_Full_Room_Lease: true,
+      Current_Status: 'Occupied',
+      Bedrooms: 3,
+      Bathrooms: 2,
+      Kitchens: 1,
+      Kitchen_Type: 'Full Kitchen',
+      Has_Den: true,
+      Dens_Count: 1,
+      Den_Details: 'South-facing private work den / sunroom',
+      Utilities_Included: true,
+      Included_Utilities: ['Hydro / Electricity', 'Heat / Natural Gas', 'Municipal Water & Sewage', 'High-Speed Internet / Fiber'],
+      Utility_Billing_Type: 'All-Inclusive',
+      Square_Feet: 1500,
+      Utility_Share_Percentage: 60,
+      Spaces_Count: 6,
+      Bedrooms_List: [
+        {
+          Bedroom_ID: 'BR-M1',
+          Bedroom_Name: 'Room 1 (Front Bedroom)',
+          Allocation_Mode: 'Sharing',
+          Full_Room_Rent: 1200,
+          Sharing_Spaces_Count: 2,
+          Sharing_Rent_Per_Space: 650,
+          Ensuite_Bath: false,
+          Notes: 'Two sharing bed spaces or 1 individual full bedroom.'
+        },
+        {
+          Bedroom_ID: 'BR-M2',
+          Bedroom_Name: 'Room 2 (Center Bedroom)',
+          Allocation_Mode: 'Sharing',
+          Full_Room_Rent: 1100,
+          Sharing_Spaces_Count: 2,
+          Sharing_Rent_Per_Space: 600,
+          Ensuite_Bath: false,
+          Notes: 'Two sharing bed spaces or 1 individual full bedroom.'
+        },
+        {
+          Bedroom_ID: 'BR-M3',
+          Bedroom_Name: 'Room 3 (Master Bedroom)',
+          Allocation_Mode: 'Sharing',
+          Full_Room_Rent: 1300,
+          Sharing_Spaces_Count: 2,
+          Sharing_Rent_Per_Space: 700,
+          Ensuite_Bath: true,
+          Notes: 'Master ensuite with private bath. 2 sharing beds or 1 individual.'
+        }
+      ],
+      Spaces: [
+        { Space_ID: 'SPC-M1', Bedroom_ID: 'BR-M1', Bedroom_Name: 'Room 1 (Front Bedroom)', Space_Name: 'Room 1 - Bed A', Space_Type: 'Shared Room Bed', Target_Rent: 650, Full_Room_Rent: 1200, Occupancy_Mode: 'Shared', Utilities_Included: true, Current_Status: 'Occupied', Tenant_ID: 'TEN-006', Tenant_Name: 'Lucas Vance' },
+        { Space_ID: 'SPC-M2', Bedroom_ID: 'BR-M1', Bedroom_Name: 'Room 1 (Front Bedroom)', Space_Name: 'Room 1 - Bed B', Space_Type: 'Shared Room Bed', Target_Rent: 650, Full_Room_Rent: 1200, Occupancy_Mode: 'Shared', Utilities_Included: true, Current_Status: 'Vacant' },
+        { Space_ID: 'SPC-M3', Bedroom_ID: 'BR-M2', Bedroom_Name: 'Room 2 (Center Bedroom)', Space_Name: 'Room 2 - Bed A', Space_Type: 'Shared Room Bed', Target_Rent: 600, Full_Room_Rent: 1100, Occupancy_Mode: 'Shared', Utilities_Included: true, Current_Status: 'Vacant' },
+        { Space_ID: 'SPC-M4', Bedroom_ID: 'BR-M2', Bedroom_Name: 'Room 2 (Center Bedroom)', Space_Name: 'Room 2 - Bed B', Space_Type: 'Shared Room Bed', Target_Rent: 600, Full_Room_Rent: 1100, Occupancy_Mode: 'Shared', Utilities_Included: true, Current_Status: 'Vacant' },
+        { Space_ID: 'SPC-M5', Bedroom_ID: 'BR-M3', Bedroom_Name: 'Room 3 (Master Bedroom)', Space_Name: 'Room 3 - Master Bed A', Space_Type: 'Master Ensuite', Target_Rent: 700, Full_Room_Rent: 1300, Occupancy_Mode: 'Shared', Utilities_Included: true, Current_Status: 'Vacant' },
+        { Space_ID: 'SPC-M6', Bedroom_ID: 'BR-M3', Bedroom_Name: 'Room 3 (Master Bedroom)', Space_Name: 'Room 3 - Master Bed B', Space_Type: 'Master Ensuite', Target_Rent: 700, Full_Room_Rent: 1300, Occupancy_Mode: 'Shared', Utilities_Included: true, Current_Status: 'Vacant' }
+      ],
+      Notes: 'Main floor configured with 6 spaces across 3 bedrooms + private den. Single occupants can lease a full room exclusively or share spaces. Rent is all-inclusive of utilities.'
+    },
+    {
+      Unit_ID: 'UNIT-601',
+      Property_ID: 'PROP-005',
+      Unit_Number_Name: 'Basement Suite (3 Spaces)',
+      Unit_Type: 'Basement Multi-Space Suite',
+      Division_Level: 'Basement',
+      Target_Rent: 1750,
+      Full_Room_Rent: 1600,
+      Allow_Full_Room_Lease: true,
+      Current_Status: 'Occupied',
+      Bedrooms: 2,
+      Bathrooms: 1,
+      Kitchens: 1,
+      Kitchen_Type: 'Full Kitchen',
+      Has_Den: false,
+      Dens_Count: 0,
+      Utilities_Included: true,
+      Included_Utilities: ['Hydro / Electricity', 'Heat / Natural Gas', 'Municipal Water & Sewage', 'High-Speed Internet / Fiber'],
+      Utility_Billing_Type: 'All-Inclusive',
+      Square_Feet: 850,
+      Utility_Share_Percentage: 40,
+      Spaces_Count: 3,
+      Spaces: [
+        { Space_ID: 'SPC-B1', Space_Name: 'Basement Room 1 - Space A', Space_Type: 'Shared Room Bed', Target_Rent: 550, Full_Room_Rent: 1000, Occupancy_Mode: 'Shared', Utilities_Included: true, Current_Status: 'Occupied', Tenant_ID: 'TEN-007', Tenant_Name: 'Emily Zhao' },
+        { Space_ID: 'SPC-B2', Space_Name: 'Basement Room 1 - Space B', Space_Type: 'Shared Room Bed', Target_Rent: 550, Full_Room_Rent: 1000, Occupancy_Mode: 'Shared', Utilities_Included: true, Current_Status: 'Vacant' },
+        { Space_ID: 'SPC-B3', Space_Name: 'Basement Room 2 - Private Bedroom', Space_Type: 'Private Bedroom', Target_Rent: 650, Full_Room_Rent: 650, Occupancy_Mode: 'Fully Used (Private)', Utilities_Included: true, Current_Status: 'Vacant' }
+      ],
+      Notes: 'Basement suite configured with 3 spaces. Individual space rents ($550-$650/mo) or full suite rate of $1,600/mo inclusive of utilities.'
+    }
   ];
 
   const tenants: Tenant[] = [
@@ -499,27 +607,29 @@ export function getSampleDemoData(): ERPDataStore {
     },
     {
       Tenant_ID: 'TEN-006',
-      Full_Name: 'Lucas Vance (Main Floor)',
+      Full_Name: 'Lucas Vance',
       Email: 'lucas.vance@gmail.com',
       Phone: '(416) 555-0811',
       Emergency_Contact: 'Clara Vance - (416) 555-0812',
       Status: 'Active',
       Current_Property_ID: 'PROP-005',
       Current_Unit_ID: 'UNIT-501',
+      Floor_Division: 'Main Floor',
       Created_At: '2025-02-01',
-      Notes: 'Architect tenant, pays 60% of shared gas and hydro bills.'
+      Notes: 'Architect tenant tagged to Main Floor (60% utility share).'
     },
     {
       Tenant_ID: 'TEN-007',
-      Full_Name: 'Emily Zhao (Basement Suite)',
+      Full_Name: 'Emily Zhao',
       Email: 'emily.zhao@utoronto.ca',
       Phone: '(416) 555-0922',
       Emergency_Contact: 'Helen Zhao - (416) 555-0923',
       Status: 'Active',
-      Current_Property_ID: 'PROP-006',
+      Current_Property_ID: 'PROP-005',
       Current_Unit_ID: 'UNIT-601',
+      Floor_Division: 'Basement',
       Created_At: '2025-02-01',
-      Notes: 'U of T graduate student, pays 40% of shared gas and hydro bills.'
+      Notes: 'U of T graduate student tagged to Basement Suite (40% utility share).'
     },
     {
       Tenant_ID: 'TEN-008',
@@ -531,7 +641,7 @@ export function getSampleDemoData(): ERPDataStore {
       Current_Property_ID: 'PROP-001',
       Current_Unit_ID: 'UNIT-103',
       Created_At: '2024-06-01',
-      Notes: 'Moved out July 31. Security deposit of $1,500 held in trust for final utility reconciliations.'
+      Notes: 'Moved out July 31. Security deposit of $1,500 held for final utility reconciliations.'
     }
   ];
 
@@ -728,6 +838,20 @@ export function getSampleDemoData(): ERPDataStore {
       Notes: 'August payout pending bank batch confirmation.',
       Created_Date: '2025-08-10',
       Created_By: 'priya.kapoor@dreamdwell.com'
+    },
+    {
+      Landlord_Pay_ID: 'LRDPAY-004',
+      Property_ID: 'PROP-005',
+      Landlord_ID: 'LAND-001',
+      Period: '2025-07',
+      Rent_Amount: 4000,
+      Deductions: 320, // 8% management fee on full property
+      Net_Amount: 3680,
+      Status: 'Posted',
+      Payment_Date: '2025-07-15',
+      Notes: 'July full master property rent disbursement for 148 Spruce St (Main Floor & Basement).',
+      Created_Date: '2025-07-15',
+      Created_By: 'priya.kapoor@dreamdwell.com'
     }
   ];
 
@@ -871,6 +995,7 @@ export function getSampleDemoData(): ERPDataStore {
       Tenant_ID: 'TEN-001',
       Property_ID: 'PROP-001',
       Unit_ID: 'UNIT-101',
+      Deposit_Type: 'Last Month Rent',
       Txn_Type: 'Payment',
       Due_Amount: 2250,
       Paid_Amount: 2250,
@@ -879,7 +1004,7 @@ export function getSampleDemoData(): ERPDataStore {
       Txn_Date: '2025-01-10',
       Status: 'Received',
       Journal_Ref_ID: 'JRN-DEP-01',
-      Reference: 'CERT-CHQ-1092',
+      Reference: 'CERT-CHQ-1092 - Last Month Rent',
       Created_By: 'admin@dreamdwell.com'
     },
     {
@@ -888,6 +1013,7 @@ export function getSampleDemoData(): ERPDataStore {
       Tenant_ID: 'TEN-002',
       Property_ID: 'PROP-001',
       Unit_ID: 'UNIT-102',
+      Deposit_Type: 'Last Month Rent',
       Txn_Type: 'Payment',
       Due_Amount: 2850,
       Paid_Amount: 2850,
@@ -896,7 +1022,25 @@ export function getSampleDemoData(): ERPDataStore {
       Txn_Date: '2025-01-15',
       Status: 'Received',
       Journal_Ref_ID: 'JRN-DEP-02',
-      Reference: 'EFT-DEPOSIT-201',
+      Reference: 'EFT-DEPOSIT-201 - Last Month Rent',
+      Created_By: 'admin@dreamdwell.com'
+    },
+    {
+      Deposit_Txn_ID: 'DEP-003',
+      Lease_ID: 'LEASE-001',
+      Tenant_ID: 'TEN-001',
+      Property_ID: 'PROP-001',
+      Unit_ID: 'UNIT-101',
+      Deposit_Type: 'Security Deposit',
+      Txn_Type: 'Payment',
+      Due_Amount: 250,
+      Paid_Amount: 250,
+      Refund_Amount: 0,
+      Balance: 0,
+      Txn_Date: '2025-01-10',
+      Status: 'Received',
+      Journal_Ref_ID: 'JRN-DEP-03',
+      Reference: 'FOB-KEY-DEP-101 - Key & Fob Deposit',
       Created_By: 'admin@dreamdwell.com'
     },
     {
@@ -905,6 +1049,7 @@ export function getSampleDemoData(): ERPDataStore {
       Tenant_ID: 'TEN-004',
       Property_ID: 'PROP-003',
       Unit_ID: 'UNIT-301',
+      Deposit_Type: 'Security Deposit',
       Txn_Type: 'Payment',
       Due_Amount: 1200,
       Paid_Amount: 600,
@@ -913,7 +1058,25 @@ export function getSampleDemoData(): ERPDataStore {
       Txn_Date: '2025-02-28',
       Status: 'Partial',
       Journal_Ref_ID: 'JRN-DEP-04',
-      Reference: 'E-TRANSFER-PARTIAL',
+      Reference: 'E-TRANSFER-PARTIAL - Key & Damage Deposit',
+      Created_By: 'admin@dreamdwell.com'
+    },
+    {
+      Deposit_Txn_ID: 'DEP-005',
+      Lease_ID: 'LEASE-004',
+      Tenant_ID: 'TEN-004',
+      Property_ID: 'PROP-003',
+      Unit_ID: 'UNIT-301',
+      Deposit_Type: 'Last Month Rent',
+      Txn_Type: 'Charge',
+      Due_Amount: 1200,
+      Paid_Amount: 0,
+      Refund_Amount: 0,
+      Balance: 1200,
+      Txn_Date: '2025-02-01',
+      Status: 'Receivable',
+      Journal_Ref_ID: 'JRN-DEP-05',
+      Reference: 'Initial Last Month Rent (LMR) Receivable',
       Created_By: 'admin@dreamdwell.com'
     }
   ];
@@ -957,6 +1120,19 @@ export function getSampleDemoData(): ERPDataStore {
       Status: 'Open',
       Notes: 'Pending sub-metering breakdown.',
       Created_By: 'priya.kapoor@dreamdwell.com'
+    },
+    {
+      Utility_Bill_ID: 'UBILL-004',
+      Property_ID: 'PROP-005',
+      Utility_ID: 'UTL-001',
+      Bill_Date: '2025-08-01',
+      Due_Date: '2025-08-20',
+      Vendor: 'Toronto Hydro Corporation',
+      Master_Amount: 380.00,
+      Bill_Reference: 'TH-SPRUCE-2025-08',
+      Status: 'Allocated',
+      Notes: 'Master hydro bill for 148 Spruce St divided between Main Floor (60%) and Basement Suite (40%).',
+      Created_By: 'priya.kapoor@dreamdwell.com'
     }
   ];
 
@@ -988,6 +1164,42 @@ export function getSampleDemoData(): ERPDataStore {
       Balance: 240.25,
       Status: 'Unpaid',
       Journal_Ref_ID: 'JRN-UTIL-02',
+      Created_By: 'priya.kapoor@dreamdwell.com'
+    },
+    {
+      Split_ID: 'USPL-003',
+      Utility_Bill_ID: 'UBILL-004',
+      Utility_Name: 'Hydro / Electricity',
+      Property_ID: 'PROP-005',
+      Unit_ID: 'UNIT-501',
+      Tenant_ID: 'TEN-006',
+      Division_Level: 'Main Floor',
+      Percentage_Share: 60,
+      Allocated_Amount: 228.00,
+      Amount_Paid: 228.00,
+      Balance: 0,
+      Payment_Date: '2025-08-05',
+      Status: 'Paid',
+      Journal_Ref_ID: 'JRN-UTIL-03',
+      Notes: 'Main floor 60% utility apportionment.',
+      Created_By: 'priya.kapoor@dreamdwell.com'
+    },
+    {
+      Split_ID: 'USPL-004',
+      Utility_Bill_ID: 'UBILL-004',
+      Utility_Name: 'Hydro / Electricity',
+      Property_ID: 'PROP-005',
+      Unit_ID: 'UNIT-601',
+      Tenant_ID: 'TEN-007',
+      Division_Level: 'Basement',
+      Percentage_Share: 40,
+      Allocated_Amount: 152.00,
+      Amount_Paid: 152.00,
+      Balance: 0,
+      Payment_Date: '2025-08-06',
+      Status: 'Paid',
+      Journal_Ref_ID: 'JRN-UTIL-04',
+      Notes: 'Basement suite 40% utility apportionment.',
       Created_By: 'priya.kapoor@dreamdwell.com'
     }
   ];
@@ -1160,6 +1372,39 @@ export function getSampleDemoData(): ERPDataStore {
       Status: 'POSTED',
       Period_ID: 'PER-2025',
       Created_At: '2025-07-15'
+    },
+    {
+      Journal_ID: 'JRN-EXP-SPRUCE-01',
+      Date: '2025-08-03',
+      Description: 'Main Floor Kitchen Plumbing & Faucet Repair',
+      Reference_Type: 'Property_Expense',
+      Reference_ID: 'EXP-SPRUCE-01',
+      Created_By: 'admin@dreamdwell.com',
+      Status: 'POSTED',
+      Period_ID: 'PER-2025',
+      Created_At: '2025-08-03'
+    },
+    {
+      Journal_ID: 'JRN-EXP-SPRUCE-02',
+      Date: '2025-08-05',
+      Description: 'Basement Suite Sump Pump Service & Dehumidifier',
+      Reference_Type: 'Property_Expense',
+      Reference_ID: 'EXP-SPRUCE-02',
+      Created_By: 'admin@dreamdwell.com',
+      Status: 'POSTED',
+      Period_ID: 'PER-2025',
+      Created_At: '2025-08-05'
+    },
+    {
+      Journal_ID: 'JRN-EXP-SPRUCE-03',
+      Date: '2025-08-08',
+      Description: 'Full Property Eavestrough & Roof Maintenance (Shared)',
+      Reference_Type: 'Property_Expense',
+      Reference_ID: 'EXP-SPRUCE-03',
+      Created_By: 'admin@dreamdwell.com',
+      Status: 'POSTED',
+      Period_ID: 'PER-2025',
+      Created_At: '2025-08-08'
     }
   ];
 
@@ -1170,7 +1415,13 @@ export function getSampleDemoData(): ERPDataStore {
     { Line_ID: 'JRN-RNT-0801-2', Journal_ID: 'JRN-RNT-0801', Account_Code: '4000', Property_ID: 'PROP-001', Unit_ID: 'UNIT-101', Tenant_ID: 'TEN-001', Debit_Amount: 0, Credit_Amount: 2250, Memo: 'Gross residential rent revenue' },
     { Line_ID: 'JRN-LPAY-01-1', Journal_ID: 'JRN-LPAY-01', Account_Code: '5000', Property_ID: 'PROP-001', Debit_Amount: 5100, Credit_Amount: 0, Memo: 'Master lease cost' },
     { Line_ID: 'JRN-LPAY-01-2', Journal_ID: 'JRN-LPAY-01', Account_Code: '4020', Property_ID: 'PROP-001', Debit_Amount: 0, Credit_Amount: 408, Memo: 'Property management fee earned' },
-    { Line_ID: 'JRN-LPAY-01-3', Journal_ID: 'JRN-LPAY-01', Account_Code: '1010', Property_ID: 'PROP-001', Debit_Amount: 0, Credit_Amount: 4692, Memo: 'EFT payment to Landlord' }
+    { Line_ID: 'JRN-LPAY-01-3', Journal_ID: 'JRN-LPAY-01', Account_Code: '1010', Property_ID: 'PROP-001', Debit_Amount: 0, Credit_Amount: 4692, Memo: 'EFT payment to Landlord' },
+    { Line_ID: 'JRN-EXP-SPRUCE-01-1', Journal_ID: 'JRN-EXP-SPRUCE-01', Account_Code: '5020', Property_ID: 'PROP-005', Unit_ID: 'UNIT-501', Division_Level: 'Main Floor', Debit_Amount: 280, Credit_Amount: 0, Memo: 'Main floor faucet & drain repair' },
+    { Line_ID: 'JRN-EXP-SPRUCE-01-2', Journal_ID: 'JRN-EXP-SPRUCE-01', Account_Code: '1010', Property_ID: 'PROP-005', Unit_ID: 'UNIT-501', Division_Level: 'Main Floor', Debit_Amount: 0, Credit_Amount: 280, Memo: 'Cheque payment to plumbing contractor' },
+    { Line_ID: 'JRN-EXP-SPRUCE-02-1', Journal_ID: 'JRN-EXP-SPRUCE-02', Account_Code: '5020', Property_ID: 'PROP-005', Unit_ID: 'UNIT-601', Division_Level: 'Basement', Debit_Amount: 420, Credit_Amount: 0, Memo: 'Basement sump pump preventative servicing' },
+    { Line_ID: 'JRN-EXP-SPRUCE-02-2', Journal_ID: 'JRN-EXP-SPRUCE-02', Account_Code: '1010', Property_ID: 'PROP-005', Unit_ID: 'UNIT-601', Division_Level: 'Basement', Debit_Amount: 0, Credit_Amount: 420, Memo: 'E-Transfer to basement maintenance specialist' },
+    { Line_ID: 'JRN-EXP-SPRUCE-03-1', Journal_ID: 'JRN-EXP-SPRUCE-03', Account_Code: '5020', Property_ID: 'PROP-005', Division_Level: 'Entire Property', Debit_Amount: 600, Credit_Amount: 0, Memo: 'Shared full property roof & gutter maintenance' },
+    { Line_ID: 'JRN-EXP-SPRUCE-03-2', Journal_ID: 'JRN-EXP-SPRUCE-03', Account_Code: '1010', Property_ID: 'PROP-005', Division_Level: 'Entire Property', Debit_Amount: 0, Credit_Amount: 600, Memo: 'Payment to roofing contractor' }
   ];
 
   const auditLogs: AuditEntry[] = [
@@ -1356,7 +1607,11 @@ class StorageService {
     try {
       const stored = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
       if (stored) {
-        return JSON.parse(stored);
+        const parsed: ERPDataStore = JSON.parse(stored);
+        this.migrateDividedProperties(parsed);
+        this.deduplicateAndMigrateDeposits(parsed);
+        this.migrateUtilityCatalog(parsed);
+        return parsed;
       }
     } catch (e) {
       console.warn('Could not read from localStorage, using initial dataset:', e);
@@ -1364,6 +1619,672 @@ class StorageService {
     const initial = getInitialData();
     this.saveDirect(initial);
     return initial;
+  }
+
+  private deduplicateAndMigrateDeposits(data: ERPDataStore) {
+    if (!data) return;
+
+    // 1. Ensure COA has 1120, 1125, 2200, 2210 separated
+    if (data.coa && Array.isArray(data.coa)) {
+      const coa = data.coa;
+      const acc1120 = coa.find(a => a.Account_Code === '1120');
+      if (acc1120) {
+        acc1120.Account_Name = 'Security Deposit Receivable';
+      }
+      if (!coa.some(a => a.Account_Code === '1125')) {
+        coa.push({
+          Account_Code: '1125',
+          Account_Name: 'Last Month Rent (LMR) Receivable',
+          Account_Type: 'Asset',
+          Account_Group: 'Current Assets',
+          Normal_Balance: 'Debit',
+          Is_Control_Account: true,
+          Is_Active: true
+        });
+      }
+      const acc2200 = coa.find(a => a.Account_Code === '2200');
+      if (acc2200) {
+        acc2200.Account_Name = 'Tenant Security Deposits Held Liability';
+      }
+      if (!coa.some(a => a.Account_Code === '2210')) {
+        coa.push({
+          Account_Code: '2210',
+          Account_Name: 'Last Month Rent (LMR) Held Liability',
+          Account_Type: 'Liability',
+          Account_Group: 'Current Liabilities',
+          Normal_Balance: 'Credit',
+          Is_Control_Account: true,
+          Is_Active: true
+        });
+      }
+      if (!coa.some(a => a.Account_Code === '4005')) {
+        coa.push({
+          Account_Code: '4005',
+          Account_Name: 'Rent Discounts & Concessions',
+          Account_Type: 'Revenue',
+          Account_Group: 'Operating Revenue',
+          Normal_Balance: 'Debit',
+          Is_Control_Account: false,
+          Is_Active: true
+        });
+      }
+    }
+
+    const validLeaseIds = new Set((data.leases || []).map(l => l.Lease_ID));
+
+    // 2. Deduplicate deposit transactions, scrub orphans of deleted leases, and assign Deposit_Type
+    if (data.depositTransactions && Array.isArray(data.depositTransactions)) {
+      const seenIds = new Set<string>();
+      const seenChargeKeys = new Set<string>();
+      const deduped: DepositTransaction[] = [];
+
+      for (const d of data.depositTransactions) {
+        if (!d || !d.Deposit_Txn_ID) continue;
+        if (seenIds.has(d.Deposit_Txn_ID)) continue;
+
+        // Auto-purge orphan deposits from deleted leases (e.g. DEP-LEASE-MTN74IDM)
+        if (d.Lease_ID && !validLeaseIds.has(d.Lease_ID)) {
+          continue; // Skip orphan
+        }
+        if (d.Deposit_Txn_ID.includes('LEASE-')) {
+          const match = d.Deposit_Txn_ID.match(/LEASE-[A-Za-z0-9_-]+/);
+          if (match && match[0] && !validLeaseIds.has(match[0])) {
+            continue; // Skip orphan
+          }
+        }
+        if (d.Reference && d.Reference.includes('LEASE-')) {
+          const match = d.Reference.match(/LEASE-[A-Za-z0-9_-]+/);
+          if (match && match[0] && !validLeaseIds.has(match[0]) && !d.Lease_ID) {
+            continue; // Skip orphan
+          }
+        }
+
+        // Assign Deposit_Type if missing
+        if (!d.Deposit_Type) {
+          const ref = (d.Reference || '').toLowerCase();
+          const notes = (d.Notes || '').toLowerCase();
+          if (ref.includes('lmr') || ref.includes('last month') || notes.includes('lmr') || notes.includes('last month')) {
+            d.Deposit_Type = 'Last Month Rent';
+          } else {
+            d.Deposit_Type = 'Security Deposit';
+          }
+        }
+
+        // Remove duplicate initial charges for the same lease & deposit type
+        if (d.Txn_Type === 'Charge' && d.Lease_ID) {
+          const chargeKey = `${d.Lease_ID}__${d.Deposit_Type}`;
+          if (seenChargeKeys.has(chargeKey)) {
+            continue; // Skip duplicate charge
+          }
+          seenChargeKeys.add(chargeKey);
+        }
+
+        seenIds.add(d.Deposit_Txn_ID);
+        deduped.push(d);
+      }
+
+      data.depositTransactions = deduped;
+    }
+
+    // 3. Scrub orphaned rent transactions & ensure unique Rent_Txn_IDs
+    if (data.rentTransactions && Array.isArray(data.rentTransactions)) {
+      // Filter out invalid/orphaned
+      const validRents = data.rentTransactions.filter(r => {
+        if (!r || !r.Rent_Txn_ID) return false;
+        if (r.Lease_ID && !validLeaseIds.has(r.Lease_ID)) return false;
+        return true;
+      });
+
+      // Migrate any Rent_Txn_ID that was formatted with Unit_ID (e.g. RENT-YYYYMM-UNIT-XXXX) to use Lease_ID
+      validRents.forEach(r => {
+        if (r.Lease_ID && r.Unit_ID && r.Rent_Txn_ID.includes(`-${r.Unit_ID}`)) {
+          const newId = `RENT-${(r.Period_Month || '').replace('-', '')}-${r.Lease_ID}`;
+          const oldId = r.Rent_Txn_ID;
+          r.Rent_Txn_ID = newId;
+          // Update any collection that used oldId
+          if (data.collections) {
+            data.collections.forEach(c => {
+              if (c.Rent_Txn_ID === oldId) c.Rent_Txn_ID = newId;
+            });
+          }
+        }
+      });
+
+      // Deduplicate by Lease_ID + Period_Month (or Rent_Txn_ID)
+      const dedupedRents: RentTransaction[] = [];
+      const seenRentKeys = new Set<string>();
+      const seenRentIds = new Set<string>();
+
+      for (const r of validRents) {
+        const leaseMonthKey = r.Lease_ID && r.Period_Month ? `${r.Lease_ID}_${r.Period_Month}` : r.Rent_Txn_ID;
+
+        if (seenRentKeys.has(leaseMonthKey) || seenRentIds.has(r.Rent_Txn_ID)) {
+          // Find existing and prefer the one with payments / newer state
+          const existingIdx = dedupedRents.findIndex(
+            x => (r.Lease_ID && x.Lease_ID === r.Lease_ID && x.Period_Month === r.Period_Month) || x.Rent_Txn_ID === r.Rent_Txn_ID
+          );
+          if (existingIdx >= 0) {
+            const existing = dedupedRents[existingIdx];
+            if ((r.Amount_Paid || 0) > (existing.Amount_Paid || 0)) {
+              dedupedRents[existingIdx] = r;
+            }
+          }
+          continue;
+        }
+
+        // Guarantee 100% unique Rent_Txn_ID
+        let finalId = r.Rent_Txn_ID;
+        let counter = 1;
+        while (seenRentIds.has(finalId)) {
+          finalId = `${r.Rent_Txn_ID}-${counter++}`;
+        }
+        r.Rent_Txn_ID = finalId;
+
+        seenRentKeys.add(leaseMonthKey);
+        seenRentIds.add(r.Rent_Txn_ID);
+        dedupedRents.push(r);
+      }
+
+      data.rentTransactions = dedupedRents;
+    }
+
+    // 4. Scrub orphaned utility splits
+    if (data.utilitySplits && Array.isArray(data.utilitySplits)) {
+      data.utilitySplits = data.utilitySplits.filter(u => {
+        if (!u || !u.Split_ID) return false;
+        if (u.Lease_ID && !validLeaseIds.has(u.Lease_ID)) return false;
+        return true;
+      });
+    }
+
+    // 5. Reconcile all leases with accounting (Rent Billings, Arrears, Deposits & Security)
+    this.reconcileLeasesWithAccounting(data);
+  }
+
+  public reconcileLeasesWithAccounting(data?: ERPDataStore, userEmail = 'system@dreamdwell.com') {
+    const store = data || this.data;
+    if (!store || !store.leases || !Array.isArray(store.leases)) return;
+    if (!store.rentTransactions) store.rentTransactions = [];
+    if (!store.depositTransactions) store.depositTransactions = [];
+    if (!store.collections) store.collections = [];
+    if (!store.journalHeaders) store.journalHeaders = [];
+    if (!store.journalLines) store.journalLines = [];
+
+    store.leases.forEach(lease => {
+      if (!lease || !lease.Lease_ID) return;
+
+      const targetSec = Math.round((lease.Deposit_Required ?? lease.Security_Deposit_Amount ?? lease.Security_Deposit ?? 0) * 100) / 100;
+      const targetLMR = Math.round((lease.Last_Month_Rent ?? lease.Last_Month_Rent_Amount ?? 0) * 100) / 100;
+      const monthlyRent = Math.round((lease.Monthly_Rent || 0) * 100) / 100;
+
+      lease.Monthly_Rent = monthlyRent;
+      lease.Deposit_Required = targetSec;
+      lease.Security_Deposit_Amount = targetSec;
+      lease.Security_Deposit = targetSec;
+      lease.Last_Month_Rent = targetLMR;
+      lease.Last_Month_Rent_Amount = targetLMR;
+
+      // 1. Reconcile Rent Transactions & Arrears
+      const leaseRentTxns = store.rentTransactions.filter(
+        r => r.Lease_ID === lease.Lease_ID || (r.Rent_Txn_ID && r.Rent_Txn_ID.includes(lease.Lease_ID))
+      );
+
+      if (leaseRentTxns.length === 0 && (lease.Status === 'Active' || (lease.Status as string) === 'active')) {
+        const firstMonth = (lease.Lease_Start || new Date().toISOString().slice(0, 10)).slice(0, 7);
+        const rentId = `RENT-${firstMonth.replace('-', '')}-${lease.Lease_ID}`;
+        store.rentTransactions.unshift({
+          Rent_Txn_ID: rentId,
+          Lease_ID: lease.Lease_ID,
+          Tenant_ID: lease.Tenant_ID,
+          Property_ID: lease.Property_ID,
+          Unit_ID: lease.Unit_ID,
+          Period_Month: firstMonth,
+          Due_Date: lease.Lease_Start,
+          Amount_Billed: monthlyRent,
+          Amount_Paid: 0,
+          Balance: monthlyRent,
+          Status: 'Unpaid',
+          Journal_Ref_ID: `JRN-LEASE-INIT-${lease.Lease_ID}`,
+          Created_By: userEmail,
+          Created_At: new Date().toISOString()
+        });
+      } else {
+        leaseRentTxns.forEach(r => {
+          r.Tenant_ID = lease.Tenant_ID;
+          r.Property_ID = lease.Property_ID;
+          r.Unit_ID = lease.Unit_ID;
+
+          const netMonthly = Math.max(0, monthlyRent - (r.Discount_Amount || 0));
+          if (r.Status === 'Unpaid' || (r.Amount_Paid || 0) === 0) {
+            r.Amount_Billed = monthlyRent;
+            r.Balance = netMonthly;
+            r.Status = r.Balance <= 0 ? 'Paid' : 'Unpaid';
+          } else if (r.Status === 'Partial' || (r.Amount_Paid || 0) < netMonthly) {
+            r.Amount_Billed = monthlyRent;
+            r.Balance = Math.max(0, Math.round((netMonthly - (r.Amount_Paid || 0)) * 100) / 100);
+            r.Status = r.Balance <= 0 ? 'Paid' : 'Partial';
+          }
+        });
+      }
+
+      // 2. Reconcile Security Deposit
+      const secCharge = store.depositTransactions.find(
+        d => (d.Lease_ID === lease.Lease_ID || d.Deposit_Txn_ID === `DEP-SEC-${lease.Lease_ID}`) &&
+             d.Deposit_Type === 'Security Deposit' &&
+             (d.Txn_Type === 'Charge' || d.Status === 'Receivable' || d.Status === 'Partial' || !d.Paid_Amount)
+      );
+
+      if (secCharge) {
+        secCharge.Tenant_ID = lease.Tenant_ID;
+        secCharge.Property_ID = lease.Property_ID;
+        secCharge.Unit_ID = lease.Unit_ID;
+        if (targetSec === 0 && (secCharge.Paid_Amount || 0) === 0) {
+          store.depositTransactions = store.depositTransactions.filter(d => d.Deposit_Txn_ID !== secCharge.Deposit_Txn_ID);
+        } else {
+          secCharge.Due_Amount = targetSec;
+          secCharge.Balance = Math.max(0, Math.round((targetSec - (secCharge.Paid_Amount || 0)) * 100) / 100);
+          secCharge.Status = secCharge.Balance <= 0 ? 'Received' : ((secCharge.Paid_Amount || 0) > 0 ? 'Partial' : 'Receivable');
+        }
+      } else if (targetSec > 0 && (lease.Status === 'Active' || (lease.Status as string) === 'active')) {
+        store.depositTransactions.unshift({
+          Deposit_Txn_ID: `DEP-SEC-${lease.Lease_ID}`,
+          Lease_ID: lease.Lease_ID,
+          Tenant_ID: lease.Tenant_ID,
+          Property_ID: lease.Property_ID,
+          Unit_ID: lease.Unit_ID,
+          Deposit_Type: 'Security Deposit',
+          Txn_Type: 'Charge',
+          Due_Amount: targetSec,
+          Paid_Amount: 0,
+          Refund_Amount: 0,
+          Balance: targetSec,
+          Txn_Date: lease.Lease_Start,
+          Status: 'Receivable',
+          Journal_Ref_ID: `JRN-LEASE-INIT-${lease.Lease_ID}`,
+          Reference: 'Security / Key Deposit Initial Charge',
+          Notes: `Initial key/security deposit charge for lease ${lease.Lease_ID}`,
+          Created_By: userEmail
+        });
+      }
+
+      // 3. Reconcile Last Month Rent (LMR)
+      const lmrCharge = store.depositTransactions.find(
+        d => (d.Lease_ID === lease.Lease_ID || d.Deposit_Txn_ID === `DEP-LMR-${lease.Lease_ID}`) &&
+             d.Deposit_Type === 'Last Month Rent' &&
+             (d.Txn_Type === 'Charge' || d.Status === 'Receivable' || d.Status === 'Partial' || !d.Paid_Amount)
+      );
+
+      if (lmrCharge) {
+        lmrCharge.Tenant_ID = lease.Tenant_ID;
+        lmrCharge.Property_ID = lease.Property_ID;
+        lmrCharge.Unit_ID = lease.Unit_ID;
+        if (targetLMR === 0 && (lmrCharge.Paid_Amount || 0) === 0) {
+          store.depositTransactions = store.depositTransactions.filter(d => d.Deposit_Txn_ID !== lmrCharge.Deposit_Txn_ID);
+        } else {
+          lmrCharge.Due_Amount = targetLMR;
+          lmrCharge.Balance = Math.max(0, Math.round((targetLMR - (lmrCharge.Paid_Amount || 0)) * 100) / 100);
+          lmrCharge.Status = lmrCharge.Balance <= 0 ? 'Received' : ((lmrCharge.Paid_Amount || 0) > 0 ? 'Partial' : 'Receivable');
+        }
+      } else if (targetLMR > 0 && (lease.Status === 'Active' || (lease.Status as string) === 'active')) {
+        store.depositTransactions.unshift({
+          Deposit_Txn_ID: `DEP-LMR-${lease.Lease_ID}`,
+          Lease_ID: lease.Lease_ID,
+          Tenant_ID: lease.Tenant_ID,
+          Property_ID: lease.Property_ID,
+          Unit_ID: lease.Unit_ID,
+          Deposit_Type: 'Last Month Rent',
+          Txn_Type: 'Charge',
+          Due_Amount: targetLMR,
+          Paid_Amount: 0,
+          Refund_Amount: 0,
+          Balance: targetLMR,
+          Txn_Date: lease.Lease_Start,
+          Status: 'Receivable',
+          Journal_Ref_ID: `JRN-LEASE-INIT-${lease.Lease_ID}`,
+          Reference: 'Last Month Rent (LMR) Initial Charge',
+          Notes: `Initial last month rent charge for lease ${lease.Lease_ID}`,
+          Created_By: userEmail
+        });
+      }
+
+      // 4. Sync other deposit transactions for this lease
+      store.depositTransactions.forEach(d => {
+        if (d.Lease_ID === lease.Lease_ID || (d.Deposit_Txn_ID && d.Deposit_Txn_ID.includes(lease.Lease_ID))) {
+          d.Tenant_ID = lease.Tenant_ID;
+          d.Property_ID = lease.Property_ID;
+          d.Unit_ID = lease.Unit_ID;
+        }
+      });
+
+      // 5. Update lease.Deposit_Received from actual paid security deposit transactions
+      const totalSecReceived = store.depositTransactions
+        .filter(d => (d.Lease_ID === lease.Lease_ID || (d.Deposit_Txn_ID && d.Deposit_Txn_ID.includes(lease.Lease_ID))) &&
+                     d.Deposit_Type === 'Security Deposit' &&
+                     (d.Txn_Type === 'Payment' || d.Status === 'Received' || (d.Paid_Amount || 0) > 0))
+        .reduce((sum, d) => sum + (d.Paid_Amount || 0), 0);
+      lease.Deposit_Received = totalSecReceived;
+
+      // 6. Sync Journal Entries
+      const jHeader = store.journalHeaders.find(
+        j => j.Journal_ID === `JRN-LEASE-INIT-${lease.Lease_ID}` || j.Reference_ID === lease.Lease_ID
+      );
+      if (jHeader) {
+        jHeader.Date = lease.Lease_Start;
+        store.journalLines.forEach(l => {
+          if (l.Journal_ID === jHeader.Journal_ID) {
+            l.Tenant_ID = lease.Tenant_ID;
+            l.Property_ID = lease.Property_ID;
+            l.Unit_ID = lease.Unit_ID;
+            if (l.Account_Code === '1100') l.Debit_Amount = monthlyRent;
+            if (l.Account_Code === '4000') l.Credit_Amount = monthlyRent;
+            if (l.Account_Code === '1120') l.Debit_Amount = targetSec;
+            if (l.Account_Code === '2200') l.Credit_Amount = targetSec;
+            if (l.Account_Code === '1125') l.Debit_Amount = targetLMR;
+            if (l.Account_Code === '2210') l.Credit_Amount = targetLMR;
+          }
+        });
+      }
+    });
+  }
+
+  private migrateUtilityCatalog(data: ERPDataStore) {
+    if (!data) return;
+    if (!data.utilityCatalog || !Array.isArray(data.utilityCatalog) || data.utilityCatalog.length === 0) {
+      data.utilityCatalog = [...DEFAULT_UTILITY_CATALOG];
+      return;
+    }
+
+    const cat = data.utilityCatalog;
+    // Core Canadian utility providers & services:
+    // ENBRIDGE, ALECTRA, HOT WATER, WATER, WIFI
+    const coreUtilities: UtilityCatalogItem[] = [
+      {
+        Utility_ID: 'UTL-ENBRIDGE',
+        Utility_Name: 'Enbridge (Natural Gas)',
+        Category: 'Natural Gas',
+        Default_Vendor: 'Enbridge Gas Inc.',
+        Default_GL_Account: '5010',
+        Description: 'Central radiator heating, furnace, and natural gas pipeline billing',
+        Is_Active: true,
+        Created_At: '2025-01-01'
+      },
+      {
+        Utility_ID: 'UTL-ALECTRA',
+        Utility_Name: 'Alectra (Electricity / Hydro)',
+        Category: 'Electricity',
+        Default_Vendor: 'Alectra Utilities Corporation',
+        Default_GL_Account: '5010',
+        Description: 'Alectra electric grid power and residential hydro consumption',
+        Is_Active: true,
+        Created_At: '2025-01-01'
+      },
+      {
+        Utility_ID: 'UTL-HOTWATER',
+        Utility_Name: 'Hot Water Tank Rental',
+        Category: 'Hot Water Tank',
+        Default_Vendor: 'Reliance Home Comfort / Enercare',
+        Default_GL_Account: '5010',
+        Description: 'Hot water heater tank rental, maintenance, and gas/electric heating unit lease',
+        Is_Active: true,
+        Created_At: '2025-01-01'
+      },
+      {
+        Utility_ID: 'UTL-WATER',
+        Utility_Name: 'Municipal Water & Sewage',
+        Category: 'Water & Sewage',
+        Default_Vendor: 'City / Municipal Water Department',
+        Default_GL_Account: '5010',
+        Description: 'Quarterly municipal metered water supply, stormwater, and wastewater services',
+        Is_Active: true,
+        Created_At: '2025-01-01'
+      },
+      {
+        Utility_ID: 'UTL-WIFI',
+        Utility_Name: 'WiFi / High-Speed Internet',
+        Category: 'Internet & Telecom',
+        Default_Vendor: 'Rogers / Bell / Telus / Cogeco',
+        Default_GL_Account: '5200',
+        Description: 'High-speed wireless broadband WiFi and fiber optic internet network',
+        Is_Active: true,
+        Created_At: '2025-01-01'
+      }
+    ];
+
+    // Ensure core services exist
+    coreUtilities.forEach(core => {
+      const idx = cat.findIndex(c =>
+        c.Utility_ID === core.Utility_ID ||
+        (core.Utility_ID === 'UTL-ENBRIDGE' && (c.Utility_Name.toLowerCase().includes('enbridge') || c.Category === 'Natural Gas')) ||
+        (core.Utility_ID === 'UTL-ALECTRA' && c.Utility_Name.toLowerCase().includes('alectra')) ||
+        (core.Utility_ID === 'UTL-HOTWATER' && (c.Utility_Name.toLowerCase().includes('hot water') || c.Category === 'Hot Water Tank')) ||
+        (core.Utility_ID === 'UTL-WIFI' && (c.Utility_Name.toLowerCase().includes('wifi') || c.Utility_Name.toLowerCase().includes('wi-fi') || c.Utility_Name.toLowerCase().includes('internet'))) ||
+        (core.Utility_ID === 'UTL-WATER' && (c.Utility_Name.toLowerCase().includes('water') && !c.Utility_Name.toLowerCase().includes('hot')))
+      );
+
+      if (idx === -1) {
+        cat.unshift(core);
+      } else {
+        cat[idx].Is_Active = true;
+        if (!cat[idx].Default_Vendor) {
+          cat[idx].Default_Vendor = core.Default_Vendor;
+        }
+      }
+    });
+  }
+
+  private migrateDividedProperties(data: ERPDataStore) {
+    if (!data || !data.properties) return;
+
+    const prop6Index = data.properties.findIndex(p => p.Property_ID === 'PROP-006');
+    const prop5 = data.properties.find(p => p.Property_ID === 'PROP-005');
+
+    if (prop6Index !== -1 || (prop5 && !prop5.Has_Divisions)) {
+      if (prop6Index !== -1) {
+        data.properties.splice(prop6Index, 1);
+      }
+      if (prop5) {
+        prop5.Property_Name = '148 Spruce Street';
+        prop5.Address = '148 Spruce Street';
+        prop5.Master_Rent_Amount = 4000;
+        prop5.Has_Divisions = true;
+        prop5.Division_Structure = 'Main_And_Basement';
+        prop5.Default_Main_Share_Pct = 60;
+        prop5.Default_Basement_Share_Pct = 40;
+        delete prop5.Parent_Property_ID;
+        delete prop5.Division_Type;
+      }
+    }
+
+    // Ensure all properties have Parking_Spots initialized
+    data.properties.forEach(p => {
+      if (!p.Parking_Spots) {
+        if (p.Property_ID === 'PROP-005') {
+          p.Total_Parking_Spots = 3;
+          p.Parking_Spots = [
+            { Spot_ID: 'PRK-501', Spot_Number_Name: 'Driveway Left (Spot 1)', Spot_Type: 'Driveway', Monthly_Fee: 0, Status: 'Assigned', Assigned_Tenant_ID: 'TEN-006', Assigned_Tenant_Name: 'Lucas Vance', Assigned_Unit_ID: 'UNIT-501', Vehicle_Plate: 'BXYZ 491', Notes: 'Allocated to Main Floor tenant' },
+            { Spot_ID: 'PRK-502', Spot_Number_Name: 'Driveway Right (Spot 2)', Spot_Type: 'Driveway', Monthly_Fee: 0, Status: 'Available', Notes: 'Shared driveway spot' },
+            { Spot_ID: 'PRK-503', Spot_Number_Name: 'Rear Garage Stall A', Spot_Type: 'Garage', Monthly_Fee: 75, Status: 'Available', Notes: 'Secure enclosed garage spot' }
+          ];
+        } else if (p.Property_ID === 'PROP-001') {
+          p.Total_Parking_Spots = 4;
+          p.Parking_Spots = [
+            { Spot_ID: 'PRK-101', Spot_Number_Name: 'Underground P1-04', Spot_Type: 'Underground', Monthly_Fee: 150, Status: 'Assigned', Assigned_Tenant_ID: 'TEN-001', Assigned_Tenant_Name: 'Sarah Jenkins', Assigned_Unit_ID: 'UNIT-101' },
+            { Spot_ID: 'PRK-102', Spot_Number_Name: 'Underground P1-05', Spot_Type: 'Underground', Monthly_Fee: 150, Status: 'Assigned', Assigned_Tenant_ID: 'TEN-002', Assigned_Tenant_Name: 'David Chen', Assigned_Unit_ID: 'UNIT-102' },
+            { Spot_ID: 'PRK-103', Spot_Number_Name: 'Underground P1-06', Spot_Type: 'Underground', Monthly_Fee: 150, Status: 'Available' },
+            { Spot_ID: 'PRK-104', Spot_Number_Name: 'Visitor Stall V-1', Spot_Type: 'Surface', Monthly_Fee: 0, Status: 'Available' }
+          ];
+        } else {
+          p.Total_Parking_Spots = p.Total_Parking_Spots || 0;
+          p.Parking_Spots = [];
+        }
+      }
+    });
+
+    if (data.units) {
+      data.units.forEach(u => {
+        if (u.Property_ID === 'PROP-006') {
+          u.Property_ID = 'PROP-005';
+        }
+        u.Kitchens = u.Kitchens ?? 1;
+        u.Kitchen_Type = u.Kitchen_Type || 'Full Kitchen';
+        if (u.Has_Den === undefined) u.Has_Den = (u.Unit_Type || u.Floor_Plan || '').toLowerCase().includes('den');
+        if (u.Dens_Count === undefined) u.Dens_Count = u.Has_Den ? 1 : 0;
+        if (u.Utilities_Included === undefined) u.Utilities_Included = false;
+        if (!u.Utility_Billing_Type) u.Utility_Billing_Type = u.Utilities_Included ? 'All-Inclusive' : 'Tenant Metered';
+
+        if (u.Unit_ID === 'UNIT-501') {
+          u.Property_ID = 'PROP-005';
+          u.Unit_Number_Name = 'Main Floor (6 Spaces)';
+          u.Division_Level = 'Main Floor';
+          u.Utility_Share_Percentage = 60;
+          u.Square_Feet = 1500;
+          u.Spaces_Count = 6;
+          u.Full_Room_Rent = 3600;
+          u.Allow_Full_Room_Lease = true;
+          u.Kitchens = 1;
+          u.Kitchen_Type = 'Full Kitchen';
+          u.Has_Den = true;
+          u.Dens_Count = 1;
+          u.Den_Details = 'South-facing private work den / sunroom';
+          u.Utilities_Included = true;
+          u.Included_Utilities = ['Hydro / Electricity', 'Heat / Natural Gas', 'Municipal Water & Sewage', 'High-Speed Internet / Fiber'];
+          u.Utility_Billing_Type = 'All-Inclusive';
+          if (!u.Bedrooms_List || u.Bedrooms_List.length === 0) {
+            u.Bedrooms_List = [
+              {
+                Bedroom_ID: 'BR-M1',
+                Bedroom_Name: 'Room 1 (Front Bedroom)',
+                Allocation_Mode: 'Sharing',
+                Full_Room_Rent: 1200,
+                Sharing_Spaces_Count: 2,
+                Sharing_Rent_Per_Space: 650,
+                Ensuite_Bath: false,
+                Notes: 'Two sharing bed spaces or 1 individual full bedroom.'
+              },
+              {
+                Bedroom_ID: 'BR-M2',
+                Bedroom_Name: 'Room 2 (Center Bedroom)',
+                Allocation_Mode: 'Sharing',
+                Full_Room_Rent: 1100,
+                Sharing_Spaces_Count: 2,
+                Sharing_Rent_Per_Space: 600,
+                Ensuite_Bath: false,
+                Notes: 'Two sharing bed spaces or 1 individual full bedroom.'
+              },
+              {
+                Bedroom_ID: 'BR-M3',
+                Bedroom_Name: 'Room 3 (Master Bedroom)',
+                Allocation_Mode: 'Sharing',
+                Full_Room_Rent: 1300,
+                Sharing_Spaces_Count: 2,
+                Sharing_Rent_Per_Space: 700,
+                Ensuite_Bath: true,
+                Notes: 'Master ensuite with private bath. 2 sharing beds or 1 individual.'
+              }
+            ];
+          }
+          if (!u.Spaces || u.Spaces.length === 0) {
+            u.Spaces = [
+              { Space_ID: 'SPC-M1', Bedroom_ID: 'BR-M1', Bedroom_Name: 'Room 1 (Front Bedroom)', Space_Name: 'Room 1 - Bed A', Space_Type: 'Shared Room Bed', Target_Rent: 650, Full_Room_Rent: 1200, Occupancy_Mode: 'Shared', Utilities_Included: true, Current_Status: 'Occupied', Tenant_ID: 'TEN-006', Tenant_Name: 'Lucas Vance' },
+              { Space_ID: 'SPC-M2', Bedroom_ID: 'BR-M1', Bedroom_Name: 'Room 1 (Front Bedroom)', Space_Name: 'Room 1 - Bed B', Space_Type: 'Shared Room Bed', Target_Rent: 650, Full_Room_Rent: 1200, Occupancy_Mode: 'Shared', Utilities_Included: true, Current_Status: 'Vacant' },
+              { Space_ID: 'SPC-M3', Bedroom_ID: 'BR-M2', Bedroom_Name: 'Room 2 (Center Bedroom)', Space_Name: 'Room 2 - Bed A', Space_Type: 'Shared Room Bed', Target_Rent: 600, Full_Room_Rent: 1100, Occupancy_Mode: 'Shared', Utilities_Included: true, Current_Status: 'Vacant' },
+              { Space_ID: 'SPC-M4', Bedroom_ID: 'BR-M2', Bedroom_Name: 'Room 2 (Center Bedroom)', Space_Name: 'Room 2 - Bed B', Space_Type: 'Shared Room Bed', Target_Rent: 600, Full_Room_Rent: 1100, Occupancy_Mode: 'Shared', Utilities_Included: true, Current_Status: 'Vacant' },
+              { Space_ID: 'SPC-M5', Bedroom_ID: 'BR-M3', Bedroom_Name: 'Room 3 (Master Bedroom)', Space_Name: 'Room 3 - Master Bed A', Space_Type: 'Master Ensuite', Target_Rent: 700, Full_Room_Rent: 1300, Occupancy_Mode: 'Shared', Utilities_Included: true, Current_Status: 'Vacant' },
+              { Space_ID: 'SPC-M6', Bedroom_ID: 'BR-M3', Bedroom_Name: 'Room 3 (Master Bedroom)', Space_Name: 'Room 3 - Master Bed B', Space_Type: 'Master Ensuite', Target_Rent: 700, Full_Room_Rent: 1300, Occupancy_Mode: 'Shared', Utilities_Included: true, Current_Status: 'Vacant' }
+            ];
+          }
+        } else if (u.Unit_ID === 'UNIT-601') {
+          u.Property_ID = 'PROP-005';
+          u.Unit_Number_Name = 'Basement Suite (3 Spaces)';
+          u.Division_Level = 'Basement';
+          u.Utility_Share_Percentage = 40;
+          u.Square_Feet = 850;
+          u.Spaces_Count = 3;
+          u.Full_Room_Rent = 1600;
+          u.Allow_Full_Room_Lease = true;
+          u.Kitchens = 1;
+          u.Kitchen_Type = 'Full Kitchen';
+          u.Has_Den = false;
+          u.Dens_Count = 0;
+          u.Utilities_Included = true;
+          u.Included_Utilities = ['Hydro / Electricity', 'Heat / Natural Gas', 'Municipal Water & Sewage', 'High-Speed Internet / Fiber'];
+          u.Utility_Billing_Type = 'All-Inclusive';
+          if (!u.Bedrooms_List || u.Bedrooms_List.length === 0) {
+            u.Bedrooms_List = [
+              {
+                Bedroom_ID: 'BR-B1',
+                Bedroom_Name: 'Basement Room 1',
+                Allocation_Mode: 'Sharing',
+                Full_Room_Rent: 1000,
+                Sharing_Spaces_Count: 2,
+                Sharing_Rent_Per_Space: 550,
+                Ensuite_Bath: false,
+                Notes: 'Two sharing bed spaces or $1,000 full room.'
+              },
+              {
+                Bedroom_ID: 'BR-B2',
+                Bedroom_Name: 'Basement Room 2',
+                Allocation_Mode: 'Fully Used',
+                Full_Room_Rent: 650,
+                Sharing_Spaces_Count: 1,
+                Sharing_Rent_Per_Space: 650,
+                Ensuite_Bath: false,
+                Notes: 'Single private room.'
+              }
+            ];
+          }
+          if (!u.Spaces || u.Spaces.length === 0) {
+            u.Spaces = [
+              { Space_ID: 'SPC-B1', Bedroom_ID: 'BR-B1', Bedroom_Name: 'Basement Room 1', Space_Name: 'Basement Room 1 - Bed A', Space_Type: 'Shared Room Bed', Target_Rent: 550, Full_Room_Rent: 1000, Occupancy_Mode: 'Shared', Utilities_Included: true, Current_Status: 'Occupied', Tenant_ID: 'TEN-007', Tenant_Name: 'Emily Zhao' },
+              { Space_ID: 'SPC-B2', Bedroom_ID: 'BR-B1', Bedroom_Name: 'Basement Room 1', Space_Name: 'Basement Room 1 - Bed B', Space_Type: 'Shared Room Bed', Target_Rent: 550, Full_Room_Rent: 1000, Occupancy_Mode: 'Shared', Utilities_Included: true, Current_Status: 'Vacant' },
+              { Space_ID: 'SPC-B3', Bedroom_ID: 'BR-B2', Bedroom_Name: 'Basement Room 2', Space_Name: 'Basement Room 2 - Private Bedroom', Space_Type: 'Private Bedroom', Target_Rent: 650, Full_Room_Rent: 650, Occupancy_Mode: 'Fully Used (Private)', Utilities_Included: true, Current_Status: 'Vacant' }
+            ];
+          }
+        }
+      });
+    }
+
+    if (data.tenants) {
+      data.tenants.forEach(t => {
+        if (t.Current_Property_ID === 'PROP-006') {
+          t.Current_Property_ID = 'PROP-005';
+        }
+        if (t.Tenant_ID === 'TEN-006') {
+          t.Full_Name = 'Lucas Vance';
+          t.Current_Property_ID = 'PROP-005';
+          t.Current_Unit_ID = 'UNIT-501';
+          t.Floor_Division = 'Main Floor';
+        } else if (t.Tenant_ID === 'TEN-007') {
+          t.Full_Name = 'Emily Zhao';
+          t.Current_Property_ID = 'PROP-005';
+          t.Current_Unit_ID = 'UNIT-601';
+          t.Floor_Division = 'Basement';
+        }
+      });
+    }
+
+    if (data.leases) {
+      data.leases.forEach(l => {
+        if (l.Property_ID === 'PROP-006') {
+          l.Property_ID = 'PROP-005';
+        }
+      });
+      // Filter out buggy auto-generated LEASE-006 and LEASE-007 records
+      data.leases = data.leases.filter(l => l.Lease_ID !== 'LEASE-006' && l.Lease_ID !== 'LEASE-007');
+    }
+
+    if (data.utilityBills) {
+      data.utilityBills.forEach(b => {
+        if (b.Property_ID === 'PROP-006') b.Property_ID = 'PROP-005';
+      });
+    }
+    if (data.utilitySplits) {
+      data.utilitySplits.forEach(s => {
+        if (s.Property_ID === 'PROP-006') s.Property_ID = 'PROP-005';
+        if (s.Unit_ID === 'UNIT-501' && !s.Division_Level) s.Division_Level = 'Main Floor';
+        if (s.Unit_ID === 'UNIT-601' && !s.Division_Level) s.Division_Level = 'Basement';
+      });
+    }
   }
 
   private saveDirect(data: ERPDataStore) {
@@ -1430,6 +2351,157 @@ class StorageService {
     this.save();
   }
 
+  public clearEntireDatabase(userEmail: string = 'admin@dreamdwell.com') {
+    this.purgeAllSampleData(userEmail);
+  }
+
+  public cleanOrphanRecords(userEmail: string = 'admin@dreamdwell.com'): {
+    removedDepositsCount: number;
+    removedRentTxnsCount: number;
+    removedSplitsCount: number;
+    syncedUnitsCount: number;
+  } {
+    const validLeaseIds = new Set(this.data.leases.map(l => l.Lease_ID));
+
+    const initialDepCount = this.data.depositTransactions.length;
+    this.data.depositTransactions = this.data.depositTransactions.filter(d => {
+      if (!d) return false;
+      // If deposit is tied to a specific lease ID, ensure the lease exists
+      if (d.Lease_ID && !validLeaseIds.has(d.Lease_ID)) {
+        return false;
+      }
+      // Check if Deposit_Txn_ID embeds a deleted lease ID (e.g. DEP-LEASE-MTN74IDM)
+      if (d.Deposit_Txn_ID && d.Deposit_Txn_ID.includes('LEASE-')) {
+        const match = d.Deposit_Txn_ID.match(/LEASE-[A-Za-z0-9_-]+/);
+        if (match && match[0] && !validLeaseIds.has(match[0])) {
+          return false;
+        }
+      }
+      // Check if Reference embeds a deleted lease ID
+      if (d.Reference && d.Reference.includes('LEASE-')) {
+        const match = d.Reference.match(/LEASE-[A-Za-z0-9_-]+/);
+        if (match && match[0] && !validLeaseIds.has(match[0]) && !d.Lease_ID) {
+          return false;
+        }
+      }
+      return true;
+    });
+    const removedDepositsCount = initialDepCount - this.data.depositTransactions.length;
+
+    const initialRentCount = this.data.rentTransactions.length;
+    this.data.rentTransactions = this.data.rentTransactions.filter(r => {
+      if (!r || !r.Rent_Txn_ID) return false;
+      if (r.Lease_ID && !validLeaseIds.has(r.Lease_ID)) return false;
+      return true;
+    });
+    const removedRentTxnsCount = initialRentCount - this.data.rentTransactions.length;
+
+    const initialSplitsCount = this.data.utilitySplits.length;
+    this.data.utilitySplits = this.data.utilitySplits.filter(u => {
+      if (!u || !u.Split_ID) return false;
+      if (u.Lease_ID && !validLeaseIds.has(u.Lease_ID)) return false;
+      return true;
+    });
+    const removedSplitsCount = initialSplitsCount - this.data.utilitySplits.length;
+
+    const syncedUnitsCount = this.syncAllUnitStatuses();
+
+    if (removedDepositsCount > 0 || removedRentTxnsCount > 0 || removedSplitsCount > 0 || syncedUnitsCount > 0) {
+      this.logAudit(userEmail, 'UPDATE', 'System', 'ORPHAN_CLEANUP', {
+        removedDepositsCount,
+        removedRentTxnsCount,
+        removedSplitsCount,
+        syncedUnitsCount
+      });
+      this.save();
+    }
+
+    return {
+      removedDepositsCount,
+      removedRentTxnsCount,
+      removedSplitsCount,
+      syncedUnitsCount
+    };
+  }
+
+  public syncAllUnitStatuses(): number {
+    let synced = 0;
+    const activeLeases = this.data.leases.filter(l => l.Status === 'Active' || (l.Status as string) === 'active');
+    const tenantMap = new Map(this.data.tenants.map(t => [t.Tenant_ID, t.Full_Name]));
+
+    this.data.units.forEach(unit => {
+      if (unit.Current_Status === 'Inactive' || unit.Current_Status === 'Maintenance') {
+        return;
+      }
+      const unitLeases = activeLeases.filter(l => l.Unit_ID === unit.Unit_ID);
+
+      if (unitLeases.length === 0) {
+        // No active leases for this unit
+        if (unit.Spaces && Array.isArray(unit.Spaces)) {
+          unit.Spaces.forEach(sp => {
+            sp.Current_Status = 'Vacant';
+            sp.Tenant_ID = undefined;
+            sp.Tenant_Name = undefined;
+          });
+        }
+        if (unit.Current_Status !== 'Vacant') {
+          unit.Current_Status = 'Vacant';
+          synced++;
+        }
+      } else {
+        // Active lease(s) exist
+        const hasWholeUnitLease = unitLeases.some(l => !l.Space_ID && !l.Bedroom_ID && !l.Is_Full_Bedroom);
+
+        if (hasWholeUnitLease) {
+          const mainLease = unitLeases.find(l => !l.Space_ID && !l.Bedroom_ID && !l.Is_Full_Bedroom)!;
+          if (unit.Spaces && Array.isArray(unit.Spaces)) {
+            unit.Spaces.forEach(sp => {
+              sp.Current_Status = 'Occupied';
+              sp.Tenant_ID = mainLease.Tenant_ID;
+              sp.Tenant_Name = tenantMap.get(mainLease.Tenant_ID) || 'Active Tenant';
+            });
+          }
+          if (unit.Current_Status !== 'Occupied') {
+            unit.Current_Status = 'Occupied';
+            synced++;
+          }
+        } else if (unit.Spaces && Array.isArray(unit.Spaces) && unit.Spaces.length > 0) {
+          // Room / Space based
+          unit.Spaces.forEach(sp => {
+            const matchingLease = unitLeases.find(l => 
+              l.Space_ID === sp.Space_ID || 
+              (l.Is_Full_Bedroom && (l.Bedroom_ID === sp.Bedroom_ID || l.Bedroom_Name === sp.Bedroom_Name)) ||
+              (l.Space_Name && sp.Space_Name && l.Space_Name.toLowerCase() === sp.Space_Name.toLowerCase())
+            );
+            if (matchingLease) {
+              sp.Current_Status = 'Occupied';
+              sp.Tenant_ID = matchingLease.Tenant_ID;
+              sp.Tenant_Name = tenantMap.get(matchingLease.Tenant_ID) || 'Active Tenant';
+            } else {
+              sp.Current_Status = 'Vacant';
+              sp.Tenant_ID = undefined;
+              sp.Tenant_Name = undefined;
+            }
+          });
+
+          const hasVacant = unit.Spaces.some(sp => sp.Current_Status === 'Vacant');
+          const newStatus = hasVacant ? 'Vacant' : 'Occupied';
+          if (unit.Current_Status !== newStatus) {
+            unit.Current_Status = newStatus;
+            synced++;
+          }
+        } else {
+          if (unit.Current_Status !== 'Occupied') {
+            unit.Current_Status = 'Occupied';
+            synced++;
+          }
+        }
+      }
+    });
+
+    return synced;
+  }
+
   public loadSampleDemoData(userEmail: string = 'admin@dreamdwell.com') {
     const demo = getSampleDemoData();
     this.data = {
@@ -1470,6 +2542,9 @@ class StorageService {
 
   public applyCloudData(cloudData: ERPDataStore) {
     if (!cloudData || !Array.isArray(cloudData.properties)) return;
+    this.migrateDividedProperties(cloudData);
+    this.deduplicateAndMigrateDeposits(cloudData);
+    this.migrateUtilityCatalog(cloudData);
     this.data = cloudData;
     this.saveDirect(this.data);
     this.listeners.forEach(fn => fn());
@@ -1589,6 +2664,7 @@ class StorageService {
   public getMoveIns() { return this.data.moveIns; }
   public getMoveOuts() { return this.data.moveOuts; }
   public getCOA() { return this.data.coa; }
+  public getChartOfAccounts() { return this.data.coa; }
   public getJournalHeaders() { return this.data.journalHeaders; }
   public getJournalLines() { return this.data.journalLines; }
   public getAccountingPeriods() { return this.data.accountingPeriods; }
@@ -1628,6 +2704,57 @@ class StorageService {
     this.logAudit(userEmail, 'DELETE', 'Properties', propertyId);
   }
 
+  public updatePropertyParkingSpots(propertyId: string, spots: ParkingSpot[], userEmail: string = 'admin@dreamdwell.com') {
+    const prop = this.data.properties.find(p => p.Property_ID === propertyId);
+    if (prop) {
+      prop.Parking_Spots = spots;
+      prop.Total_Parking_Spots = spots.length;
+      this.logAudit(userEmail, 'UPDATE', 'Properties', propertyId, { parkingSpotsCount: spots.length });
+      this.save();
+    }
+  }
+
+  public assignParkingSpot(propertyId: string, spotId: string, tenantId?: string, vehiclePlate?: string, userEmail: string = 'admin@dreamdwell.com') {
+    const prop = this.data.properties.find(p => p.Property_ID === propertyId);
+    if (!prop || !prop.Parking_Spots) return;
+    const spot = prop.Parking_Spots.find(s => s.Spot_ID === spotId);
+    if (!spot) return;
+
+    // If previously assigned to another tenant, clear that tenant's parking reference
+    if (spot.Assigned_Tenant_ID && spot.Assigned_Tenant_ID !== tenantId) {
+      const prevTenant = this.data.tenants.find(t => t.Tenant_ID === spot.Assigned_Tenant_ID);
+      if (prevTenant) {
+        prevTenant.Assigned_Parking_Spot_ID = undefined;
+        prevTenant.Assigned_Parking_Spot_Name = undefined;
+        prevTenant.Parking_Monthly_Fee = undefined;
+      }
+    }
+
+    if (tenantId) {
+      const tenant = this.data.tenants.find(t => t.Tenant_ID === tenantId);
+      spot.Status = 'Assigned';
+      spot.Assigned_Tenant_ID = tenantId;
+      spot.Assigned_Tenant_Name = tenant?.Full_Name;
+      spot.Assigned_Unit_ID = tenant?.Current_Unit_ID;
+      if (vehiclePlate !== undefined) spot.Vehicle_Plate = vehiclePlate;
+
+      if (tenant) {
+        tenant.Assigned_Parking_Spot_ID = spot.Spot_ID;
+        tenant.Assigned_Parking_Spot_Name = spot.Spot_Number_Name;
+        tenant.Parking_Monthly_Fee = spot.Monthly_Fee;
+      }
+    } else {
+      spot.Status = 'Available';
+      spot.Assigned_Tenant_ID = undefined;
+      spot.Assigned_Tenant_Name = undefined;
+      spot.Assigned_Unit_ID = undefined;
+      spot.Vehicle_Plate = undefined;
+    }
+
+    this.logAudit(userEmail, 'UPDATE', 'Properties', propertyId, { action: 'ASSIGN_PARKING', spotId, tenantId });
+    this.save();
+  }
+
   public addUnit(unit: Unit, userEmail: string) {
     this.data.units.unshift(unit);
     this.logAudit(userEmail, 'CREATE', 'Units', unit.Unit_ID, unit);
@@ -1638,7 +2765,90 @@ class StorageService {
     if (idx >= 0) {
       this.data.units[idx] = unit;
       this.logAudit(userEmail, 'UPDATE', 'Units', unit.Unit_ID, unit);
+      this.save();
     }
+  }
+
+  public deriveUnitSpacesFromBedrooms(unit: { Unit_ID: string; Bedrooms_List?: BedroomAllocation[]; Spaces?: UnitSpace[]; Utilities_Included?: boolean }): UnitSpace[] {
+    if (!unit.Bedrooms_List || unit.Bedrooms_List.length === 0) {
+      return unit.Spaces || [];
+    }
+    const existingSpaces = unit.Spaces || [];
+    const newSpaces: UnitSpace[] = [];
+
+    unit.Bedrooms_List.forEach((br, bIdx) => {
+      if (br.Allocation_Mode === 'Fully Used') {
+        const existingForBr = existingSpaces.find(s => s.Bedroom_ID === br.Bedroom_ID || s.Space_Name.startsWith(br.Bedroom_Name));
+        newSpaces.push({
+          Space_ID: existingForBr?.Space_ID || `SPC-${unit.Unit_ID.replace('UNIT-', '')}-BR${bIdx + 1}-FULL`,
+          Space_Name: `${br.Bedroom_Name} (Full Bedroom - Individual)`,
+          Bedroom_ID: br.Bedroom_ID,
+          Bedroom_Name: br.Bedroom_Name,
+          Space_Type: br.Ensuite_Bath ? 'Master Ensuite' : 'Private Bedroom',
+          Target_Rent: br.Full_Room_Rent,
+          Full_Room_Rent: br.Full_Room_Rent,
+          Occupancy_Mode: 'Fully Used (Private)',
+          Utilities_Included: unit.Utilities_Included,
+          Current_Status: existingForBr?.Current_Status || 'Vacant',
+          Tenant_ID: existingForBr?.Tenant_ID,
+          Tenant_Name: existingForBr?.Tenant_Name,
+          Notes: br.Notes || 'Leased fully to single tenant'
+        });
+      } else {
+        const spacesCount = br.Sharing_Spaces_Count || 2;
+        for (let i = 0; i < spacesCount; i++) {
+          const spaceSuffix = String.fromCharCode(65 + i); // 'A', 'B', etc.
+          const existingSp = existingSpaces.find(s =>
+            (s.Bedroom_ID === br.Bedroom_ID && s.Space_Name.includes(spaceSuffix)) ||
+            s.Space_Name === `${br.Bedroom_Name} - Bed ${spaceSuffix}` ||
+            s.Space_Name === `${br.Bedroom_Name} - Space ${spaceSuffix}` ||
+            s.Space_Name === `${br.Bedroom_Name} - Master Bed ${spaceSuffix}` ||
+            s.Space_Name === `${br.Bedroom_Name} - Master Space ${spaceSuffix}`
+          );
+          newSpaces.push({
+            Space_ID: existingSp?.Space_ID || `SPC-${unit.Unit_ID.replace('UNIT-', '')}-BR${bIdx + 1}-${spaceSuffix}`,
+            Space_Name: `${br.Bedroom_Name} - Bed ${spaceSuffix}`,
+            Bedroom_ID: br.Bedroom_ID,
+            Bedroom_Name: br.Bedroom_Name,
+            Space_Type: br.Ensuite_Bath ? 'Master Ensuite' : 'Shared Room Bed',
+            Target_Rent: br.Sharing_Rent_Per_Space,
+            Full_Room_Rent: br.Full_Room_Rent,
+            Occupancy_Mode: 'Shared',
+            Utilities_Included: unit.Utilities_Included,
+            Current_Status: existingSp?.Current_Status || 'Vacant',
+            Tenant_ID: existingSp?.Tenant_ID,
+            Tenant_Name: existingSp?.Tenant_Name,
+            Notes: br.Notes || `Sharing bed ${spaceSuffix}`
+          });
+        }
+      }
+    });
+
+    return newSpaces;
+  }
+
+  public toggleBedroomAllocationMode(unitId: string, bedroomId: string, userEmail: string): Unit | undefined {
+    const unit = this.data.units.find(u => u.Unit_ID === unitId);
+    if (!unit || !unit.Bedrooms_List) return undefined;
+    const br = unit.Bedrooms_List.find(b => b.Bedroom_ID === bedroomId);
+    if (!br) return undefined;
+
+    const newMode: 'Fully Used' | 'Sharing' = br.Allocation_Mode === 'Sharing' ? 'Fully Used' : 'Sharing';
+    br.Allocation_Mode = newMode;
+
+    unit.Spaces = this.deriveUnitSpacesFromBedrooms(unit);
+    unit.Spaces_Count = unit.Spaces.length;
+    unit.Target_Rent = unit.Spaces.reduce((sum, s) => sum + (s.Target_Rent || 0), 0);
+    unit.Monthly_Rent = unit.Target_Rent;
+
+    this.logAudit(userEmail, 'UPDATE', 'Units', unit.Unit_ID, {
+      action: 'TOGGLE_BEDROOM_ALLOCATION',
+      bedroomId,
+      bedroomName: br.Bedroom_Name,
+      newMode
+    });
+    this.save();
+    return unit;
   }
 
   public deleteUnit(unitId: string, userEmail: string) {
@@ -1728,14 +2938,382 @@ class StorageService {
   public updateLease(lease: Lease, userEmail: string) {
     const idx = this.data.leases.findIndex(l => l.Lease_ID === lease.Lease_ID);
     if (idx >= 0) {
+      const oldLease = this.data.leases[idx];
+
+      const targetSec = Math.round((lease.Deposit_Required ?? lease.Security_Deposit_Amount ?? lease.Security_Deposit ?? 0) * 100) / 100;
+      const targetLMR = Math.round((lease.Last_Month_Rent ?? lease.Last_Month_Rent_Amount ?? 0) * 100) / 100;
+      const monthlyRent = Math.round((lease.Monthly_Rent || 0) * 100) / 100;
+
+      lease.Monthly_Rent = monthlyRent;
+      lease.Deposit_Required = targetSec;
+      lease.Security_Deposit_Amount = targetSec;
+      lease.Security_Deposit = targetSec;
+      lease.Last_Month_Rent = targetLMR;
+      lease.Last_Month_Rent_Amount = targetLMR;
+
       this.data.leases[idx] = lease;
+
+      const tenantChanged = oldLease.Tenant_ID !== lease.Tenant_ID;
+      const propertyChanged = oldLease.Property_ID !== lease.Property_ID;
+      const unitChanged = oldLease.Unit_ID !== lease.Unit_ID;
+      const startDateChanged = oldLease.Lease_Start !== lease.Lease_Start;
+      const rentChanged = oldLease.Monthly_Rent !== lease.Monthly_Rent;
+
+      // 1. Cascade update related deposit transactions
+      let hasSecCharge = false;
+      let hasLmrCharge = false;
+
+      this.data.depositTransactions.forEach(d => {
+        if (d.Lease_ID === lease.Lease_ID || (d.Deposit_Txn_ID && d.Deposit_Txn_ID.includes(lease.Lease_ID))) {
+          d.Lease_ID = lease.Lease_ID;
+          if (tenantChanged) d.Tenant_ID = lease.Tenant_ID;
+          if (propertyChanged) d.Property_ID = lease.Property_ID;
+          if (unitChanged) d.Unit_ID = lease.Unit_ID;
+
+          // If Security Deposit charge
+          if (d.Deposit_Type === 'Security Deposit' && (d.Txn_Type === 'Charge' || d.Status === 'Receivable' || d.Status === 'Partial' || !d.Paid_Amount)) {
+            hasSecCharge = true;
+            d.Due_Amount = targetSec;
+            d.Balance = Math.max(0, Math.round((targetSec - (d.Paid_Amount || 0)) * 100) / 100);
+            d.Status = d.Balance <= 0 ? 'Received' : ((d.Paid_Amount || 0) > 0 ? 'Partial' : 'Receivable');
+            if ((d.Paid_Amount || 0) === 0 && startDateChanged) {
+              d.Txn_Date = lease.Lease_Start;
+            }
+          }
+
+          // If LMR charge
+          if (d.Deposit_Type === 'Last Month Rent' && (d.Txn_Type === 'Charge' || d.Status === 'Receivable' || d.Status === 'Partial' || !d.Paid_Amount)) {
+            hasLmrCharge = true;
+            d.Due_Amount = targetLMR;
+            d.Balance = Math.max(0, Math.round((targetLMR - (d.Paid_Amount || 0)) * 100) / 100);
+            d.Status = d.Balance <= 0 ? 'Received' : ((d.Paid_Amount || 0) > 0 ? 'Partial' : 'Receivable');
+            if ((d.Paid_Amount || 0) === 0 && startDateChanged) {
+              d.Txn_Date = lease.Lease_Start;
+            }
+          }
+        }
+      });
+
+      // If Security Deposit requirement was removed and charge is completely unpaid, purge it
+      if (targetSec === 0) {
+        this.data.depositTransactions = this.data.depositTransactions.filter(
+          d => !((d.Lease_ID === lease.Lease_ID || d.Deposit_Txn_ID === `DEP-SEC-${lease.Lease_ID}`) &&
+                 d.Deposit_Type === 'Security Deposit' &&
+                 (d.Paid_Amount || 0) === 0)
+        );
+      } else if (!hasSecCharge && (lease.Status === 'Active' || (lease.Status as string) === 'active')) {
+        // Charge was missing but now required: create it
+        this.data.depositTransactions.unshift({
+          Deposit_Txn_ID: `DEP-SEC-${lease.Lease_ID}`,
+          Lease_ID: lease.Lease_ID,
+          Tenant_ID: lease.Tenant_ID,
+          Property_ID: lease.Property_ID,
+          Unit_ID: lease.Unit_ID,
+          Deposit_Type: 'Security Deposit',
+          Txn_Type: 'Charge',
+          Due_Amount: targetSec,
+          Paid_Amount: 0,
+          Refund_Amount: 0,
+          Balance: targetSec,
+          Txn_Date: lease.Lease_Start,
+          Status: 'Receivable',
+          Journal_Ref_ID: `JRN-LEASE-INIT-${lease.Lease_ID}`,
+          Reference: 'Security / Key Deposit Initial Charge',
+          Notes: `Initial key/security deposit charge for lease ${lease.Lease_ID}`,
+          Created_By: userEmail
+        });
+      }
+
+      // If LMR requirement was removed and charge is completely unpaid, purge it
+      if (targetLMR === 0) {
+        this.data.depositTransactions = this.data.depositTransactions.filter(
+          d => !((d.Lease_ID === lease.Lease_ID || d.Deposit_Txn_ID === `DEP-LMR-${lease.Lease_ID}`) &&
+                 d.Deposit_Type === 'Last Month Rent' &&
+                 (d.Paid_Amount || 0) === 0)
+        );
+      } else if (!hasLmrCharge && (lease.Status === 'Active' || (lease.Status as string) === 'active')) {
+        // Charge was missing but now required: create it
+        this.data.depositTransactions.unshift({
+          Deposit_Txn_ID: `DEP-LMR-${lease.Lease_ID}`,
+          Lease_ID: lease.Lease_ID,
+          Tenant_ID: lease.Tenant_ID,
+          Property_ID: lease.Property_ID,
+          Unit_ID: lease.Unit_ID,
+          Deposit_Type: 'Last Month Rent',
+          Txn_Type: 'Charge',
+          Due_Amount: targetLMR,
+          Paid_Amount: 0,
+          Refund_Amount: 0,
+          Balance: targetLMR,
+          Txn_Date: lease.Lease_Start,
+          Status: 'Receivable',
+          Journal_Ref_ID: `JRN-LEASE-INIT-${lease.Lease_ID}`,
+          Reference: 'Last Month Rent (LMR) Initial Charge',
+          Notes: `Initial last month rent charge for lease ${lease.Lease_ID}`,
+          Created_By: userEmail
+        });
+      }
+
+      // Recalculate lease.Deposit_Received from held payments
+      const totalSecReceived = this.data.depositTransactions
+        .filter(d => (d.Lease_ID === lease.Lease_ID || (d.Deposit_Txn_ID && d.Deposit_Txn_ID.includes(lease.Lease_ID))) &&
+                     d.Deposit_Type === 'Security Deposit' &&
+                     (d.Txn_Type === 'Payment' || d.Status === 'Received' || (d.Paid_Amount || 0) > 0))
+        .reduce((sum, d) => sum + (d.Paid_Amount || 0), 0);
+      lease.Deposit_Received = totalSecReceived;
+
+      // 2. Cascade update related rent transactions & arrears
+      const matchingRentTxns = this.data.rentTransactions.filter(
+        r => r.Lease_ID === lease.Lease_ID || (r.Rent_Txn_ID && r.Rent_Txn_ID.includes(lease.Lease_ID))
+      );
+
+      if (matchingRentTxns.length === 0 && (lease.Status === 'Active' || (lease.Status as string) === 'active')) {
+        // Rent transaction missing: create initial rent billing
+        const firstMonthStr = (lease.Lease_Start || new Date().toISOString().slice(0, 10)).slice(0, 7);
+        const rentTxnId = `RENT-${firstMonthStr.replace('-', '')}-${lease.Lease_ID}`;
+        this.data.rentTransactions.unshift({
+          Rent_Txn_ID: rentTxnId,
+          Lease_ID: lease.Lease_ID,
+          Tenant_ID: lease.Tenant_ID,
+          Property_ID: lease.Property_ID,
+          Unit_ID: lease.Unit_ID,
+          Period_Month: firstMonthStr,
+          Due_Date: lease.Lease_Start,
+          Amount_Billed: monthlyRent,
+          Amount_Paid: 0,
+          Balance: monthlyRent,
+          Status: 'Unpaid',
+          Journal_Ref_ID: `JRN-LEASE-INIT-${lease.Lease_ID}`,
+          Created_By: userEmail,
+          Created_At: new Date().toISOString()
+        });
+      } else {
+        matchingRentTxns.forEach(r => {
+          if (tenantChanged) r.Tenant_ID = lease.Tenant_ID;
+          if (propertyChanged) r.Property_ID = lease.Property_ID;
+          if (unitChanged) r.Unit_ID = lease.Unit_ID;
+
+          if (rentChanged) {
+            // Update rent billing amount and recalculate balance (arrears) taking any discount into account
+            const netMonthly = Math.max(0, monthlyRent - (r.Discount_Amount || 0));
+            if (r.Status === 'Unpaid' || (r.Amount_Paid || 0) === 0) {
+              r.Amount_Billed = monthlyRent;
+              r.Balance = netMonthly;
+              r.Status = r.Balance <= 0 ? 'Paid' : 'Unpaid';
+            } else if (r.Status === 'Partial' || (r.Amount_Paid || 0) < netMonthly) {
+              r.Amount_Billed = monthlyRent;
+              r.Balance = Math.max(0, Math.round((netMonthly - (r.Amount_Paid || 0)) * 100) / 100);
+              r.Status = r.Balance <= 0 ? 'Paid' : 'Partial';
+            } else if (r.Status === 'Paid' && netMonthly > (r.Amount_Paid || 0)) {
+              // Upward rent revision generates arrears for the delta
+              r.Amount_Billed = monthlyRent;
+              r.Balance = Math.max(0, Math.round((netMonthly - (r.Amount_Paid || 0)) * 100) / 100);
+              r.Status = 'Partial';
+            }
+          }
+
+          if (startDateChanged && (r.Amount_Paid || 0) === 0) {
+            const oldStartMonth = (oldLease.Lease_Start || '').slice(0, 7);
+            if (r.Due_Date === oldLease.Lease_Start || r.Period_Month === oldStartMonth || r.Rent_Txn_ID.includes(oldStartMonth.replace('-', ''))) {
+              r.Period_Month = (lease.Lease_Start || '').slice(0, 7);
+              r.Due_Date = lease.Lease_Start;
+            }
+          }
+        });
+      }
+
+      // 3. Cascade update related collections records
+      if (this.data.collections && Array.isArray(this.data.collections)) {
+        this.data.collections.forEach(c => {
+          const matchRent = matchingRentTxns.some(r => r.Rent_Txn_ID === c.Rent_Txn_ID);
+          const matchTenant = c.Tenant_ID === oldLease.Tenant_ID;
+          if (matchRent || matchTenant) {
+            if (tenantChanged) c.Tenant_ID = lease.Tenant_ID;
+            if (propertyChanged) c.Property_ID = lease.Property_ID;
+            if (unitChanged) c.Unit_ID = lease.Unit_ID;
+          }
+        });
+      }
+
+      // 4. Cascade update related utility splits
+      this.data.utilitySplits.forEach(u => {
+        if (u.Lease_ID === lease.Lease_ID) {
+          if (tenantChanged) u.Tenant_ID = lease.Tenant_ID;
+          if (unitChanged) u.Unit_ID = lease.Unit_ID;
+        }
+      });
+
+      // 5. Cascade update initial inception journal entry (GL 1100, 4000, 1120, 2200, 1125, 2210)
+      const jHeader = this.data.journalHeaders.find(
+        j => j.Journal_ID === `JRN-LEASE-INIT-${lease.Lease_ID}` || j.Reference_ID === lease.Lease_ID
+      );
+      if (jHeader) {
+        jHeader.Date = lease.Lease_Start;
+        jHeader.Description = `Lease Inception — ${lease.Lease_ID} (${lease.Unit_ID}${lease.Space_Name ? ` - ${lease.Space_Name}` : lease.Is_Full_Room ? ' - Full Room' : ''})`;
+        this.data.journalLines.forEach(l => {
+          if (l.Journal_ID === jHeader.Journal_ID) {
+            l.Tenant_ID = lease.Tenant_ID;
+            l.Property_ID = lease.Property_ID;
+            l.Unit_ID = lease.Unit_ID;
+            if (l.Account_Code === '1100') l.Debit_Amount = monthlyRent;
+            if (l.Account_Code === '4000') l.Credit_Amount = monthlyRent;
+            if (l.Account_Code === '1120') l.Debit_Amount = targetSec;
+            if (l.Account_Code === '2200') l.Credit_Amount = targetSec;
+            if (l.Account_Code === '1125') l.Debit_Amount = targetLMR;
+            if (l.Account_Code === '2210') l.Credit_Amount = targetLMR;
+          }
+        });
+      }
+
+      // 6. Update tenant status and property links
+      const tIdx = this.data.tenants.findIndex(t => t.Tenant_ID === lease.Tenant_ID);
+      if (tIdx >= 0) {
+        this.data.tenants[tIdx].Status = 'Active';
+        this.data.tenants[tIdx].Current_Property_ID = lease.Property_ID;
+        this.data.tenants[tIdx].Current_Unit_ID = lease.Unit_ID;
+      }
+
+      // 7. Full synchronization of accounting reconciliation and unit statuses
+      this.reconcileLeasesWithAccounting(this.data, userEmail);
+      this.syncAllUnitStatuses();
       this.logAudit(userEmail, 'UPDATE', 'Leases', lease.Lease_ID, lease);
+      this.save();
+    }
+  }
+
+  public addIndividualExpenseCharge(leaseId: string, charge: IndividualExpenseCharge, userEmail: string = 'admin@dreamdwell.com') {
+    const lease = this.data.leases.find(l => l.Lease_ID === leaseId);
+    if (lease) {
+      if (!lease.Individual_Expenses) lease.Individual_Expenses = [];
+      lease.Individual_Expenses.unshift(charge);
+      this.logAudit(userEmail, 'CREATE', 'IndividualExpenses', charge.Charge_ID, charge);
+      this.save();
+    }
+  }
+
+  public updateIndividualExpenseCharge(leaseId: string, charge: IndividualExpenseCharge, userEmail: string = 'admin@dreamdwell.com') {
+    const lease = this.data.leases.find(l => l.Lease_ID === leaseId);
+    if (lease && lease.Individual_Expenses) {
+      const idx = lease.Individual_Expenses.findIndex(c => c.Charge_ID === charge.Charge_ID);
+      if (idx >= 0) {
+        lease.Individual_Expenses[idx] = charge;
+        this.logAudit(userEmail, 'UPDATE', 'IndividualExpenses', charge.Charge_ID, charge);
+        this.save();
+      }
+    }
+  }
+
+  public recordIndividualExpensePayment(
+    leaseId: string,
+    chargeId: string,
+    paidAmount: number,
+    paymentMethod: string,
+    reference?: string,
+    userEmail: string = 'admin@dreamdwell.com'
+  ) {
+    const lease = this.data.leases.find(l => l.Lease_ID === leaseId);
+    if (!lease || !lease.Individual_Expenses) return;
+    const charge = lease.Individual_Expenses.find(c => c.Charge_ID === chargeId);
+    if (!charge) return;
+
+    const newPaid = Math.round(((charge.Amount_Paid || 0) + paidAmount) * 100) / 100;
+    const newBalance = Math.max(0, Math.round((charge.Amount - newPaid) * 100) / 100);
+
+    charge.Amount_Paid = newPaid;
+    charge.Balance = newBalance;
+    charge.Status = newBalance <= 0 ? 'Paid' : 'Partial';
+    charge.Payment_Date = new Date().toISOString().slice(0, 10);
+    charge.Payment_Method = paymentMethod;
+    if (reference) charge.Reference = reference;
+
+    this.logAudit(userEmail, 'UPDATE', 'IndividualExpenses', chargeId, {
+      action: 'PAYMENT',
+      paidAmount,
+      balance: newBalance,
+      status: charge.Status
+    });
+    this.save();
+  }
+
+  public deleteIndividualExpenseCharge(leaseId: string, chargeId: string, userEmail: string = 'admin@dreamdwell.com') {
+    const lease = this.data.leases.find(l => l.Lease_ID === leaseId);
+    if (lease && lease.Individual_Expenses) {
+      lease.Individual_Expenses = lease.Individual_Expenses.filter(c => c.Charge_ID !== chargeId);
+      this.logAudit(userEmail, 'DELETE', 'IndividualExpenses', chargeId);
+      this.save();
     }
   }
 
   public deleteLease(leaseId: string, userEmail: string) {
+    const targetLease = this.data.leases.find(l => l.Lease_ID === leaseId);
     this.data.leases = this.data.leases.filter(l => l.Lease_ID !== leaseId);
+    
+    // 1. Cascade remove associated rent transactions
+    this.data.rentTransactions = this.data.rentTransactions.filter(r => 
+      r.Lease_ID !== leaseId && !r.Rent_Txn_ID?.includes(leaseId)
+    );
+
+    // 2. Cascade remove associated deposit transactions (handles both Lease_ID and ID embedded like DEP-LEASE-MTN74IDM)
+    this.data.depositTransactions = this.data.depositTransactions.filter(d => 
+      d.Lease_ID !== leaseId && 
+      !d.Deposit_Txn_ID.includes(leaseId) &&
+      !(d.Reference && d.Reference.includes(leaseId))
+    );
+
+    // 3. Cascade remove associated utility splits
+    this.data.utilitySplits = this.data.utilitySplits.filter(u => u.Lease_ID !== leaseId);
+
+    // 4. Cascade remove associated move-in / move-out records
+    this.data.moveIns = this.data.moveIns.filter(m => m.Lease_ID !== leaseId);
+    this.data.moveOuts = this.data.moveOuts.filter(m => m.Lease_ID !== leaseId);
+
+    if (targetLease) {
+      // 5. Free assigned spaces in the unit
+      const unit = this.data.units.find(u => u.Unit_ID === targetLease.Unit_ID);
+      if (unit && unit.Spaces && Array.isArray(unit.Spaces)) {
+        unit.Spaces.forEach(sp => {
+          if (sp.Tenant_ID === targetLease.Tenant_ID || (targetLease.Space_ID && sp.Space_ID === targetLease.Space_ID)) {
+            sp.Current_Status = 'Vacant';
+            sp.Tenant_ID = undefined;
+            sp.Tenant_Name = undefined;
+          }
+        });
+      }
+
+      // 6. Check if tenant has other active leases
+      const allOccupantTenantIds = [targetLease.Tenant_ID];
+      if (targetLease.Occupants) {
+        targetLease.Occupants.forEach(o => {
+          if (o.Occupant_ID && !allOccupantTenantIds.includes(o.Occupant_ID)) {
+            allOccupantTenantIds.push(o.Occupant_ID);
+          }
+        });
+      }
+
+      allOccupantTenantIds.forEach(tid => {
+        const remainingLeases = this.data.leases.filter(
+          l => (l.Tenant_ID === tid || l.Occupants?.some(o => o.Occupant_ID === tid)) && (l.Status === 'Active' || (l.Status as string) === 'active')
+        );
+        if (remainingLeases.length === 0) {
+          const tIdx = this.data.tenants.findIndex(t => t.Tenant_ID === tid);
+          if (tIdx >= 0) {
+            this.data.tenants[tIdx].Current_Property_ID = undefined;
+            this.data.tenants[tIdx].Current_Unit_ID = undefined;
+            this.data.tenants[tIdx].Current_Space_Name = undefined;
+            this.data.tenants[tIdx].Status = 'Inactive';
+          }
+        }
+      });
+    }
+
+    // 7. Re-sync all unit occupancy statuses
+    this.syncAllUnitStatuses();
+
+    // 8. Scrub any lingering orphaned records
+    this.cleanOrphanRecords(userEmail);
+
     this.logAudit(userEmail, 'DELETE', 'Leases', leaseId);
+    this.save();
   }
 
   public addLandlordPayment(payment: LandlordPayment, userEmail: string) {
@@ -1757,8 +3335,17 @@ class StorageService {
   }
 
   public addRentTransaction(txn: RentTransaction, userEmail: string) {
-    this.data.rentTransactions.unshift(txn);
-    this.logAudit(userEmail, 'CREATE', 'Rent', txn.Rent_Txn_ID, txn);
+    const existingIdx = this.data.rentTransactions.findIndex(
+      r => r.Rent_Txn_ID === txn.Rent_Txn_ID || (r.Lease_ID === txn.Lease_ID && r.Period_Month === txn.Period_Month)
+    );
+    if (existingIdx >= 0) {
+      this.data.rentTransactions[existingIdx] = txn;
+      this.logAudit(userEmail, 'UPDATE', 'Rent', txn.Rent_Txn_ID, txn);
+    } else {
+      this.data.rentTransactions.unshift(txn);
+      this.logAudit(userEmail, 'CREATE', 'Rent', txn.Rent_Txn_ID, txn);
+    }
+    this.save();
   }
 
   public updateRentTransaction(txn: RentTransaction, userEmail: string) {
@@ -1766,17 +3353,53 @@ class StorageService {
     if (idx >= 0) {
       this.data.rentTransactions[idx] = txn;
       this.logAudit(userEmail, 'UPDATE', 'Rent', txn.Rent_Txn_ID, txn);
+      this.save();
     }
   }
 
   public deleteRentTransaction(txnId: string, userEmail: string) {
     this.data.rentTransactions = this.data.rentTransactions.filter(r => r.Rent_Txn_ID !== txnId);
     this.logAudit(userEmail, 'DELETE', 'Rent', txnId);
+    this.save();
+  }
+
+  public syncLeaseDepositReceived(leaseId: string) {
+    const lease = this.data.leases.find(l => l.Lease_ID === leaseId);
+    if (!lease) return;
+    const totalSecReceived = this.data.depositTransactions
+      .filter(d => (d.Lease_ID === leaseId || (d.Deposit_Txn_ID && d.Deposit_Txn_ID.includes(leaseId))) &&
+                   d.Deposit_Type === 'Security Deposit' &&
+                   (d.Txn_Type === 'Payment' || d.Status === 'Received' || (d.Paid_Amount || 0) > 0))
+      .reduce((sum, d) => sum + (d.Paid_Amount || 0), 0);
+    lease.Deposit_Received = totalSecReceived;
   }
 
   public addDepositTransaction(txn: DepositTransaction, userEmail: string) {
-    this.data.depositTransactions.unshift(txn);
-    this.logAudit(userEmail, 'CREATE', 'Deposits', txn.Deposit_Txn_ID, txn);
+    const existingIdx = this.data.depositTransactions.findIndex(d => d.Deposit_Txn_ID === txn.Deposit_Txn_ID);
+    if (existingIdx >= 0) {
+      this.data.depositTransactions[existingIdx] = txn;
+      this.logAudit(userEmail, 'UPDATE', 'Deposits', txn.Deposit_Txn_ID, txn);
+    } else {
+      // Idempotency: if a Charge for this exact lease and Deposit_Type already exists, update rather than duplicate
+      if (txn.Txn_Type === 'Charge' && txn.Lease_ID) {
+        const dupChargeIdx = this.data.depositTransactions.findIndex(
+          d => d.Lease_ID === txn.Lease_ID && d.Deposit_Type === txn.Deposit_Type && d.Txn_Type === 'Charge'
+        );
+        if (dupChargeIdx >= 0) {
+          this.data.depositTransactions[dupChargeIdx] = txn;
+          this.logAudit(userEmail, 'UPDATE', 'Deposits', txn.Deposit_Txn_ID, txn);
+          this.syncLeaseDepositReceived(txn.Lease_ID);
+          this.save();
+          return;
+        }
+      }
+      this.data.depositTransactions.unshift(txn);
+      this.logAudit(userEmail, 'CREATE', 'Deposits', txn.Deposit_Txn_ID, txn);
+    }
+    if (txn.Lease_ID) {
+      this.syncLeaseDepositReceived(txn.Lease_ID);
+    }
+    this.save();
   }
 
   public updateDepositTransaction(txn: DepositTransaction, userEmail: string) {
@@ -1784,12 +3407,22 @@ class StorageService {
     if (idx >= 0) {
       this.data.depositTransactions[idx] = txn;
       this.logAudit(userEmail, 'UPDATE', 'Deposits', txn.Deposit_Txn_ID, txn);
+      if (txn.Lease_ID) {
+        this.syncLeaseDepositReceived(txn.Lease_ID);
+      }
+      this.save();
     }
   }
 
   public deleteDepositTransaction(txnId: string, userEmail: string) {
+    const txn = this.data.depositTransactions.find(d => d.Deposit_Txn_ID === txnId);
+    const leaseId = txn?.Lease_ID;
     this.data.depositTransactions = this.data.depositTransactions.filter(d => d.Deposit_Txn_ID !== txnId);
     this.logAudit(userEmail, 'DELETE', 'Deposits', txnId);
+    if (leaseId) {
+      this.syncLeaseDepositReceived(leaseId);
+    }
+    this.save();
   }
 
   public addUtilityBill(bill: UtilityBill, userEmail: string) {
@@ -1856,6 +3489,13 @@ class StorageService {
     if (!this.data.utilityCatalog) this.data.utilityCatalog = [];
     this.data.utilityCatalog = this.data.utilityCatalog.filter(u => u.Utility_ID !== utilityId);
     this.logAudit(userEmail, 'DELETE', 'UtilityCatalog', utilityId);
+  }
+
+  public ensureCoreCanadianUtilities(userEmail: string) {
+    this.migrateUtilityCatalog(this.data);
+    this.saveDirect(this.data);
+    this.logAudit(userEmail, 'UPDATE', 'UtilityCatalog', 'ENSURE_CORE_CANADIAN_UTILITIES');
+    this.listeners.forEach(fn => fn());
   }
 
   public addCollection(collection: CollectionRecord, userEmail: string) {

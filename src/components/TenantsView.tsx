@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   Users, Plus, ShieldCheck, FileText, CheckCircle2,
   AlertCircle, ExternalLink, Calendar, Phone, Mail,
-  CreditCard, Search, ArrowUpRight, Edit3, Trash2, X
+  CreditCard, Search, ArrowUpRight, Edit3, Trash2, X, Split
 } from 'lucide-react';
 import { storage } from '../services/storage';
 import { Tenant, TenantIDProof, TenantIdType, User } from '../types/erp';
@@ -18,6 +18,7 @@ export const TenantsView: React.FC<TenantsViewProps> = ({ currentUser, onToast }
   const properties = storage.getProperties();
   const units = storage.getUnits();
   const idProofs = storage.getTenantIDProofs();
+  const leases = storage.getLeases();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTenant, setSelectedTenant] = useState<Tenant | null>(tenants[0] || null);
@@ -229,6 +230,8 @@ export const TenantsView: React.FC<TenantsViewProps> = ({ currentUser, onToast }
               filteredTenants.map(tenant => {
                 const isSelected = selectedTenant?.Tenant_ID === tenant.Tenant_ID;
                 const tenantProofs = idProofs.filter(p => p.Tenant_ID === tenant.Tenant_ID);
+                const isCoOccupant = leases.some(l => l.Occupants?.some(o => !o.Is_Primary && o.Occupant_ID === tenant.Tenant_ID));
+                const isLeadJoint = leases.some(l => (l.Occupants && l.Occupants.length > 1) && l.Occupants?.some(o => o.Is_Primary && o.Occupant_ID === tenant.Tenant_ID));
 
                 return (
                   <div
@@ -246,6 +249,18 @@ export const TenantsView: React.FC<TenantsViewProps> = ({ currentUser, onToast }
                         }`}>
                           {tenant.Status}
                         </span>
+                        {isCoOccupant && (
+                          <span className="flex items-center gap-1 text-[10px] font-bold text-purple-700 bg-purple-100 px-1.5 py-0.5 rounded-md">
+                            <Users className="w-3 h-3 text-purple-600" />
+                            Co-Occupant
+                          </span>
+                        )}
+                        {isLeadJoint && (
+                          <span className="flex items-center gap-1 text-[10px] font-bold text-indigo-700 bg-indigo-100 px-1.5 py-0.5 rounded-md">
+                            <Users className="w-3 h-3 text-indigo-600" />
+                            Lead Roommate
+                          </span>
+                        )}
                         {tenantProofs.length > 0 && (
                           <span className="flex items-center gap-1 text-[10px] font-bold text-indigo-700 bg-indigo-100/80 px-1.5 py-0.5 rounded-md">
                             <ShieldCheck className="w-3 h-3 text-indigo-600" />
@@ -264,9 +279,16 @@ export const TenantsView: React.FC<TenantsViewProps> = ({ currentUser, onToast }
                       </div>
 
                       {tenant.Current_Unit_ID && (
-                        <p className="text-[11px] text-indigo-900 font-medium pt-0.5">
-                          Suite: <span className="font-bold">{unitName(tenant.Current_Unit_ID)}</span> · {propertyName(tenant.Current_Property_ID)}
-                        </p>
+                        <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-indigo-900 font-medium pt-0.5">
+                          <span>Suite: <strong className="font-bold">{unitName(tenant.Current_Unit_ID)}</strong></span>
+                          {tenant.Current_Space_Name && (
+                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">
+                              <Split className="w-2.5 h-2.5" /> Space: {tenant.Current_Space_Name}
+                            </span>
+                          )}
+                          <span className="text-slate-400">·</span>
+                          <span className="text-slate-600">{propertyName(tenant.Current_Property_ID)}</span>
+                        </div>
                       )}
                     </div>
 
@@ -334,6 +356,59 @@ export const TenantsView: React.FC<TenantsViewProps> = ({ currentUser, onToast }
                     <p className="text-[11px] text-slate-600 mt-1 italic">"{selectedTenant.Notes}"</p>
                   )}
                 </div>
+
+                {/* Joint Room Occupancy Card */}
+                {(() => {
+                  const jointLease = leases.find(l =>
+                    l.Occupants?.some(o => o.Occupant_ID === selectedTenant.Tenant_ID || o.Full_Name.toLowerCase() === selectedTenant.Full_Name.toLowerCase())
+                  );
+                  if (!jointLease || !jointLease.Occupants || jointLease.Occupants.length <= 1) return null;
+
+                  const thisOcc = jointLease.Occupants.find(
+                    o => o.Occupant_ID === selectedTenant.Tenant_ID || o.Full_Name.toLowerCase() === selectedTenant.Full_Name.toLowerCase()
+                  );
+                  const otherOccs = jointLease.Occupants.filter(o => o !== thisOcc);
+
+                  return (
+                    <div className="p-3.5 bg-purple-50/70 rounded-xl border border-purple-200/80 space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-purple-950 flex items-center gap-1.5">
+                          <Users className="w-3.5 h-3.5 text-purple-700" />
+                          Joint Room Co-Occupancy
+                        </span>
+                        <span className="text-[10px] font-bold text-purple-800 bg-purple-200/60 px-2 py-0.5 rounded-full">
+                          {thisOcc?.Is_Primary ? 'Primary Leaseholder' : 'Room Co-Occupant'}
+                        </span>
+                      </div>
+
+                      <div className="text-[11px] text-purple-900 space-y-1">
+                        <div className="flex justify-between">
+                          <span className="text-purple-600">Room:</span>
+                          <span className="font-semibold">{jointLease.Bedroom_Name || jointLease.Space_Name}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-purple-600">Utility Cost Share:</span>
+                          <span className="font-bold text-purple-900">{thisOcc?.Utility_Share_Percentage || 0}%</span>
+                        </div>
+                        {otherOccs.length > 0 && (
+                          <div className="pt-1.5 border-t border-purple-200/60">
+                            <span className="text-[10px] text-purple-600 block mb-1 font-semibold">Roommates in this Room:</span>
+                            <div className="space-y-1">
+                              {otherOccs.map(ro => (
+                                <div key={ro.Occupant_ID} className="flex items-center justify-between text-[11px] bg-white/80 p-1.5 rounded border border-purple-100">
+                                  <span className="font-semibold text-slate-800">{ro.Full_Name}</span>
+                                  <span className="text-[10px] text-purple-700 font-bold">
+                                    {ro.Is_Primary ? 'Lead' : 'Co-Occupant'} · {ro.Utility_Share_Percentage}%
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {currentTenantProofs.length === 0 ? (
                   <div className="p-6 text-center bg-slate-50/70 rounded-xl border border-dashed border-slate-200">

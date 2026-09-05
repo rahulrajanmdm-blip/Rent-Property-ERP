@@ -1,0 +1,1980 @@
+{
+  "users": [
+    {
+      "Created_At": "2025-01-01",
+      "Assigned_Tabs": [
+        "Dashboard",
+        "CollectionsBoard",
+        "Properties",
+        "Units",
+        "Landlords",
+        "LandlordPayments",
+        "Tenants",
+        "Bookings",
+        "Leases",
+        "MoveIn",
+        "MoveOut",
+        "Rent",
+        "Deposits",
+        "Utilities",
+        "Collections",
+        "ExcessPayments",
+        "Refunds",
+        "Accounting",
+        "Reports",
+        "Administration",
+        "AppsScriptHub"
+      ],
+      "Role": "Admin",
+      "TwoFactorMethod": "EMAIL_OTP",
+      "User_ID": "USR-MASTER-ADMIN",
+      "Phone": "(416) 555-0100",
+      "Is_Active": true,
+      "Full_Name": "Rahul Rajan (Master Admin)",
+      "Last_Login": "2026-09-05T15:48:44.130Z",
+      "Email": "rahulrajanmdm@gmail.com",
+      "TwoFactorEnabled": true,
+      "Password": "admin",
+      "EmergencyBackupCode": "8492-3105"
+    },
+    {
+      "TwoFactorEnabled": true,
+      "Password": "1234",
+      "EmergencyBackupCode": "8492-3105",
+      "Assigned_Tabs": [
+        "Dashboard",
+        "CollectionsBoard",
+        "Properties",
+        "Units",
+        "Tenants",
+        "Leases",
+        "MoveIn",
+        "MoveOut",
+        "Landlords",
+        "LandlordPayments",
+        "Bookings",
+        "Rent",
+        "Deposits",
+        "Utilities",
+        "Reports",
+        "Collections",
+        "Accounting"
+      ],
+      "Created_At": "2026-09-02",
+      "Phone": "",
+      "Role": "Finance",
+      "User_ID": "USR-002",
+      "TwoFactorMethod": "EMAIL_OTP",
+      "Is_Active": true,
+      "Full_Name": "Farha",
+      "Email": "Finances.dreamdwell@gmail.com"
+    }
+  ],
+  "utilityBills": [],
+  "journalHeaders": [],
+  "moveOuts": [],
+  "journalLines": [],
+  "tenants": [
+    {
+      "Created_At": "2026-09-05",
+      "Tenant_ID": "TEN-MTOT51VA",
+      "Notes": "",
+      "Status": "Active",
+      "Email": "RAMEEZ@GMAILCOM",
+      "Emergency_Contact": "",
+      "Phone": "12345678",
+      "Full_Name": "RAMEEZ"
+    },
+    {
+      "Status": "Active",
+      "Email": "JIENDRA@GMAIL.COM",
+      "Notes": "",
+      "Created_At": "2026-09-05",
+      "Emergency_Contact": "",
+      "Full_Name": "JITENDRA",
+      "Tenant_ID": "TEN-MTOT4PTA",
+      "Phone": "12345678"
+    },
+    {
+      "Emergency_Contact": "",
+      "Status": "Active",
+      "Created_At": "2026-09-05",
+      "Email": "LIPSONB@GMAIL.COM",
+      "Tenant_ID": "TEN-MTOT447Q",
+      "Notes": "",
+      "Phone": "12345678",
+      "Full_Name": "LIPSON"
+    },
+    {
+      "Emergency_Contact": "",
+      "Email": "NAVDEEP@GMAIL.COM",
+      "Created_At": "2026-09-05",
+      "Notes": "",
+      "Tenant_ID": "TEN-MTOT3A65",
+      "Status": "Active",
+      "Full_Name": "NAVDEEP",
+      "Phone": "12345678"
+    },
+    {
+      "Phone": "12345678",
+      "Full_Name": "BALDEV",
+      "Emergency_Contact": "",
+      "Notes": "",
+      "Tenant_ID": "TEN-MTOT2V34",
+      "Created_At": "2026-09-05",
+      "Email": "BALDEV@GMAIL.COM",
+      "Status": "Active"
+    },
+    {
+      "Full_Name": "SHEBA",
+      "Created_At": "2026-09-05",
+      "Phone": "12345678",
+      "Email": "shebakabraham@gmail.com",
+      "Emergency_Contact": "",
+      "Tenant_ID": "TEN-MTOT2DNI",
+      "Status": "Active",
+      "Notes": ""
+    },
+    {
+      "Email": "namikasharma21@gmail.com",
+      "Emergency_Contact": "",
+      "Notes": "",
+      "Full_Name": "NIMMU",
+      "Status": "Active",
+      "Created_At": "2026-09-05",
+      "Tenant_ID": "TEN-MTOT1U2Q",
+      "Phone": "12345678"
+    },
+    {
+      "Full_Name": "NAMIKA",
+      "Email": "namikasharma21@gmail.com",
+      "Notes": "",
+      "Created_At": "2026-09-05",
+      "Status": "Active",
+      "Phone": "12345678",
+      "Emergency_Contact": "",
+      "Tenant_ID": "TEN-MTOT12NR"
+    },
+    {
+      "Email": "lavishsharma2025@gmail.com",
+      "Emergency_Contact": "",
+      "Created_At": "2026-09-05",
+      "Full_Name": "LAVISH",
+      "Notes": "",
+      "Status": "Active",
+      "Tenant_ID": "TEN-MTOSZY6E",
+      "Phone": "12345678"
+    }
+  ],
+  "utilitySplits": [],
+  "tenantIDProofs": [],
+  "accountingPeriods": [
+    {
+      "End_Date": "2025-12-31",
+      "Period_ID": "PER-2025",
+      "Period_Name": "Fiscal Year 2025",
+      "Status": "OPEN",
+      "Start_Date": "2025-01-01"
+    },
+    {
+      "End_Date": "2024-12-31",
+      "Closed_At": "2025-01-15T18:00:00Z",
+      "Period_ID": "PER-2024",
+      "Closed_By": "priya.kapoor@dreamdwell.com",
+      "Start_Date": "2024-01-01",
+      "Period_Name": "Fiscal Year 2024",
+      "Status": "Closed"
+    }
+  ],
+  "auditLogs": [
+    {
+      "Audit_ID": "AUD-1788638727044-735",
+      "Timestamp": "2026-09-05T20:05:27.044Z",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Action": "DELETE",
+      "Module": "Leases",
+      "Record_ID": "LEASE-007",
+      "IP_or_Source": "Web ERP Client"
+    },
+    {
+      "Audit_ID": "AUD-1788638721151-800",
+      "Timestamp": "2026-09-05T20:05:21.151Z",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Action": "DELETE",
+      "Module": "Leases",
+      "Record_ID": "LEASE-006",
+      "After_JSON": null,
+      "IP_or_Source": "Web ERP Client"
+    },
+    {
+      "Audit_ID": "AUD-1788638669203-692",
+      "Timestamp": "2026-09-05T20:04:29.203Z",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Action": "UPDATE",
+      "Module": "Units",
+      "Record_ID": "UNIT-MTOSLN60-B",
+      "After_JSON": "{\"Kitchen_Type\":\"Full Kitchen\",\"Notes\":\"\",\"Has_Den\":false,\"Utilities_Included\":false,\"Bedrooms\":2,\"Utility_Billing_Type\":\"Tenant Metered\",\"Target_Rent\":2400,\"Kitchens\":1,\"Unit_ID\":\"UNIT-MTOSLN60-B\",\"Unit_Number\":\"Basement Suite\",\"Unit_Type\":\"Basement Suite\",\"Property_ID\":\"PROP-MTOSLN5B\",\"Division_Level\":\"Basement\",\"Bathrooms\":1,\"Current_Status\":\"Vacant\",\"Square_Feet\":800,\"Dens_Count\":0,\"Unit_Number_Name\":\"Basement Suite\",\"Floor_Plan\":\"Basement Suite\",\"Allow_Full_Room_Lease\":true,\"Monthly_Rent\":2400}",
+      "IP_or_Source": "Web ERP Client"
+    },
+    {
+      "Audit_ID": "AUD-1788638661240-13",
+      "Timestamp": "2026-09-05T20:04:21.240Z",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Action": "UPDATE",
+      "Module": "Units",
+      "Record_ID": "UNIT-MTOSLN5P-M",
+      "After_JSON": "{\"Current_Status\":\"Vacant\",\"Bathrooms\":3,\"Division_Level\":\"Main Floor\",\"Utility_Billing_Type\":\"Tenant Metered\",\"Kitchen_Type\":\"Full Kitchen\",\"Target_Rent\":3600,\"Utilities_Included\":false,\"Unit_Number\":\"Main Floor\",\"Floor_Plan\":\"Main Floor Suite\",\"Has_Den\":false,\"Unit_Number_Name\":\"Main Floor\",\"Property_ID\":\"PROP-MTOSLN5B\",\"Square_Feet\":1200,\"Kitchens\":2,\"Monthly_Rent\":3600,\"Dens_Count\":0,\"Notes\":\"\",\"Allow_Full_Room_Lease\":true,\"Unit_ID\":\"UNIT-MTOSLN5P-M\",\"Bedrooms\":6,\"Unit_Type\":\"Main Floor Suite\"}",
+      "IP_or_Source": "Web ERP Client"
+    },
+    {
+      "Audit_ID": "AUD-1788638634218-64",
+      "Timestamp": "2026-09-05T20:03:54.218Z",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Action": "UPDATE",
+      "Module": "Units",
+      "Record_ID": "UNIT-MTOSLN60-B",
+      "After_JSON": "{\"Kitchen_Type\":\"Full Kitchen\",\"Notes\":\"\",\"Has_Den\":false,\"Utilities_Included\":false,\"Bedrooms\":2,\"Utility_Billing_Type\":\"Tenant Metered\",\"Target_Rent\":2400,\"Kitchens\":1,\"Unit_ID\":\"UNIT-MTOSLN60-B\",\"Unit_Number\":\"Basement Suite\",\"Unit_Type\":\"Basement Suite\",\"Property_ID\":\"PROP-MTOSLN5B\",\"Division_Level\":\"Basement\",\"Bathrooms\":1,\"Current_Status\":\"Vacant\",\"Square_Feet\":800,\"Dens_Count\":0,\"Unit_Number_Name\":\"Basement Suite\",\"Floor_Plan\":\"Basement Suite\",\"Allow_Full_Room_Lease\":true,\"Monthly_Rent\":2400}",
+      "IP_or_Source": "Web ERP Client"
+    },
+    {
+      "Audit_ID": "AUD-1788638630607-913",
+      "Timestamp": "2026-09-05T20:03:50.607Z",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Action": "UPDATE",
+      "Module": "Units",
+      "Record_ID": "UNIT-MTOSLN5P-M",
+      "After_JSON": "{\"Current_Status\":\"Vacant\",\"Bathrooms\":3,\"Division_Level\":\"Main Floor\",\"Utility_Billing_Type\":\"Tenant Metered\",\"Kitchen_Type\":\"Full Kitchen\",\"Target_Rent\":3600,\"Utilities_Included\":false,\"Unit_Number\":\"Main Floor\",\"Floor_Plan\":\"Main Floor Suite\",\"Has_Den\":false,\"Unit_Number_Name\":\"Main Floor\",\"Property_ID\":\"PROP-MTOSLN5B\",\"Square_Feet\":1200,\"Kitchens\":2,\"Monthly_Rent\":3600,\"Dens_Count\":0,\"Notes\":\"\",\"Allow_Full_Room_Lease\":true,\"Unit_ID\":\"UNIT-MTOSLN5P-M\",\"Bedrooms\":6,\"Unit_Type\":\"Main Floor Suite\"}",
+      "IP_or_Source": "Web ERP Client"
+    },
+    {
+      "Audit_ID": "AUD-1788638548279-458",
+      "Timestamp": "2026-09-05T20:02:28.279Z",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Action": "DELETE",
+      "Module": "Leases",
+      "Record_ID": "LEASE-007",
+      "After_JSON": null,
+      "IP_or_Source": "Web ERP Client"
+    },
+    {
+      "Audit_ID": "AUD-1788638545939-472",
+      "Timestamp": "2026-09-05T20:02:25.939Z",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Action": "DELETE",
+      "Module": "Leases",
+      "Record_ID": "LEASE-006",
+      "After_JSON": null,
+      "IP_or_Source": "Web ERP Client"
+    },
+    {
+      "Module": "Tenants",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTOT51VA\",\"Full_Name\":\"RAMEEZ\",\"Email\":\"RAMEEZ@GMAILCOM\",\"Phone\":\"12345678\",\"Emergency_Contact\":\"\",\"Status\":\"Active\",\"Created_At\":\"2026-09-05\",\"Notes\":\"\"}",
+      "User_Email": "Finances.dreamdwell@gmail.com",
+      "Timestamp": "2026-09-05T20:00:30.646Z",
+      "Record_ID": "TEN-MTOT51VA",
+      "Audit_ID": "AUD-1788638430646-76",
+      "Action": "CREATE",
+      "IP_or_Source": "Web ERP Client"
+    },
+    {
+      "Module": "Tenants",
+      "Timestamp": "2026-09-05T20:00:15.023Z",
+      "IP_or_Source": "Web ERP Client",
+      "User_Email": "Finances.dreamdwell@gmail.com",
+      "Audit_ID": "AUD-1788638415023-485",
+      "Record_ID": "TEN-MTOT4PTA",
+      "Action": "CREATE",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTOT4PTA\",\"Full_Name\":\"JITENDRA\",\"Email\":\"JIENDRA@GMAIL.COM\",\"Phone\":\"12345678\",\"Emergency_Contact\":\"\",\"Status\":\"Active\",\"Created_At\":\"2026-09-05\",\"Notes\":\"\"}"
+    },
+    {
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTOT447Q\",\"Full_Name\":\"LIPSON\",\"Email\":\"LIPSONB@GMAIL.COM\",\"Phone\":\"12345678\",\"Emergency_Contact\":\"\",\"Status\":\"Active\",\"Created_At\":\"2026-09-05\",\"Notes\":\"\"}",
+      "Action": "CREATE",
+      "Audit_ID": "AUD-1788638387030-305",
+      "User_Email": "Finances.dreamdwell@gmail.com",
+      "Record_ID": "TEN-MTOT447Q",
+      "Timestamp": "2026-09-05T19:59:47.030Z",
+      "Module": "Tenants",
+      "IP_or_Source": "Web ERP Client"
+    },
+    {
+      "Audit_ID": "AUD-1788638348095-88",
+      "Module": "Tenants",
+      "User_Email": "Finances.dreamdwell@gmail.com",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTOT3A65\",\"Full_Name\":\"NAVDEEP\",\"Email\":\"NAVDEEP@GMAIL.COM\",\"Phone\":\"12345678\",\"Emergency_Contact\":\"\",\"Status\":\"Active\",\"Created_At\":\"2026-09-05\",\"Notes\":\"\"}",
+      "IP_or_Source": "Web ERP Client",
+      "Record_ID": "TEN-MTOT3A65",
+      "Timestamp": "2026-09-05T19:59:08.095Z",
+      "Action": "CREATE"
+    },
+    {
+      "Audit_ID": "AUD-1788638328544-720",
+      "Action": "CREATE",
+      "IP_or_Source": "Web ERP Client",
+      "Record_ID": "TEN-MTOT2V34",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTOT2V34\",\"Full_Name\":\"BALDEV\",\"Email\":\"BALDEV@GMAIL.COM\",\"Phone\":\"12345678\",\"Emergency_Contact\":\"\",\"Status\":\"Active\",\"Created_At\":\"2026-09-05\",\"Notes\":\"\"}",
+      "Timestamp": "2026-09-05T19:58:48.544Z",
+      "Module": "Tenants",
+      "User_Email": "Finances.dreamdwell@gmail.com"
+    },
+    {
+      "Record_ID": "TEN-MTOT2DNI",
+      "IP_or_Source": "Web ERP Client",
+      "Module": "Tenants",
+      "User_Email": "Finances.dreamdwell@gmail.com",
+      "Action": "CREATE",
+      "Audit_ID": "AUD-1788638305951-556",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTOT2DNI\",\"Full_Name\":\"SHEBA\",\"Email\":\"shebakabraham@gmail.com\",\"Phone\":\"12345678\",\"Emergency_Contact\":\"\",\"Status\":\"Active\",\"Created_At\":\"2026-09-05\",\"Notes\":\"\"}",
+      "Timestamp": "2026-09-05T19:58:25.951Z"
+    },
+    {
+      "Record_ID": "TEN-MTOT1U2Q",
+      "Module": "Tenants",
+      "IP_or_Source": "Web ERP Client",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTOT1U2Q\",\"Full_Name\":\"NIMMU\",\"Email\":\"namikasharma21@gmail.com\",\"Phone\":\"12345678\",\"Emergency_Contact\":\"\",\"Status\":\"Active\",\"Created_At\":\"2026-09-05\",\"Notes\":\"\"}",
+      "Timestamp": "2026-09-05T19:58:00.578Z",
+      "User_Email": "Finances.dreamdwell@gmail.com",
+      "Audit_ID": "AUD-1788638280578-409",
+      "Action": "CREATE"
+    },
+    {
+      "User_Email": "Finances.dreamdwell@gmail.com",
+      "Action": "CREATE",
+      "Timestamp": "2026-09-05T19:57:25.047Z",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTOT12NR\",\"Full_Name\":\"NAMIKA\",\"Email\":\"namikasharma21@gmail.com\",\"Phone\":\"12345678\",\"Emergency_Contact\":\"\",\"Status\":\"Active\",\"Created_At\":\"2026-09-05\",\"Notes\":\"\"}",
+      "Record_ID": "TEN-MTOT12NR",
+      "IP_or_Source": "Web ERP Client",
+      "Module": "Tenants",
+      "Audit_ID": "AUD-1788638245047-254"
+    },
+    {
+      "Action": "CREATE",
+      "IP_or_Source": "Web ERP Client",
+      "Audit_ID": "AUD-1788638192582-41",
+      "User_Email": "Finances.dreamdwell@gmail.com",
+      "Timestamp": "2026-09-05T19:56:32.582Z",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTOSZY6E\",\"Full_Name\":\"LAVISH\",\"Email\":\"lavishsharma2025@gmail.com\",\"Phone\":\"12345678\",\"Emergency_Contact\":\"\",\"Status\":\"Active\",\"Created_At\":\"2026-09-05\",\"Notes\":\"\"}",
+      "Record_ID": "TEN-MTOSZY6E",
+      "Module": "Tenants"
+    },
+    {
+      "After_JSON": "{\"Unit_ID\":\"UNIT-MTOSLN60-B\",\"Property_ID\":\"PROP-MTOSLN5B\",\"Unit_Number_Name\":\"Basement Suite\",\"Unit_Type\":\"Basement Suite\",\"Division_Level\":\"Basement\",\"Target_Rent\":2400,\"Current_Status\":\"Occupied\",\"Bedrooms\":2,\"Bathrooms\":1,\"Square_Feet\":800,\"Kitchens\":1,\"Kitchen_Type\":\"Full Kitchen\",\"Has_Den\":false,\"Dens_Count\":0,\"Utilities_Included\":false,\"Utility_Billing_Type\":\"Tenant Metered\",\"Unit_Number\":\"Basement Suite\",\"Floor_Plan\":\"Basement Suite\",\"Monthly_Rent\":2400,\"Notes\":\"\",\"Allow_Full_Room_Lease\":true}",
+      "Audit_ID": "AUD-1788638017168-612",
+      "Timestamp": "2026-09-05T19:53:37.168Z",
+      "IP_or_Source": "Web ERP Client",
+      "Action": "UPDATE",
+      "User_Email": "Finances.dreamdwell@gmail.com",
+      "Module": "Units",
+      "Record_ID": "UNIT-MTOSLN60-B"
+    },
+    {
+      "Action": "UPDATE",
+      "Timestamp": "2026-09-05T19:51:53.651Z",
+      "IP_or_Source": "Web ERP Client",
+      "User_Email": "Finances.dreamdwell@gmail.com",
+      "Record_ID": "UNIT-MTOSLN5P-M",
+      "Audit_ID": "AUD-1788637913651-93",
+      "After_JSON": "{\"Unit_ID\":\"UNIT-MTOSLN5P-M\",\"Property_ID\":\"PROP-MTOSLN5B\",\"Unit_Number_Name\":\"Main Floor\",\"Unit_Type\":\"Main Floor Suite\",\"Division_Level\":\"Main Floor\",\"Target_Rent\":3600,\"Current_Status\":\"Occupied\",\"Bedrooms\":6,\"Bathrooms\":3,\"Square_Feet\":1200,\"Kitchens\":2,\"Kitchen_Type\":\"Full Kitchen\",\"Has_Den\":false,\"Dens_Count\":0,\"Utilities_Included\":false,\"Utility_Billing_Type\":\"Tenant Metered\",\"Unit_Number\":\"Main Floor\",\"Floor_Plan\":\"Main Floor Suite\",\"Monthly_Rent\":3600,\"Notes\":\"\",\"Allow_Full_Room_Lease\":true}",
+      "Module": "Units"
+    },
+    {
+      "Record_ID": "UNIT-MTOSLN60-B",
+      "IP_or_Source": "Web ERP Client",
+      "Action": "CREATE",
+      "Audit_ID": "AUD-1788637525128-487",
+      "After_JSON": "{\"Unit_ID\":\"UNIT-MTOSLN60-B\",\"Property_ID\":\"PROP-MTOSLN5B\",\"Unit_Number_Name\":\"Basement Suite\",\"Unit_Type\":\"Basement Suite\",\"Division_Level\":\"Basement\",\"Target_Rent\":2400,\"Current_Status\":\"Vacant\",\"Bedrooms\":1,\"Bathrooms\":1,\"Square_Feet\":800}",
+      "User_Email": "Finances.dreamdwell@gmail.com",
+      "Module": "Units",
+      "Timestamp": "2026-09-05T19:45:25.128Z"
+    },
+    {
+      "Action": "CREATE",
+      "Audit_ID": "AUD-1788637525117-639",
+      "Record_ID": "UNIT-MTOSLN5P-M",
+      "After_JSON": "{\"Unit_ID\":\"UNIT-MTOSLN5P-M\",\"Property_ID\":\"PROP-MTOSLN5B\",\"Unit_Number_Name\":\"Main Floor\",\"Unit_Type\":\"Main Floor Suite\",\"Division_Level\":\"Main Floor\",\"Target_Rent\":3600,\"Current_Status\":\"Vacant\",\"Bedrooms\":2,\"Bathrooms\":1,\"Square_Feet\":1200}",
+      "Timestamp": "2026-09-05T19:45:25.117Z",
+      "Module": "Units",
+      "User_Email": "Finances.dreamdwell@gmail.com",
+      "IP_or_Source": "Web ERP Client"
+    },
+    {
+      "User_Email": "Finances.dreamdwell@gmail.com",
+      "IP_or_Source": "Web ERP Client",
+      "Timestamp": "2026-09-05T19:45:25.103Z",
+      "Module": "Properties",
+      "After_JSON": "{\"Property_ID\":\"PROP-MTOSLN5B\",\"Property_Name\":\"4597 BISMARK CRE\",\"Address\":\"MISSISSAUGA\",\"City\":\"MISSISSAUGA\",\"Postal_Code\":\"M5V 2T6\",\"Landlord_ID\":\"LAND-001\",\"Master_Rent_Amount\":6000,\"Has_Divisions\":true,\"Division_Structure\":\"Main_And_Basement\",\"Default_Main_Share_Pct\":60,\"Default_Basement_Share_Pct\":40,\"Division_Type\":\"None\",\"Active\":true,\"Parking_Spots\":[{\"Spot_ID\":\"PRK-fntk-1\",\"Spot_Number_Name\":\"Spot 1 - Driveway Left\",\"Spot_Type\":\"Outdoor Surface\",\"Monthly_Fee\":0,\"Status\":\"Available\"},{\"Spot_ID\":\"PRK-fntk-2\",\"Spot_Number_Name\":\"Spot 2 - Driveway Right\",\"Spot_Type\":\"Driveway\",\"Monthly_Fee\":0,\"Status\":\"Available\"}],\"Created_At\":\"2026-09-05\"}",
+      "Record_ID": "PROP-MTOSLN5B",
+      "Audit_ID": "AUD-1788637525103-549",
+      "Action": "CREATE"
+    },
+    {
+      "After_JSON": "{\"Landlord_ID\":\"LAND-001\",\"Full_Name\":\"CHANAN SIDHU\",\"Email\":\"Chanansidhu50@gmail.com\",\"Phone\":\"4162945414\",\"Address\":\"Chanansidhu50@gmail.com\",\"Payment_Method\":\"Interac e-Transfer\",\"Bank_Reference\":\"RBC Royal Bank Transit #00002 Acct #\",\"Status\":\"Active\",\"Notes\":\"\"}",
+      "Module": "Landlords",
+      "User_Email": "Finances.dreamdwell@gmail.com",
+      "Record_ID": "LAND-001",
+      "Audit_ID": "AUD-1788637188263-141",
+      "Action": "CREATE",
+      "Timestamp": "2026-09-05T19:39:48.263Z",
+      "IP_or_Source": "Web ERP Client"
+    },
+    {
+      "Audit_ID": "AUD-1788636922665-695",
+      "Timestamp": "2026-09-05T19:35:22.665Z",
+      "Module": "Authentication",
+      "User_Email": "Finances.dreamdwell@gmail.com",
+      "After_JSON": "{\"method\":\"Password + Email OTP\",\"rememberMe\":false,\"timestamp\":\"2026-09-05T19:35:22.665Z\"}",
+      "IP_or_Source": "Web ERP Client",
+      "Record_ID": "USR-002",
+      "Action": "LOGIN"
+    },
+    {
+      "After_JSON": "{\"timestamp\":\"2026-09-05T19:35:38.974Z\"}",
+      "IP_or_Source": "Web ERP Client",
+      "Audit_ID": "AUD-1788636938974-346",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Record_ID": "SESSION_TERMINATED",
+      "Action": "LOGOUT",
+      "Timestamp": "2026-09-05T19:35:38.974Z",
+      "Module": "Authentication"
+    },
+    {
+      "Audit_ID": "AUD-1788636837450-789",
+      "After_JSON": "{\"method\":\"Password + Email OTP\",\"rememberMe\":true,\"timestamp\":\"2026-09-05T19:33:57.450Z\"}",
+      "Record_ID": "USR-MASTER-ADMIN",
+      "Action": "LOGIN",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "IP_or_Source": "Web ERP Client",
+      "Module": "Authentication",
+      "Timestamp": "2026-09-05T19:33:57.450Z"
+    },
+    {
+      "Audit_ID": "AUD-1788636809874-313",
+      "Timestamp": "2026-09-05T19:33:29.874Z",
+      "IP_or_Source": "Web ERP Client",
+      "Action": "LOGOUT",
+      "After_JSON": "{\"timestamp\":\"2026-09-05T19:33:29.874Z\"}",
+      "Module": "Authentication",
+      "Record_ID": "SESSION_TERMINATED",
+      "User_Email": "rahulrajanmdm@gmail.com"
+    },
+    {
+      "Module": "System",
+      "Audit_ID": "AUD-1788633394437-638",
+      "Record_ID": "PURGE_ALL_DATA",
+      "After_JSON": "{\"message\":\"All operational records purged. Clean production state.\"}",
+      "Timestamp": "2026-09-05T18:36:34.437Z",
+      "Action": "DELETE",
+      "IP_or_Source": "Web ERP Client",
+      "User_Email": "rahulrajanmdm@gmail.com"
+    },
+    {
+      "User_Email": "Finances.dreamdwell@gmail.com",
+      "After_JSON": null,
+      "Module": "UtilityCatalog",
+      "Timestamp": "2026-09-05T16:21:20.471Z",
+      "Record_ID": "ENSURE_CORE_CANADIAN_UTILITIES",
+      "IP_or_Source": "Web ERP Client",
+      "Audit_ID": "AUD-1788625280471-475",
+      "Action": "UPDATE"
+    },
+    {
+      "Module": "UtilityCatalog",
+      "Audit_ID": "AUD-1788625267292-110",
+      "Timestamp": "2026-09-05T16:21:07.292Z",
+      "IP_or_Source": "Web ERP Client",
+      "Record_ID": "UTL-004",
+      "User_Email": "Finances.dreamdwell@gmail.com",
+      "Action": "UPDATE",
+      "After_JSON": "{\"Utility_Name\":\"WiFi / High-Speed Internet\",\"Utility_ID\":\"UTL-004\",\"Is_Active\":true,\"Description\":\"High-speed wireless broadband WiFi and fiber optic internet network\",\"Default_Vendor\":\"Rogers / Bell / Telus / Cogeco\",\"Category\":\"Internet & Telecom\",\"Created_At\":\"2025-01-01\",\"Default_GL_Account\":\"5200\"}"
+    },
+    {
+      "Module": "UtilityCatalog",
+      "Audit_ID": "AUD-1788625253577-497",
+      "Record_ID": "UTL-003",
+      "Action": "UPDATE",
+      "Timestamp": "2026-09-05T16:20:53.577Z",
+      "After_JSON": "{\"Category\":\"Water & Sewage\",\"Default_GL_Account\":\"5010\",\"Description\":\"Quarterly municipal metered water supply, stormwater, and wastewater services\",\"Utility_Name\":\"Water\",\"Created_At\":\"2025-01-01\",\"Is_Active\":true,\"Utility_ID\":\"UTL-003\",\"Default_Vendor\":\"City / Municipal Water Department\"}",
+      "User_Email": "Finances.dreamdwell@gmail.com",
+      "IP_or_Source": "Web ERP Client"
+    },
+    {
+      "Action": "DELETE",
+      "Record_ID": "UTL-005",
+      "User_Email": "Finances.dreamdwell@gmail.com",
+      "IP_or_Source": "Web ERP Client",
+      "Module": "UtilityCatalog",
+      "After_JSON": null,
+      "Audit_ID": "AUD-1788625219231-635",
+      "Timestamp": "2026-09-05T16:20:19.231Z"
+    },
+    {
+      "After_JSON": null,
+      "Module": "UtilityCatalog",
+      "Audit_ID": "AUD-1788625209143-917",
+      "Record_ID": "UTL-006",
+      "User_Email": "Finances.dreamdwell@gmail.com",
+      "IP_or_Source": "Web ERP Client",
+      "Timestamp": "2026-09-05T16:20:09.143Z",
+      "Action": "DELETE"
+    },
+    {
+      "IP_or_Source": "Web ERP Client",
+      "Record_ID": "UTL-ALECTRA",
+      "Action": "UPDATE",
+      "User_Email": "Finances.dreamdwell@gmail.com",
+      "Timestamp": "2026-09-05T16:19:41.740Z",
+      "After_JSON": "{\"Utility_ID\":\"UTL-ALECTRA\",\"Utility_Name\":\"Alectra (Hydro)\",\"Category\":\"Electricity\",\"Default_Vendor\":\"Alectra Utilities Corporation\",\"Default_GL_Account\":\"5010\",\"Description\":\"Alectra electric grid power and residential hydro consumption\",\"Is_Active\":true,\"Created_At\":\"2025-01-01\"}",
+      "Audit_ID": "AUD-1788625181740-434",
+      "Module": "UtilityCatalog"
+    },
+    {
+      "Action": "UPDATE",
+      "Timestamp": "2026-09-05T16:19:02.264Z",
+      "User_Email": "Finances.dreamdwell@gmail.com",
+      "After_JSON": "{\"Utility_ID\":\"UTL-HOTWATER\",\"Utility_Name\":\"Hot Water\",\"Category\":\"Hot Water Tank\",\"Default_Vendor\":\"Reliance Home Comfort / Enercare\",\"Default_GL_Account\":\"5010\",\"Description\":\"Hot water heater tank rental, maintenance, and gas/electric heating unit lease\",\"Is_Active\":true,\"Created_At\":\"2025-01-01\"}",
+      "IP_or_Source": "Web ERP Client",
+      "Audit_ID": "AUD-1788625142264-810",
+      "Module": "UtilityCatalog",
+      "Record_ID": "UTL-HOTWATER"
+    },
+    {
+      "After_JSON": "{\"message\":\"All operational records purged. Clean production state.\"}",
+      "Module": "System",
+      "Record_ID": "PURGE_ALL_DATA",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Audit_ID": "AUD-1788623747096-55",
+      "Timestamp": "2026-09-05T15:55:47.096Z",
+      "Action": "DELETE",
+      "IP_or_Source": "Web ERP Client"
+    },
+    {
+      "Timestamp": "2026-09-05T15:50:31.605Z",
+      "IP_or_Source": "Web ERP Client",
+      "Module": "Authentication",
+      "After_JSON": "{\"method\":\"Password + Email OTP\",\"rememberMe\":false,\"timestamp\":\"2026-09-05T15:50:31.605Z\"}",
+      "Action": "LOGIN",
+      "Audit_ID": "AUD-1788623431605-173",
+      "Record_ID": "USR-MASTER-ADMIN",
+      "User_Email": "rahulrajanmdm@gmail.com"
+    },
+    {
+      "Record_ID": "SESSION_TERMINATED",
+      "Module": "Authentication",
+      "After_JSON": "{\"timestamp\":\"2026-09-05T06:22:50.117Z\"}",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Timestamp": "2026-09-05T06:22:50.117Z",
+      "IP_or_Source": "Web ERP Client",
+      "Action": "LOGOUT",
+      "Audit_ID": "AUD-1788589370117-357"
+    },
+    {
+      "Timestamp": "2026-09-05T06:21:03.232Z",
+      "IP_or_Source": "Web ERP Client",
+      "Audit_ID": "AUD-1788589263232-89",
+      "Action": "UPDATE",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Module": "Deposits",
+      "After_JSON": "{\"Lease_ID\":\"LEASE-MTN6SMUY\",\"Due_Amount\":1750,\"Journal_Ref_ID\":\"JRN-LEASE-INIT-LEASE-MTN6SMUY\",\"Paid_Amount\":150,\"Refund_Amount\":0,\"Txn_Type\":\"Charge\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Balance\":1600,\"Deposit_Txn_ID\":\"DEP-LEASE-MTN6SMUY\",\"Status\":\"Receivable\",\"Txn_Date\":\"2026-06-01\",\"Created_By\":\"rahulrajanmdm@gmail.com\",\"Unit_ID\":\"UNIT-MTLR08OF-B\",\"Tenant_ID\":\"TEN-MTN569R0\",\"Deposit_Type\":\"Security Deposit\",\"Reference\":\"\",\"Notes\":\"\"}",
+      "Record_ID": "DEP-LEASE-MTN6SMUY"
+    },
+    {
+      "Record_ID": "DEP-LEASE-MTN6SMUY",
+      "IP_or_Source": "Web ERP Client",
+      "Action": "UPDATE",
+      "Module": "Deposits",
+      "After_JSON": "{\"Lease_ID\":\"LEASE-MTN6SMUY\",\"Due_Amount\":150,\"Journal_Ref_ID\":\"JRN-LEASE-INIT-LEASE-MTN6SMUY\",\"Paid_Amount\":150,\"Refund_Amount\":0,\"Txn_Type\":\"Charge\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Balance\":0,\"Deposit_Txn_ID\":\"DEP-LEASE-MTN6SMUY\",\"Status\":\"Receivable\",\"Txn_Date\":\"2026-06-01\",\"Created_By\":\"rahulrajanmdm@gmail.com\",\"Unit_ID\":\"UNIT-MTLR08OF-B\",\"Tenant_ID\":\"TEN-MTN569R0\",\"Deposit_Type\":\"Security Deposit\",\"Reference\":\"\",\"Notes\":\"\"}",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Timestamp": "2026-09-05T06:20:29.395Z",
+      "Audit_ID": "AUD-1788589229395-424"
+    },
+    {
+      "Action": "POST",
+      "Timestamp": "2026-09-05T06:17:08.875Z",
+      "Audit_ID": "AUD-1788589028875-703",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Module": "Journal",
+      "After_JSON": "{\"header\":{\"Journal_ID\":\"JRN-ALLOC-COL-MTNZQ777\",\"Date\":\"2026-09-05\",\"Description\":\"Bank Payment Allocation — TEN-MTN569R0 (ET-BANK-113806)\",\"Reference_Type\":\"PAYMENT_ALLOCATION\",\"Reference_ID\":\"COL-MTNZQ777\",\"Created_By\":\"rahulrajanmdm@gmail.com\",\"Status\":\"POSTED\",\"Period_ID\":\"PER-2025\",\"Created_At\":\"2026-09-05T06:17:08.875Z\"},\"lines\":[{\"Line_ID\":\"JRN-ALLOC-COL-MTNZQ777-DR-BANK\",\"Journal_ID\":\"JRN-ALLOC-COL-MTNZQ777\",\"Account_Code\":\"1010\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OF-B\",\"Tenant_ID\":\"TEN-MTN569R0\",\"Debit_Amount\":1750,\"Credit_Amount\":0,\"Memo\":\"Bank deposit received via Interac e-Transfer (ET-BANK-113806)\"},{\"Line_ID\":\"JRN-ALLOC-COL-MTNZQ777-CR-RENT-2\",\"Journal_ID\":\"JRN-ALLOC-COL-MTNZQ777\",\"Account_Code\":\"1100\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OF-B\",\"Tenant_ID\":\"TEN-MTN569R0\",\"Debit_Amount\":0,\"Credit_Amount\":1600,\"Memo\":\"Payment applied to Rent (2026-06)\"},{\"Line_ID\":\"JRN-ALLOC-COL-MTNZQ777-CR-EXCESS-3\",\"Journal_ID\":\"JRN-ALLOC-COL-MTNZQ777\",\"Account_Code\":\"2300\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OF-B\",\"Tenant_ID\":\"TEN-MTN569R0\",\"Debit_Amount\":0,\"Credit_Amount\":150,\"Memo\":\"Unallocated excess payment from bank deposit\"}]}",
+      "IP_or_Source": "Web ERP Client",
+      "Record_ID": "JRN-ALLOC-COL-MTNZQ777"
+    },
+    {
+      "Action": "CREATE",
+      "IP_or_Source": "Web ERP Client",
+      "Record_ID": "EXC-MTNZQ77E",
+      "Audit_ID": "AUD-1788589028859-878",
+      "Module": "Excess",
+      "Timestamp": "2026-09-05T06:17:08.859Z",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "After_JSON": "{\"Excess_ID\":\"EXC-MTNZQ77E\",\"Collection_ID\":\"COL-MTNZQ777\",\"Tenant_ID\":\"TEN-MTN569R0\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Payment_Date\":\"2026-09-05\",\"Excess_Amount\":150,\"Resolution_Status\":\"Unresolved\",\"Notes\":\"Excess bank funds via Interac e-Transfer (ET-BANK-113806)\"}"
+    },
+    {
+      "Audit_ID": "AUD-1788589028851-260",
+      "Action": "UPDATE",
+      "Record_ID": "RENT-202606-UNIT-MTLR08OF-B",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTN569R0\",\"Balance\":0,\"Period_Month\":\"2026-06\",\"Due_Date\":\"2026-06-01\",\"Amount_Billed\":1600,\"Amount_Paid\":1600,\"Lease_ID\":\"LEASE-MTN6SMUY\",\"Created_At\":\"2026-09-04T16:47:13.602Z\",\"Created_By\":\"rahulrajanmdm@gmail.com\",\"Unit_ID\":\"UNIT-MTLR08OF-B\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Journal_Ref_ID\":\"JRN-LEASE-INIT-LEASE-MTN6SMUY\",\"Status\":\"Paid\",\"Rent_Txn_ID\":\"RENT-202606-UNIT-MTLR08OF-B\",\"Payment_Date\":\"2026-09-05\",\"Payment_Method\":\"Interac e-Transfer\",\"Reference\":\"ET-BANK-113806\"}",
+      "IP_or_Source": "Web ERP Client",
+      "Timestamp": "2026-09-05T06:17:08.851Z",
+      "Module": "Rent",
+      "User_Email": "rahulrajanmdm@gmail.com"
+    },
+    {
+      "Record_ID": "UNIT-MTLR08OE-M",
+      "Action": "UPDATE",
+      "IP_or_Source": "Web ERP Client",
+      "Audit_ID": "AUD-1788588329818-437",
+      "Module": "Units",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Timestamp": "2026-09-05T06:05:29.818Z",
+      "After_JSON": "{\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Kitchens\":1,\"Square_Feet\":600,\"Utilities_Included\":false,\"Has_Den\":false,\"Unit_Number_Name\":\"Main Floor\",\"Monthly_Rent\":2375,\"Kitchen_Type\":\"Full Kitchen\",\"Notes\":\"\",\"Division_Level\":\"Main Floor\",\"Bedrooms\":3,\"Bedrooms_List\":[{\"Bedroom_Name\":\"Room 1\",\"Ensuite_Bath\":false,\"Sharing_Spaces_Count\":2,\"Full_Room_Rent\":1200,\"Notes\":\"Room 1 allocation.\",\"Bedroom_ID\":\"BR-1\",\"Sharing_Rent_Per_Space\":425,\"Allocation_Mode\":\"Sharing\"},{\"Allocation_Mode\":\"Fully Used\",\"Sharing_Spaces_Count\":2,\"Notes\":\"Room 2 allocation.\",\"Sharing_Rent_Per_Space\":600,\"Full_Room_Rent\":675,\"Bedroom_Name\":\"Room 2\",\"Bedroom_ID\":\"BR-2\",\"Ensuite_Bath\":false},{\"Sharing_Spaces_Count\":2,\"Notes\":\"2 sharing beds or 1 individual full bedroom.\",\"Sharing_Rent_Per_Space\":425,\"Ensuite_Bath\":false,\"Allocation_Mode\":\"Sharing\",\"Bedroom_ID\":\"BR-xlmi\",\"Full_Room_Rent\":1200,\"Bedroom_Name\":\"Room 3\"}],\"Spaces\":[{\"Space_ID\":\"SPC-MTLR08OE-M-BR1-A\",\"Bedroom_ID\":\"BR-1\",\"Space_Type\":\"Shared Room Bed\",\"Tenant_ID\":null,\"Notes\":\"Room 1 allocation.\",\"Full_Room_Rent\":1200,\"Current_Status\":\"Vacant\",\"Occupancy_Mode\":\"Shared\",\"Target_Rent\":425,\"Utilities_Included\":false,\"Tenant_Name\":null,\"Bedroom_Name\":\"Room 1\",\"Space_Name\":\"Room 1 - Bed A\"},{\"Full_Room_Rent\":1200,\"Bedroom_Name\":\"Room 1\",\"Bedroom_ID\":\"BR-1\",\"Space_Type\":\"Shared Room Bed\",\"Current_Status\":\"Vacant\",\"Occupancy_Mode\":\"Shared\",\"Tenant_Name\":null,\"Target_Rent\":425,\"Utilities_Included\":false,\"Space_ID\":\"SPC-MTLR08OE-M-BR1-A\",\"Notes\":\"Room 1 allocation.\",\"Tenant_ID\":null,\"Space_Name\":\"Room 1 - Bed B\"},{\"Tenant_ID\":\"TEN-MTN53Y0W\",\"Target_Rent\":675,\"Space_Type\":\"Private Bedroom\",\"Bedroom_ID\":\"BR-2\",\"Utilities_Included\":false,\"Space_Name\":\"Room 2 (Full Bedroom - Individual)\",\"Notes\":\"Room 2 allocation.\",\"Space_ID\":\"SPC-MTLR08OE-M-BR2-A\",\"Bedroom_Name\":\"Room 2\",\"Current_Status\":\"Occupied\",\"Occupancy_Mode\":\"Fully Used (Private)\",\"Tenant_Name\":\"Johin\",\"Full_Room_Rent\":675},{\"Utilities_Included\":false,\"Bedroom_Name\":\"Room 3\",\"Target_Rent\":425,\"Space_Name\":\"Room 3 - Bed A\",\"Notes\":\"2 sharing beds or 1 individual full bedroom.\",\"Tenant_ID\":\"TEN-MTN54OCA\",\"Bedroom_ID\":\"BR-xlmi\",\"Space_Type\":\"Shared Room Bed\",\"Tenant_Name\":\"Lavina\",\"Space_ID\":\"SPC-MTLR08OE-M-BR3-A\",\"Current_Status\":\"Occupied\",\"Occupancy_Mode\":\"Fully Used (Private)\",\"Full_Room_Rent\":1200},{\"Utilities_Included\":false,\"Space_ID\":\"SPC-MTLR08OE-M-BR3-A\",\"Space_Type\":\"Shared Room Bed\",\"Bedroom_ID\":\"BR-xlmi\",\"Current_Status\":\"Occupied\",\"Occupancy_Mode\":\"Fully Used (Private)\",\"Bedroom_Name\":\"Room 3\",\"Full_Room_Rent\":1200,\"Tenant_Name\":\"Lavina\",\"Tenant_ID\":\"TEN-MTN54OCA\",\"Target_Rent\":425,\"Space_Name\":\"Room 3 - Bed B\",\"Notes\":\"2 sharing beds or 1 individual full bedroom.\"}],\"Unit_Number\":\"Main Floor\",\"Target_Rent\":2375,\"Utility_Billing_Type\":\"All-Inclusive\",\"Full_Room_Rent\":1920,\"Utility_Share_Percentage\":null,\"Spaces_Count\":5,\"Bathrooms\":1,\"Current_Status\":\"Occupied\",\"Dens_Count\":0,\"Floor_Plan\":\"Main Floor Suite\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_Type\":\"Main Floor Suite\",\"Allow_Full_Room_Lease\":true,\"Included_Utilities\":[]}"
+    },
+    {
+      "Module": "Authentication",
+      "IP_or_Source": "Web ERP Client",
+      "Record_ID": "USR-MASTER-ADMIN",
+      "Audit_ID": "AUD-1788588223097-834",
+      "Timestamp": "2026-09-05T06:03:43.097Z",
+      "After_JSON": "{\"method\":\"Password + Email OTP\",\"rememberMe\":false,\"timestamp\":\"2026-09-05T06:03:43.097Z\"}",
+      "Action": "LOGIN",
+      "User_Email": "rahulrajanmdm@gmail.com"
+    },
+    {
+      "Action": "LOGOUT",
+      "IP_or_Source": "Web ERP Client",
+      "Timestamp": "2026-09-04T18:26:04.007Z",
+      "Audit_ID": "AUD-1788546364007-25",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Record_ID": "SESSION_TERMINATED",
+      "After_JSON": "{\"timestamp\":\"2026-09-04T18:26:04.007Z\"}",
+      "Module": "Authentication"
+    },
+    {
+      "Module": "Authentication",
+      "Timestamp": "2026-09-04T17:12:43.241Z",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "IP_or_Source": "Web ERP Client",
+      "After_JSON": "{\"method\":\"Password + Email OTP\",\"rememberMe\":false,\"timestamp\":\"2026-09-04T17:12:43.241Z\"}",
+      "Audit_ID": "AUD-1788541963241-921",
+      "Action": "LOGIN",
+      "Record_ID": "USR-MASTER-ADMIN"
+    },
+    {
+      "Action": "LOGIN",
+      "Timestamp": "2026-09-04T17:10:43.694Z",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "IP_or_Source": "Web ERP Client",
+      "Audit_ID": "AUD-1788541843694-998",
+      "After_JSON": "{\"method\":\"Password + Email OTP\",\"rememberMe\":false,\"timestamp\":\"2026-09-04T17:10:43.694Z\"}",
+      "Module": "Authentication",
+      "Record_ID": "USR-MASTER-ADMIN"
+    },
+    {
+      "Record_ID": "SESSION_TERMINATED",
+      "After_JSON": "{\"timestamp\":\"2026-09-04T17:09:33.168Z\"}",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Action": "LOGOUT",
+      "Module": "Authentication",
+      "Timestamp": "2026-09-04T17:09:33.169Z",
+      "IP_or_Source": "Web ERP Client",
+      "Audit_ID": "AUD-1788541773169-522"
+    },
+    {
+      "Timestamp": "2026-09-04T17:01:05.098Z",
+      "IP_or_Source": "Web ERP Client",
+      "Module": "Tenants",
+      "Audit_ID": "AUD-1788541265098-362",
+      "Action": "UPDATE",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTN54OCA\",\"Full_Name\":\"Lavina\",\"Email\":\"test@gmail.com\",\"Phone\":\"123\",\"Emergency_Contact\":\"\",\"Status\":\"Active\",\"Created_At\":\"2026-09-04\",\"Notes\":\"\",\"Current_Property_ID\":\"PROP-MTLPM82Q\",\"Current_Unit_ID\":\"UNIT-MTLR08OE-M\",\"Current_Space_Name\":\"Room 3 (Joint Room - Lavina & Amal)\"}",
+      "Record_ID": "TEN-MTN54OCA"
+    },
+    {
+      "Action": "UPDATE",
+      "Timestamp": "2026-09-04T17:01:05.075Z",
+      "IP_or_Source": "Web ERP Client",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Record_ID": "UNIT-MTLR08OE-M",
+      "Module": "Units",
+      "After_JSON": "{\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_Number_Name\":\"Main Floor\",\"Unit_Number\":\"Main Floor\",\"Unit_Type\":\"Main Floor Suite\",\"Floor_Plan\":\"Main Floor Suite\",\"Division_Level\":\"Main Floor\",\"Utility_Share_Percentage\":null,\"Target_Rent\":2375,\"Monthly_Rent\":2375,\"Current_Status\":\"Vacant\",\"Bedrooms\":3,\"Bathrooms\":1,\"Square_Feet\":600,\"Kitchens\":1,\"Kitchen_Type\":\"Full Kitchen\",\"Has_Den\":false,\"Dens_Count\":0,\"Den_Details\":null,\"Utilities_Included\":false,\"Included_Utilities\":[],\"Utility_Billing_Type\":\"All-Inclusive\",\"Notes\":\"\",\"Bedrooms_List\":[{\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Allocation_Mode\":\"Sharing\",\"Full_Room_Rent\":1200,\"Sharing_Spaces_Count\":2,\"Sharing_Rent_Per_Space\":425,\"Ensuite_Bath\":false,\"Notes\":\"Room 1 allocation.\"},{\"Bedroom_ID\":\"BR-2\",\"Bedroom_Name\":\"Room 2\",\"Allocation_Mode\":\"Fully Used\",\"Full_Room_Rent\":675,\"Sharing_Spaces_Count\":2,\"Sharing_Rent_Per_Space\":600,\"Ensuite_Bath\":false,\"Notes\":\"Room 2 allocation.\"},{\"Bedroom_ID\":\"BR-xlmi\",\"Bedroom_Name\":\"Room 3\",\"Allocation_Mode\":\"Sharing\",\"Full_Room_Rent\":1200,\"Sharing_Spaces_Count\":2,\"Sharing_Rent_Per_Space\":425,\"Ensuite_Bath\":false,\"Notes\":\"2 sharing beds or 1 individual full bedroom.\"}],\"Spaces_Count\":5,\"Spaces\":[{\"Space_ID\":\"SPC-MTLR08OE-M-BR1-A\",\"Space_Name\":\"Room 1 - Bed A\",\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":425,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Shared\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Tenant_ID\":null,\"Tenant_Name\":null,\"Notes\":\"Room 1 allocation.\"},{\"Space_ID\":\"SPC-MTLR08OE-M-BR1-A\",\"Space_Name\":\"Room 1 - Bed B\",\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":425,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Shared\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Tenant_ID\":null,\"Tenant_Name\":null,\"Notes\":\"Room 1 allocation.\"},{\"Space_ID\":\"SPC-MTLR08OE-M-BR2-A\",\"Space_Name\":\"Room 2 (Full Bedroom - Individual)\",\"Bedroom_ID\":\"BR-2\",\"Bedroom_Name\":\"Room 2\",\"Space_Type\":\"Private Bedroom\",\"Target_Rent\":675,\"Full_Room_Rent\":675,\"Occupancy_Mode\":\"Fully Used (Private)\",\"Utilities_Included\":false,\"Current_Status\":\"Occupied\",\"Tenant_ID\":\"TEN-MTN53Y0W\",\"Tenant_Name\":\"Johin\",\"Notes\":\"Room 2 allocation.\"},{\"Space_ID\":\"SPC-MTLR08OE-M-BR3-A\",\"Space_Name\":\"Room 3 - Bed A\",\"Bedroom_ID\":\"BR-xlmi\",\"Bedroom_Name\":\"Room 3\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":425,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Fully Used (Private)\",\"Utilities_Included\":false,\"Current_Status\":\"Occupied\",\"Tenant_ID\":\"TEN-MTN54OCA\",\"Tenant_Name\":\"Lavina\",\"Notes\":\"2 sharing beds or 1 individual full bedroom.\"},{\"Space_ID\":\"SPC-MTLR08OE-M-BR3-A\",\"Space_Name\":\"Room 3 - Bed B\",\"Bedroom_ID\":\"BR-xlmi\",\"Bedroom_Name\":\"Room 3\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":425,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Fully Used (Private)\",\"Utilities_Included\":false,\"Current_Status\":\"Occupied\",\"Tenant_ID\":\"TEN-MTN54OCA\",\"Tenant_Name\":\"Lavina\",\"Notes\":\"2 sharing beds or 1 individual full bedroom.\"}],\"Full_Room_Rent\":1920,\"Allow_Full_Room_Lease\":false}",
+      "Audit_ID": "AUD-1788541265075-301"
+    },
+    {
+      "Action": "POST",
+      "Audit_ID": "AUD-1788541265065-313",
+      "Record_ID": "JRN-LEASE-INIT-LEASE-MTN7AGEK",
+      "After_JSON": "{\"header\":{\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN7AGEK\",\"Date\":\"2026-07-01\",\"Description\":\"Lease Inception — LEASE-MTN7AGEK (UNIT-MTLR08OE-M - Room 3 (Joint Room - Lavina & Amal))\",\"Reference_Type\":\"LEASE_INCEPTION\",\"Reference_ID\":\"LEASE-MTN7AGEK\",\"Created_By\":\"rahulrajanmdm@gmail.com\",\"Status\":\"POSTED\",\"Period_ID\":\"PER-2025\",\"Created_At\":\"2026-09-04T17:01:05.064Z\"},\"lines\":[{\"Line_ID\":\"JRN-LEASE-INIT-LEASE-MTN7AGEK-1\",\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN7AGEK\",\"Account_Code\":\"1100\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Tenant_ID\":\"TEN-MTN54OCA\",\"Debit_Amount\":850,\"Credit_Amount\":0,\"Memo\":\"Initial 1st Month Rent Charge (2026-07)\"},{\"Line_ID\":\"JRN-LEASE-INIT-LEASE-MTN7AGEK-2\",\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN7AGEK\",\"Account_Code\":\"4000\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Tenant_ID\":\"TEN-MTN54OCA\",\"Debit_Amount\":0,\"Credit_Amount\":850,\"Memo\":\"Initial 1st Month Rent Revenue\"},{\"Line_ID\":\"JRN-LEASE-INIT-LEASE-MTN7AGEK-3\",\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN7AGEK\",\"Account_Code\":\"1120\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Tenant_ID\":\"TEN-MTN54OCA\",\"Debit_Amount\":1000,\"Credit_Amount\":0,\"Memo\":\"Deposit / Last Month Rent Receivable\"},{\"Line_ID\":\"JRN-LEASE-INIT-LEASE-MTN7AGEK-4\",\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN7AGEK\",\"Account_Code\":\"2200\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Tenant_ID\":\"TEN-MTN54OCA\",\"Debit_Amount\":0,\"Credit_Amount\":1000,\"Memo\":\"Tenant Deposit Held Liability (Security & LMR)\"}]}",
+      "Timestamp": "2026-09-04T17:01:05.065Z",
+      "IP_or_Source": "Web ERP Client",
+      "Module": "Journal",
+      "User_Email": "rahulrajanmdm@gmail.com"
+    },
+    {
+      "Module": "Deposits",
+      "After_JSON": "{\"Deposit_Txn_ID\":\"DEP-LEASE-MTN7AGEK\",\"Lease_ID\":\"LEASE-MTN7AGEK\",\"Tenant_ID\":\"TEN-MTN54OCA\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Txn_Type\":\"Charge\",\"Due_Amount\":1000,\"Paid_Amount\":0,\"Refund_Amount\":0,\"Balance\":1000,\"Txn_Date\":\"2026-07-01\",\"Status\":\"Receivable\",\"Journal_Ref_ID\":\"JRN-LEASE-INIT-LEASE-MTN7AGEK\",\"Created_By\":\"rahulrajanmdm@gmail.com\"}",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Timestamp": "2026-09-04T17:01:05.054Z",
+      "Record_ID": "DEP-LEASE-MTN7AGEK",
+      "Action": "CREATE",
+      "IP_or_Source": "Web ERP Client",
+      "Audit_ID": "AUD-1788541265054-999"
+    },
+    {
+      "IP_or_Source": "Web ERP Client",
+      "Audit_ID": "AUD-1788541265045-683",
+      "Action": "CREATE",
+      "Record_ID": "RENT-202607-UNIT-MTLR08OE-M",
+      "Timestamp": "2026-09-04T17:01:05.045Z",
+      "Module": "Rent",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "After_JSON": "{\"Rent_Txn_ID\":\"RENT-202607-UNIT-MTLR08OE-M\",\"Lease_ID\":\"LEASE-MTN7AGEK\",\"Tenant_ID\":\"TEN-MTN54OCA\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Period_Month\":\"2026-07\",\"Due_Date\":\"2026-07-01\",\"Amount_Billed\":850,\"Amount_Paid\":0,\"Balance\":850,\"Status\":\"Unpaid\",\"Journal_Ref_ID\":\"JRN-LEASE-INIT-LEASE-MTN7AGEK\",\"Created_By\":\"rahulrajanmdm@gmail.com\",\"Created_At\":\"2026-09-04T17:01:05.045Z\"}"
+    },
+    {
+      "Record_ID": "LEASE-MTN7AGEK",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTN54OCA\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Space_Name\":\"Room 3 (Joint Room - Lavina & Amal)\",\"Bedroom_ID\":\"BR-3\",\"Bedroom_Name\":\"Room 3\",\"Is_Full_Bedroom\":true,\"Is_Full_Room\":false,\"Occupancy_Type\":\"Joint Room (2 People)\",\"Occupants_Count\":2,\"Charge_Utilities_Individually\":true,\"Occupants\":[{\"Occupant_ID\":\"TEN-MTN54OCA\",\"Full_Name\":\"Lavina\",\"Email\":\"test@gmail.com\",\"Phone\":\"123\",\"Is_Primary\":true,\"Utility_Share_Percentage\":50,\"Charge_Utilities_Individually\":true,\"Notes\":\"Lead Group Tenant\"},{\"Occupant_ID\":\"TEN-MTN553YV\",\"Full_Name\":\"Amal\",\"Email\":\"test@gmail.com\",\"Phone\":\"123\",\"Is_Primary\":false,\"Utility_Share_Percentage\":50,\"Charge_Utilities_Individually\":true,\"Notes\":\"Co-Occupant\"}],\"Lease_Start\":\"2026-07-01\",\"Lease_End\":\"2026-12-31\",\"Monthly_Rent\":850,\"Deposit_Required\":150,\"Deposit_Received\":0,\"Last_Month_Rent\":850,\"Drive_Folder_URL\":\"https://drive.google.com/drive/folders/lease-unit-mtlr08oe-m\",\"Notes\":\"Standard Tenancy Agreement. Rent and utilities configured for tenant.\",\"Utilities_Included\":false,\"Lease_ID\":\"LEASE-MTN7AGEK\",\"Status\":\"Active\",\"Created_At\":\"2026-09-04T17:01:05.036Z\"}",
+      "Module": "Leases",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "IP_or_Source": "Web ERP Client",
+      "Audit_ID": "AUD-1788541265037-905",
+      "Action": "CREATE",
+      "Timestamp": "2026-09-04T17:01:05.037Z"
+    },
+    {
+      "Module": "Tenants",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTN553YV\",\"Full_Name\":\"Amal\",\"Email\":\"test@gmail.com\",\"Phone\":\"123\",\"Emergency_Contact\":\"\",\"Status\":\"Active\",\"Created_At\":\"2026-09-04\",\"Notes\":\"\",\"Current_Property_ID\":\"PROP-MTLPM82Q\",\"Current_Unit_ID\":\"UNIT-MTLR08OE-M\",\"Current_Space_Name\":\"Room 3 (Co-Occupant)\"}",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Audit_ID": "AUD-1788541265027-732",
+      "Record_ID": "TEN-MTN553YV",
+      "Timestamp": "2026-09-04T17:01:05.027Z",
+      "IP_or_Source": "Web ERP Client",
+      "Action": "UPDATE"
+    },
+    {
+      "Action": "UPDATE",
+      "Audit_ID": "AUD-1788541167819-783",
+      "Record_ID": "TEN-MTN53Y0W",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTN53Y0W\",\"Full_Name\":\"Johin\",\"Email\":\"test@gmail.com\",\"Phone\":\"123\",\"Emergency_Contact\":\"\",\"Status\":\"Active\",\"Created_At\":\"2026-09-04\",\"Notes\":\"\",\"Current_Property_ID\":\"PROP-MTLPM82Q\",\"Current_Unit_ID\":\"UNIT-MTLR08OE-M\",\"Current_Space_Name\":\"Room 2 (Full Room Exclusive)\"}",
+      "Timestamp": "2026-09-04T16:59:27.819Z",
+      "IP_or_Source": "Web ERP Client",
+      "Module": "Tenants",
+      "User_Email": "rahulrajanmdm@gmail.com"
+    },
+    {
+      "Module": "Units",
+      "Timestamp": "2026-09-04T16:59:27.800Z",
+      "Audit_ID": "AUD-1788541167800-230",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Action": "UPDATE",
+      "After_JSON": "{\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_Number_Name\":\"Main Floor\",\"Unit_Number\":\"Main Floor\",\"Unit_Type\":\"Main Floor Suite\",\"Floor_Plan\":\"Main Floor Suite\",\"Division_Level\":\"Main Floor\",\"Utility_Share_Percentage\":null,\"Target_Rent\":2375,\"Monthly_Rent\":2375,\"Current_Status\":\"Vacant\",\"Bedrooms\":3,\"Bathrooms\":1,\"Square_Feet\":600,\"Kitchens\":1,\"Kitchen_Type\":\"Full Kitchen\",\"Has_Den\":false,\"Dens_Count\":0,\"Den_Details\":null,\"Utilities_Included\":false,\"Included_Utilities\":[],\"Utility_Billing_Type\":\"All-Inclusive\",\"Notes\":\"\",\"Bedrooms_List\":[{\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Allocation_Mode\":\"Sharing\",\"Full_Room_Rent\":1200,\"Sharing_Spaces_Count\":2,\"Sharing_Rent_Per_Space\":425,\"Ensuite_Bath\":false,\"Notes\":\"Room 1 allocation.\"},{\"Bedroom_ID\":\"BR-2\",\"Bedroom_Name\":\"Room 2\",\"Allocation_Mode\":\"Fully Used\",\"Full_Room_Rent\":675,\"Sharing_Spaces_Count\":2,\"Sharing_Rent_Per_Space\":600,\"Ensuite_Bath\":false,\"Notes\":\"Room 2 allocation.\"},{\"Bedroom_ID\":\"BR-xlmi\",\"Bedroom_Name\":\"Room 3\",\"Allocation_Mode\":\"Sharing\",\"Full_Room_Rent\":1200,\"Sharing_Spaces_Count\":2,\"Sharing_Rent_Per_Space\":425,\"Ensuite_Bath\":false,\"Notes\":\"2 sharing beds or 1 individual full bedroom.\"}],\"Spaces_Count\":5,\"Spaces\":[{\"Space_ID\":\"SPC-MTLR08OE-M-BR1-A\",\"Space_Name\":\"Room 1 - Bed A\",\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":425,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Shared\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Tenant_ID\":null,\"Tenant_Name\":null,\"Notes\":\"Room 1 allocation.\"},{\"Space_ID\":\"SPC-MTLR08OE-M-BR1-A\",\"Space_Name\":\"Room 1 - Bed B\",\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":425,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Shared\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Tenant_ID\":null,\"Tenant_Name\":null,\"Notes\":\"Room 1 allocation.\"},{\"Space_ID\":\"SPC-MTLR08OE-M-BR2-A\",\"Space_Name\":\"Room 2 (Full Bedroom - Individual)\",\"Bedroom_ID\":\"BR-2\",\"Bedroom_Name\":\"Room 2\",\"Space_Type\":\"Private Bedroom\",\"Target_Rent\":675,\"Full_Room_Rent\":675,\"Occupancy_Mode\":\"Fully Used (Private)\",\"Utilities_Included\":false,\"Current_Status\":\"Occupied\",\"Tenant_ID\":\"TEN-MTN53Y0W\",\"Tenant_Name\":\"Johin\",\"Notes\":\"Room 2 allocation.\"},{\"Space_ID\":\"SPC-MTLR08OE-M-BR3-A\",\"Space_Name\":\"Room 3 - Bed A\",\"Bedroom_ID\":\"BR-xlmi\",\"Bedroom_Name\":\"Room 3\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":425,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Shared\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Tenant_ID\":null,\"Tenant_Name\":null,\"Notes\":\"2 sharing beds or 1 individual full bedroom.\"},{\"Space_ID\":\"SPC-MTLR08OE-M-BR3-A\",\"Space_Name\":\"Room 3 - Bed B\",\"Bedroom_ID\":\"BR-xlmi\",\"Bedroom_Name\":\"Room 3\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":425,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Shared\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Tenant_ID\":null,\"Tenant_Name\":null,\"Notes\":\"2 sharing beds or 1 individual full bedroom.\"}],\"Full_Room_Rent\":1920,\"Allow_Full_Room_Lease\":false}",
+      "IP_or_Source": "Web ERP Client",
+      "Record_ID": "UNIT-MTLR08OE-M"
+    },
+    {
+      "After_JSON": "{\"header\":{\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN78DC4\",\"Date\":\"2026-06-01\",\"Description\":\"Lease Inception — LEASE-MTN78DC4 (UNIT-MTLR08OE-M - Room 2 (Full Room Exclusive))\",\"Reference_Type\":\"LEASE_INCEPTION\",\"Reference_ID\":\"LEASE-MTN78DC4\",\"Created_By\":\"rahulrajanmdm@gmail.com\",\"Status\":\"POSTED\",\"Period_ID\":\"PER-2025\",\"Created_At\":\"2026-09-04T16:59:27.786Z\"},\"lines\":[{\"Line_ID\":\"JRN-LEASE-INIT-LEASE-MTN78DC4-1\",\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN78DC4\",\"Account_Code\":\"1100\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Tenant_ID\":\"TEN-MTN53Y0W\",\"Debit_Amount\":675,\"Credit_Amount\":0,\"Memo\":\"Initial 1st Month Rent Charge (2026-06)\"},{\"Line_ID\":\"JRN-LEASE-INIT-LEASE-MTN78DC4-2\",\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN78DC4\",\"Account_Code\":\"4000\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Tenant_ID\":\"TEN-MTN53Y0W\",\"Debit_Amount\":0,\"Credit_Amount\":675,\"Memo\":\"Initial 1st Month Rent Revenue\"},{\"Line_ID\":\"JRN-LEASE-INIT-LEASE-MTN78DC4-3\",\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN78DC4\",\"Account_Code\":\"1120\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Tenant_ID\":\"TEN-MTN53Y0W\",\"Debit_Amount\":825,\"Credit_Amount\":0,\"Memo\":\"Deposit / Last Month Rent Receivable\"},{\"Line_ID\":\"JRN-LEASE-INIT-LEASE-MTN78DC4-4\",\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN78DC4\",\"Account_Code\":\"2200\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Tenant_ID\":\"TEN-MTN53Y0W\",\"Debit_Amount\":0,\"Credit_Amount\":825,\"Memo\":\"Tenant Deposit Held Liability (Security & LMR)\"}]}",
+      "Action": "POST",
+      "Timestamp": "2026-09-04T16:59:27.786Z",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Audit_ID": "AUD-1788541167786-708",
+      "Record_ID": "JRN-LEASE-INIT-LEASE-MTN78DC4",
+      "IP_or_Source": "Web ERP Client",
+      "Module": "Journal"
+    },
+    {
+      "IP_or_Source": "Web ERP Client",
+      "After_JSON": "{\"Deposit_Txn_ID\":\"DEP-LEASE-MTN78DC4\",\"Lease_ID\":\"LEASE-MTN78DC4\",\"Tenant_ID\":\"TEN-MTN53Y0W\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Txn_Type\":\"Charge\",\"Due_Amount\":825,\"Paid_Amount\":0,\"Refund_Amount\":0,\"Balance\":825,\"Txn_Date\":\"2026-06-01\",\"Status\":\"Receivable\",\"Journal_Ref_ID\":\"JRN-LEASE-INIT-LEASE-MTN78DC4\",\"Created_By\":\"rahulrajanmdm@gmail.com\"}",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Timestamp": "2026-09-04T16:59:27.777Z",
+      "Action": "CREATE",
+      "Audit_ID": "AUD-1788541167777-219",
+      "Record_ID": "DEP-LEASE-MTN78DC4",
+      "Module": "Deposits"
+    },
+    {
+      "Action": "CREATE",
+      "Timestamp": "2026-09-04T16:59:27.761Z",
+      "Audit_ID": "AUD-1788541167761-249",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Record_ID": "RENT-202606-UNIT-MTLR08OE-M",
+      "After_JSON": "{\"Rent_Txn_ID\":\"RENT-202606-UNIT-MTLR08OE-M\",\"Lease_ID\":\"LEASE-MTN78DC4\",\"Tenant_ID\":\"TEN-MTN53Y0W\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Period_Month\":\"2026-06\",\"Due_Date\":\"2026-06-01\",\"Amount_Billed\":675,\"Amount_Paid\":0,\"Balance\":675,\"Status\":\"Unpaid\",\"Journal_Ref_ID\":\"JRN-LEASE-INIT-LEASE-MTN78DC4\",\"Created_By\":\"rahulrajanmdm@gmail.com\",\"Created_At\":\"2026-09-04T16:59:27.761Z\"}",
+      "Module": "Rent",
+      "IP_or_Source": "Web ERP Client"
+    },
+    {
+      "Action": "CREATE",
+      "Audit_ID": "AUD-1788541167749-984",
+      "Timestamp": "2026-09-04T16:59:27.749Z",
+      "IP_or_Source": "Web ERP Client",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTN53Y0W\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Space_Name\":\"Room 2 (Full Room Exclusive)\",\"Bedroom_ID\":\"BR-2\",\"Bedroom_Name\":\"Room 2\",\"Is_Full_Bedroom\":true,\"Is_Full_Room\":false,\"Occupancy_Type\":\"Full Room (1 Person)\",\"Occupants_Count\":1,\"Charge_Utilities_Individually\":true,\"Occupants\":[{\"Occupant_ID\":\"TEN-MTN53Y0W\",\"Full_Name\":\"Johin\",\"Email\":\"test@gmail.com\",\"Phone\":\"123\",\"Is_Primary\":true,\"Utility_Share_Percentage\":100,\"Charge_Utilities_Individually\":false}],\"Lease_Start\":\"2026-06-01\",\"Lease_End\":\"2026-09-30\",\"Monthly_Rent\":675,\"Deposit_Required\":150,\"Deposit_Received\":0,\"Last_Month_Rent\":675,\"Drive_Folder_URL\":\"https://drive.google.com/drive/folders/lease-unit-mtlr08oe-m\",\"Notes\":\"Standard Tenancy Agreement. Rent and utilities configured for tenant.\",\"Utilities_Included\":false,\"Lease_ID\":\"LEASE-MTN78DC4\",\"Status\":\"Active\",\"Created_At\":\"2026-09-04T16:59:27.748Z\"}",
+      "Record_ID": "LEASE-MTN78DC4",
+      "Module": "Leases",
+      "User_Email": "rahulrajanmdm@gmail.com"
+    },
+    {
+      "Record_ID": "LEASE-MTN74IDM",
+      "IP_or_Source": "Web ERP Client",
+      "Action": "DELETE",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Audit_ID": "AUD-1788541119597-925",
+      "Module": "Leases",
+      "After_JSON": null,
+      "Timestamp": "2026-09-04T16:58:39.598Z"
+    },
+    {
+      "Record_ID": "TEN-MTN53Y0W",
+      "Action": "UPDATE",
+      "Module": "Tenants",
+      "Audit_ID": "AUD-1788541002520-25",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTN53Y0W\",\"Full_Name\":\"Johin\",\"Email\":\"test@gmail.com\",\"Phone\":\"123\",\"Emergency_Contact\":\"\",\"Status\":\"Active\",\"Created_At\":\"2026-09-04\",\"Notes\":\"\",\"Current_Property_ID\":\"PROP-MTLPM82Q\",\"Current_Unit_ID\":\"UNIT-MTLR08OE-M\",\"Current_Space_ID\":\"SPACE-UUNIT-MTLR08OE-M-R2-A\",\"Current_Space_Name\":\"Room 2 - Bed A (Sharing)\"}",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Timestamp": "2026-09-04T16:56:42.520Z",
+      "IP_or_Source": "Web ERP Client"
+    },
+    {
+      "Action": "UPDATE",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "IP_or_Source": "Web ERP Client",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTN53Y0W\",\"Full_Name\":\"John\",\"Email\":\"test@gmail.com\",\"Phone\":\"123\",\"Emergency_Contact\":\"\",\"Status\":\"Active\",\"Created_At\":\"2026-09-04\",\"Notes\":\"\",\"Current_Property_ID\":\"PROP-MTLPM82Q\",\"Current_Unit_ID\":\"UNIT-MTLR08OE-M\",\"Current_Space_ID\":\"SPACE-UUNIT-MTLR08OE-M-R2-A\",\"Current_Space_Name\":\"Room 2 - Bed A (Sharing)\"}",
+      "Record_ID": "TEN-MTN53Y0W",
+      "Timestamp": "2026-09-04T16:56:27.695Z",
+      "Audit_ID": "AUD-1788540987695-530",
+      "Module": "Tenants"
+    },
+    {
+      "Timestamp": "2026-09-04T16:56:27.683Z",
+      "Audit_ID": "AUD-1788540987683-561",
+      "Action": "UPDATE",
+      "Module": "Units",
+      "IP_or_Source": "Web ERP Client",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Record_ID": "UNIT-MTLR08OE-M",
+      "After_JSON": "{\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_Number_Name\":\"Main Floor\",\"Unit_Number\":\"Main Floor\",\"Unit_Type\":\"Main Floor Suite\",\"Floor_Plan\":\"Main Floor Suite\",\"Division_Level\":\"Main Floor\",\"Utility_Share_Percentage\":null,\"Target_Rent\":2375,\"Monthly_Rent\":2375,\"Current_Status\":\"Vacant\",\"Bedrooms\":3,\"Bathrooms\":1,\"Square_Feet\":600,\"Kitchens\":1,\"Kitchen_Type\":\"Full Kitchen\",\"Has_Den\":false,\"Dens_Count\":0,\"Den_Details\":null,\"Utilities_Included\":false,\"Included_Utilities\":[],\"Utility_Billing_Type\":\"All-Inclusive\",\"Notes\":\"\",\"Bedrooms_List\":[{\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Allocation_Mode\":\"Sharing\",\"Full_Room_Rent\":1200,\"Sharing_Spaces_Count\":2,\"Sharing_Rent_Per_Space\":425,\"Ensuite_Bath\":false,\"Notes\":\"Room 1 allocation.\"},{\"Bedroom_ID\":\"BR-2\",\"Bedroom_Name\":\"Room 2\",\"Allocation_Mode\":\"Fully Used\",\"Full_Room_Rent\":675,\"Sharing_Spaces_Count\":2,\"Sharing_Rent_Per_Space\":600,\"Ensuite_Bath\":false,\"Notes\":\"Room 2 allocation.\"},{\"Bedroom_ID\":\"BR-xlmi\",\"Bedroom_Name\":\"Room 3\",\"Allocation_Mode\":\"Sharing\",\"Full_Room_Rent\":1200,\"Sharing_Spaces_Count\":2,\"Sharing_Rent_Per_Space\":425,\"Ensuite_Bath\":false,\"Notes\":\"2 sharing beds or 1 individual full bedroom.\"}],\"Spaces_Count\":5,\"Spaces\":[{\"Space_ID\":\"SPC-MTLR08OE-M-BR1-A\",\"Space_Name\":\"Room 1 - Bed A\",\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":425,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Shared\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Tenant_ID\":null,\"Tenant_Name\":null,\"Notes\":\"Room 1 allocation.\"},{\"Space_ID\":\"SPC-MTLR08OE-M-BR1-A\",\"Space_Name\":\"Room 1 - Bed B\",\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":425,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Shared\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Tenant_ID\":null,\"Tenant_Name\":null,\"Notes\":\"Room 1 allocation.\"},{\"Space_ID\":\"SPC-MTLR08OE-M-BR2-A\",\"Space_Name\":\"Room 2 (Full Bedroom - Individual)\",\"Bedroom_ID\":\"BR-2\",\"Bedroom_Name\":\"Room 2\",\"Space_Type\":\"Private Bedroom\",\"Target_Rent\":675,\"Full_Room_Rent\":675,\"Occupancy_Mode\":\"Fully Used (Private)\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Tenant_ID\":null,\"Tenant_Name\":null,\"Notes\":\"Room 2 allocation.\"},{\"Space_ID\":\"SPC-MTLR08OE-M-BR3-A\",\"Space_Name\":\"Room 3 - Bed A\",\"Bedroom_ID\":\"BR-xlmi\",\"Bedroom_Name\":\"Room 3\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":425,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Shared\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Tenant_ID\":null,\"Tenant_Name\":null,\"Notes\":\"2 sharing beds or 1 individual full bedroom.\"},{\"Space_ID\":\"SPC-MTLR08OE-M-BR3-A\",\"Space_Name\":\"Room 3 - Bed B\",\"Bedroom_ID\":\"BR-xlmi\",\"Bedroom_Name\":\"Room 3\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":425,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Shared\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Tenant_ID\":null,\"Tenant_Name\":null,\"Notes\":\"2 sharing beds or 1 individual full bedroom.\"}],\"Full_Room_Rent\":1920,\"Allow_Full_Room_Lease\":false}"
+    },
+    {
+      "Action": "POST",
+      "Timestamp": "2026-09-04T16:56:27.676Z",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Record_ID": "JRN-LEASE-INIT-LEASE-MTN74IDM",
+      "IP_or_Source": "Web ERP Client",
+      "Audit_ID": "AUD-1788540987676-343",
+      "After_JSON": "{\"header\":{\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN74IDM\",\"Date\":\"2026-06-01\",\"Description\":\"Lease Inception — LEASE-MTN74IDM (UNIT-MTLR08OE-M - Room 2 - Bed A (Sharing))\",\"Reference_Type\":\"LEASE_INCEPTION\",\"Reference_ID\":\"LEASE-MTN74IDM\",\"Created_By\":\"rahulrajanmdm@gmail.com\",\"Status\":\"POSTED\",\"Period_ID\":\"PER-2025\",\"Created_At\":\"2026-09-04T16:56:27.676Z\"},\"lines\":[{\"Line_ID\":\"JRN-LEASE-INIT-LEASE-MTN74IDM-1\",\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN74IDM\",\"Account_Code\":\"1100\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Tenant_ID\":\"TEN-MTN53Y0W\",\"Debit_Amount\":675,\"Credit_Amount\":0,\"Memo\":\"Initial 1st Month Rent Charge (2026-06)\"},{\"Line_ID\":\"JRN-LEASE-INIT-LEASE-MTN74IDM-2\",\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN74IDM\",\"Account_Code\":\"4000\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Tenant_ID\":\"TEN-MTN53Y0W\",\"Debit_Amount\":0,\"Credit_Amount\":675,\"Memo\":\"Initial 1st Month Rent Revenue\"},{\"Line_ID\":\"JRN-LEASE-INIT-LEASE-MTN74IDM-3\",\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN74IDM\",\"Account_Code\":\"1120\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Tenant_ID\":\"TEN-MTN53Y0W\",\"Debit_Amount\":825,\"Credit_Amount\":0,\"Memo\":\"Deposit / Last Month Rent Receivable\"},{\"Line_ID\":\"JRN-LEASE-INIT-LEASE-MTN74IDM-4\",\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN74IDM\",\"Account_Code\":\"2200\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Tenant_ID\":\"TEN-MTN53Y0W\",\"Debit_Amount\":0,\"Credit_Amount\":825,\"Memo\":\"Tenant Deposit Held Liability (Security & LMR)\"}]}",
+      "Module": "Journal"
+    },
+    {
+      "After_JSON": "{\"Deposit_Txn_ID\":\"DEP-LEASE-MTN74IDM\",\"Lease_ID\":\"LEASE-MTN74IDM\",\"Tenant_ID\":\"TEN-MTN53Y0W\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Txn_Type\":\"Charge\",\"Due_Amount\":825,\"Paid_Amount\":0,\"Refund_Amount\":0,\"Balance\":825,\"Txn_Date\":\"2026-06-01\",\"Status\":\"Receivable\",\"Journal_Ref_ID\":\"JRN-LEASE-INIT-LEASE-MTN74IDM\",\"Created_By\":\"rahulrajanmdm@gmail.com\"}",
+      "Action": "CREATE",
+      "Record_ID": "DEP-LEASE-MTN74IDM",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "IP_or_Source": "Web ERP Client",
+      "Timestamp": "2026-09-04T16:56:27.664Z",
+      "Audit_ID": "AUD-1788540987664-39",
+      "Module": "Deposits"
+    },
+    {
+      "IP_or_Source": "Web ERP Client",
+      "Timestamp": "2026-09-04T16:56:27.662Z",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Audit_ID": "AUD-1788540987662-609",
+      "After_JSON": "{\"Rent_Txn_ID\":\"RENT-202606-UNIT-MTLR08OE-M\",\"Lease_ID\":\"LEASE-MTN74IDM\",\"Tenant_ID\":\"TEN-MTN53Y0W\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Period_Month\":\"2026-06\",\"Due_Date\":\"2026-06-01\",\"Amount_Billed\":675,\"Amount_Paid\":0,\"Balance\":675,\"Status\":\"Unpaid\",\"Journal_Ref_ID\":\"JRN-LEASE-INIT-LEASE-MTN74IDM\",\"Created_By\":\"rahulrajanmdm@gmail.com\",\"Created_At\":\"2026-09-04T16:56:27.662Z\"}",
+      "Action": "CREATE",
+      "Module": "Rent",
+      "Record_ID": "RENT-202606-UNIT-MTLR08OE-M"
+    },
+    {
+      "Action": "CREATE",
+      "Record_ID": "LEASE-MTN74IDM",
+      "IP_or_Source": "Web ERP Client",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTN53Y0W\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Space_ID\":\"SPACE-UUNIT-MTLR08OE-M-R2-A\",\"Space_Name\":\"Room 2 - Bed A (Sharing)\",\"Bedroom_ID\":\"BR-2\",\"Bedroom_Name\":\"Room 2\",\"Is_Full_Bedroom\":false,\"Is_Full_Room\":false,\"Occupancy_Type\":\"Single Bed\",\"Occupants_Count\":1,\"Charge_Utilities_Individually\":true,\"Occupants\":[{\"Occupant_ID\":\"TEN-MTN53Y0W\",\"Full_Name\":\"John\",\"Email\":\"test@gmail.com\",\"Phone\":\"123\",\"Is_Primary\":true,\"Utility_Share_Percentage\":100,\"Charge_Utilities_Individually\":false}],\"Lease_Start\":\"2026-06-01\",\"Lease_End\":\"2026-09-30\",\"Monthly_Rent\":675,\"Deposit_Required\":150,\"Deposit_Received\":0,\"Last_Month_Rent\":675,\"Drive_Folder_URL\":\"https://drive.google.com/drive/folders/lease-unit-mtlr08oe-m\",\"Notes\":\"Standard Tenancy Agreement. Rent and utilities configured for tenant.\",\"Utilities_Included\":false,\"Lease_ID\":\"LEASE-MTN74IDM\",\"Status\":\"Active\",\"Created_At\":\"2026-09-04T16:56:27.658Z\"}",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Audit_ID": "AUD-1788540987658-911",
+      "Timestamp": "2026-09-04T16:56:27.658Z",
+      "Module": "Leases"
+    },
+    {
+      "Module": "Tenants",
+      "IP_or_Source": "Web ERP Client",
+      "Audit_ID": "AUD-1788540770339-57",
+      "Record_ID": "TEN-MTN53IOY",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTN53IOY\",\"Full_Name\":\"ELNA\",\"Email\":\"test@gmail.com\",\"Phone\":\"123\",\"Emergency_Contact\":\"\",\"Status\":\"Active\",\"Created_At\":\"2026-09-04\",\"Notes\":\"\",\"Current_Property_ID\":\"PROP-MTLPM82Q\",\"Current_Unit_ID\":\"UNIT-MTLR08OE-M\",\"Current_Space_ID\":\"SPACE-UUNIT-MTLR08OE-M-R1-A\",\"Current_Space_Name\":\"Room 1 - Bed A (Sharing)\"}",
+      "Timestamp": "2026-09-04T16:52:50.339Z",
+      "Action": "UPDATE",
+      "User_Email": "rahulrajanmdm@gmail.com"
+    },
+    {
+      "Record_ID": "UNIT-MTLR08OE-M",
+      "Audit_ID": "AUD-1788540770327-882",
+      "IP_or_Source": "Web ERP Client",
+      "Module": "Units",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Action": "UPDATE",
+      "Timestamp": "2026-09-04T16:52:50.327Z",
+      "After_JSON": "{\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_Number_Name\":\"Main Floor\",\"Unit_Number\":\"Main Floor\",\"Unit_Type\":\"Main Floor Suite\",\"Floor_Plan\":\"Main Floor Suite\",\"Division_Level\":\"Main Floor\",\"Utility_Share_Percentage\":null,\"Target_Rent\":2375,\"Monthly_Rent\":2375,\"Current_Status\":\"Vacant\",\"Bedrooms\":3,\"Bathrooms\":1,\"Square_Feet\":600,\"Kitchens\":1,\"Kitchen_Type\":\"Full Kitchen\",\"Has_Den\":false,\"Dens_Count\":0,\"Den_Details\":null,\"Utilities_Included\":false,\"Included_Utilities\":[],\"Utility_Billing_Type\":\"All-Inclusive\",\"Notes\":\"\",\"Bedrooms_List\":[{\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Allocation_Mode\":\"Sharing\",\"Full_Room_Rent\":1200,\"Sharing_Spaces_Count\":2,\"Sharing_Rent_Per_Space\":425,\"Ensuite_Bath\":false,\"Notes\":\"Room 1 allocation.\"},{\"Bedroom_ID\":\"BR-2\",\"Bedroom_Name\":\"Room 2\",\"Allocation_Mode\":\"Fully Used\",\"Full_Room_Rent\":675,\"Sharing_Spaces_Count\":2,\"Sharing_Rent_Per_Space\":600,\"Ensuite_Bath\":false,\"Notes\":\"Room 2 allocation.\"},{\"Bedroom_ID\":\"BR-xlmi\",\"Bedroom_Name\":\"Room 3\",\"Allocation_Mode\":\"Sharing\",\"Full_Room_Rent\":1200,\"Sharing_Spaces_Count\":2,\"Sharing_Rent_Per_Space\":425,\"Ensuite_Bath\":false,\"Notes\":\"2 sharing beds or 1 individual full bedroom.\"}],\"Spaces_Count\":5,\"Spaces\":[{\"Space_ID\":\"SPC-MTLR08OE-M-BR1-A\",\"Space_Name\":\"Room 1 - Bed A\",\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":425,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Shared\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Tenant_ID\":null,\"Tenant_Name\":null,\"Notes\":\"Room 1 allocation.\"},{\"Space_ID\":\"SPC-MTLR08OE-M-BR1-A\",\"Space_Name\":\"Room 1 - Bed B\",\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":425,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Shared\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Tenant_ID\":null,\"Tenant_Name\":null,\"Notes\":\"Room 1 allocation.\"},{\"Space_ID\":\"SPC-MTLR08OE-M-BR2-A\",\"Space_Name\":\"Room 2 (Full Bedroom - Individual)\",\"Bedroom_ID\":\"BR-2\",\"Bedroom_Name\":\"Room 2\",\"Space_Type\":\"Private Bedroom\",\"Target_Rent\":675,\"Full_Room_Rent\":675,\"Occupancy_Mode\":\"Fully Used (Private)\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Tenant_ID\":null,\"Tenant_Name\":null,\"Notes\":\"Room 2 allocation.\"},{\"Space_ID\":\"SPC-MTLR08OE-M-BR3-A\",\"Space_Name\":\"Room 3 - Bed A\",\"Bedroom_ID\":\"BR-xlmi\",\"Bedroom_Name\":\"Room 3\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":425,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Shared\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Tenant_ID\":null,\"Tenant_Name\":null,\"Notes\":\"2 sharing beds or 1 individual full bedroom.\"},{\"Space_ID\":\"SPC-MTLR08OE-M-BR3-A\",\"Space_Name\":\"Room 3 - Bed B\",\"Bedroom_ID\":\"BR-xlmi\",\"Bedroom_Name\":\"Room 3\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":425,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Shared\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Tenant_ID\":null,\"Tenant_Name\":null,\"Notes\":\"2 sharing beds or 1 individual full bedroom.\"}],\"Full_Room_Rent\":1920,\"Allow_Full_Room_Lease\":false}"
+    },
+    {
+      "After_JSON": "{\"header\":{\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN6ZUNS\",\"Date\":\"2026-05-01\",\"Description\":\"Lease Inception — LEASE-MTN6ZUNS (UNIT-MTLR08OE-M - Room 1 - Bed A (Sharing))\",\"Reference_Type\":\"LEASE_INCEPTION\",\"Reference_ID\":\"LEASE-MTN6ZUNS\",\"Created_By\":\"rahulrajanmdm@gmail.com\",\"Status\":\"POSTED\",\"Period_ID\":\"PER-2025\",\"Created_At\":\"2026-09-04T16:52:50.318Z\"},\"lines\":[{\"Line_ID\":\"JRN-LEASE-INIT-LEASE-MTN6ZUNS-1\",\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN6ZUNS\",\"Account_Code\":\"1100\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Tenant_ID\":\"TEN-MTN53IOY\",\"Debit_Amount\":425,\"Credit_Amount\":0,\"Memo\":\"Initial 1st Month Rent Charge (2026-05)\"},{\"Line_ID\":\"JRN-LEASE-INIT-LEASE-MTN6ZUNS-2\",\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN6ZUNS\",\"Account_Code\":\"4000\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Tenant_ID\":\"TEN-MTN53IOY\",\"Debit_Amount\":0,\"Credit_Amount\":425,\"Memo\":\"Initial 1st Month Rent Revenue\"},{\"Line_ID\":\"JRN-LEASE-INIT-LEASE-MTN6ZUNS-3\",\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN6ZUNS\",\"Account_Code\":\"1120\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Tenant_ID\":\"TEN-MTN53IOY\",\"Debit_Amount\":575,\"Credit_Amount\":0,\"Memo\":\"Deposit / Last Month Rent Receivable\"},{\"Line_ID\":\"JRN-LEASE-INIT-LEASE-MTN6ZUNS-4\",\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN6ZUNS\",\"Account_Code\":\"2200\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Tenant_ID\":\"TEN-MTN53IOY\",\"Debit_Amount\":0,\"Credit_Amount\":575,\"Memo\":\"Tenant Deposit Held Liability (Security & LMR)\"}]}",
+      "Audit_ID": "AUD-1788540770319-461",
+      "Action": "POST",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "IP_or_Source": "Web ERP Client",
+      "Record_ID": "JRN-LEASE-INIT-LEASE-MTN6ZUNS",
+      "Timestamp": "2026-09-04T16:52:50.319Z",
+      "Module": "Journal"
+    },
+    {
+      "Action": "CREATE",
+      "IP_or_Source": "Web ERP Client",
+      "Timestamp": "2026-09-04T16:52:50.311Z",
+      "Record_ID": "DEP-LEASE-MTN6ZUNS",
+      "After_JSON": "{\"Deposit_Txn_ID\":\"DEP-LEASE-MTN6ZUNS\",\"Lease_ID\":\"LEASE-MTN6ZUNS\",\"Tenant_ID\":\"TEN-MTN53IOY\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Txn_Type\":\"Charge\",\"Due_Amount\":575,\"Paid_Amount\":0,\"Refund_Amount\":0,\"Balance\":575,\"Txn_Date\":\"2026-05-01\",\"Status\":\"Receivable\",\"Journal_Ref_ID\":\"JRN-LEASE-INIT-LEASE-MTN6ZUNS\",\"Created_By\":\"rahulrajanmdm@gmail.com\"}",
+      "Audit_ID": "AUD-1788540770311-515",
+      "Module": "Deposits",
+      "User_Email": "rahulrajanmdm@gmail.com"
+    },
+    {
+      "Action": "CREATE",
+      "Timestamp": "2026-09-04T16:52:50.305Z",
+      "Audit_ID": "AUD-1788540770305-174",
+      "IP_or_Source": "Web ERP Client",
+      "After_JSON": "{\"Rent_Txn_ID\":\"RENT-202605-UNIT-MTLR08OE-M\",\"Lease_ID\":\"LEASE-MTN6ZUNS\",\"Tenant_ID\":\"TEN-MTN53IOY\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Period_Month\":\"2026-05\",\"Due_Date\":\"2026-05-01\",\"Amount_Billed\":425,\"Amount_Paid\":0,\"Balance\":425,\"Status\":\"Unpaid\",\"Journal_Ref_ID\":\"JRN-LEASE-INIT-LEASE-MTN6ZUNS\",\"Created_By\":\"rahulrajanmdm@gmail.com\",\"Created_At\":\"2026-09-04T16:52:50.305Z\"}",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Record_ID": "RENT-202605-UNIT-MTLR08OE-M",
+      "Module": "Rent"
+    },
+    {
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTN53IOY\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Space_ID\":\"SPACE-UUNIT-MTLR08OE-M-R1-A\",\"Space_Name\":\"Room 1 - Bed A (Sharing)\",\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Is_Full_Bedroom\":false,\"Is_Full_Room\":false,\"Occupancy_Type\":\"Single Bed\",\"Occupants_Count\":1,\"Charge_Utilities_Individually\":true,\"Occupants\":[{\"Occupant_ID\":\"TEN-MTN53IOY\",\"Full_Name\":\"ELNA\",\"Email\":\"test@gmail.com\",\"Phone\":\"123\",\"Is_Primary\":true,\"Utility_Share_Percentage\":100,\"Charge_Utilities_Individually\":false}],\"Lease_Start\":\"2026-05-01\",\"Lease_End\":\"2026-12-30\",\"Monthly_Rent\":425,\"Deposit_Required\":150,\"Deposit_Received\":0,\"Last_Month_Rent\":425,\"Drive_Folder_URL\":\"https://drive.google.com/drive/folders/lease-unit-mtlr08oe-m\",\"Notes\":\"Standard Tenancy Agreement. Rent and utilities configured for tenant.\",\"Utilities_Included\":false,\"Lease_ID\":\"LEASE-MTN6ZUNS\",\"Status\":\"Active\",\"Created_At\":\"2026-09-04T16:52:50.296Z\"}",
+      "Audit_ID": "AUD-1788540770297-479",
+      "Module": "Leases",
+      "Record_ID": "LEASE-MTN6ZUNS",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Action": "CREATE",
+      "Timestamp": "2026-09-04T16:52:50.297Z",
+      "IP_or_Source": "Web ERP Client"
+    },
+    {
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTN52SH8\",\"Full_Name\":\"ALEENA\",\"Email\":\"Test@gmail.com\",\"Phone\":\"0000\",\"Emergency_Contact\":\"\",\"Status\":\"Active\",\"Created_At\":\"2026-09-04\",\"Notes\":\"\",\"Current_Property_ID\":\"PROP-MTLPM82Q\",\"Current_Unit_ID\":\"UNIT-MTLR08OE-M\",\"Current_Space_ID\":\"SPACE-UUNIT-MTLR08OE-M-R1-A\",\"Current_Space_Name\":\"Room 1 - Bed A (Sharing)\"}",
+      "Module": "Tenants",
+      "Audit_ID": "AUD-1788540614101-397",
+      "Record_ID": "TEN-MTN52SH8",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "IP_or_Source": "Web ERP Client",
+      "Timestamp": "2026-09-04T16:50:14.101Z",
+      "Action": "UPDATE"
+    },
+    {
+      "After_JSON": "{\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_Number_Name\":\"Main Floor\",\"Unit_Number\":\"Main Floor\",\"Unit_Type\":\"Main Floor Suite\",\"Floor_Plan\":\"Main Floor Suite\",\"Division_Level\":\"Main Floor\",\"Utility_Share_Percentage\":null,\"Target_Rent\":2375,\"Monthly_Rent\":2375,\"Current_Status\":\"Vacant\",\"Bedrooms\":3,\"Bathrooms\":1,\"Square_Feet\":600,\"Kitchens\":1,\"Kitchen_Type\":\"Full Kitchen\",\"Has_Den\":false,\"Dens_Count\":0,\"Den_Details\":null,\"Utilities_Included\":false,\"Included_Utilities\":[],\"Utility_Billing_Type\":\"All-Inclusive\",\"Notes\":\"\",\"Bedrooms_List\":[{\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Allocation_Mode\":\"Sharing\",\"Full_Room_Rent\":1200,\"Sharing_Spaces_Count\":2,\"Sharing_Rent_Per_Space\":425,\"Ensuite_Bath\":false,\"Notes\":\"Room 1 allocation.\"},{\"Bedroom_ID\":\"BR-2\",\"Bedroom_Name\":\"Room 2\",\"Allocation_Mode\":\"Fully Used\",\"Full_Room_Rent\":675,\"Sharing_Spaces_Count\":2,\"Sharing_Rent_Per_Space\":600,\"Ensuite_Bath\":false,\"Notes\":\"Room 2 allocation.\"},{\"Bedroom_ID\":\"BR-xlmi\",\"Bedroom_Name\":\"Room 3\",\"Allocation_Mode\":\"Sharing\",\"Full_Room_Rent\":1200,\"Sharing_Spaces_Count\":2,\"Sharing_Rent_Per_Space\":425,\"Ensuite_Bath\":false,\"Notes\":\"2 sharing beds or 1 individual full bedroom.\"}],\"Spaces_Count\":5,\"Spaces\":[{\"Space_ID\":\"SPC-MTLR08OE-M-BR1-A\",\"Space_Name\":\"Room 1 - Bed A\",\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":425,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Shared\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Tenant_ID\":null,\"Tenant_Name\":null,\"Notes\":\"Room 1 allocation.\"},{\"Space_ID\":\"SPC-MTLR08OE-M-BR1-A\",\"Space_Name\":\"Room 1 - Bed B\",\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":425,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Shared\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Tenant_ID\":null,\"Tenant_Name\":null,\"Notes\":\"Room 1 allocation.\"},{\"Space_ID\":\"SPC-MTLR08OE-M-BR2-A\",\"Space_Name\":\"Room 2 (Full Bedroom - Individual)\",\"Bedroom_ID\":\"BR-2\",\"Bedroom_Name\":\"Room 2\",\"Space_Type\":\"Private Bedroom\",\"Target_Rent\":675,\"Full_Room_Rent\":675,\"Occupancy_Mode\":\"Fully Used (Private)\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Tenant_ID\":null,\"Tenant_Name\":null,\"Notes\":\"Room 2 allocation.\"},{\"Space_ID\":\"SPC-MTLR08OE-M-BR3-A\",\"Space_Name\":\"Room 3 - Bed A\",\"Bedroom_ID\":\"BR-xlmi\",\"Bedroom_Name\":\"Room 3\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":425,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Shared\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Tenant_ID\":null,\"Tenant_Name\":null,\"Notes\":\"2 sharing beds or 1 individual full bedroom.\"},{\"Space_ID\":\"SPC-MTLR08OE-M-BR3-A\",\"Space_Name\":\"Room 3 - Bed B\",\"Bedroom_ID\":\"BR-xlmi\",\"Bedroom_Name\":\"Room 3\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":425,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Shared\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Tenant_ID\":null,\"Tenant_Name\":null,\"Notes\":\"2 sharing beds or 1 individual full bedroom.\"}],\"Full_Room_Rent\":1920,\"Allow_Full_Room_Lease\":false}",
+      "Action": "UPDATE",
+      "Record_ID": "UNIT-MTLR08OE-M",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Timestamp": "2026-09-04T16:50:14.084Z",
+      "Audit_ID": "AUD-1788540614084-341",
+      "IP_or_Source": "Web ERP Client",
+      "Module": "Units"
+    },
+    {
+      "Audit_ID": "AUD-1788540614077-272",
+      "Timestamp": "2026-09-04T16:50:14.077Z",
+      "Action": "POST",
+      "IP_or_Source": "Web ERP Client",
+      "Module": "Journal",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "After_JSON": "{\"header\":{\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN6WI3R\",\"Date\":\"2026-05-01\",\"Description\":\"Lease Inception — LEASE-MTN6WI3R (UNIT-MTLR08OE-M - Room 1 - Bed A (Sharing))\",\"Reference_Type\":\"LEASE_INCEPTION\",\"Reference_ID\":\"LEASE-MTN6WI3R\",\"Created_By\":\"rahulrajanmdm@gmail.com\",\"Status\":\"POSTED\",\"Period_ID\":\"PER-2025\",\"Created_At\":\"2026-09-04T16:50:14.077Z\"},\"lines\":[{\"Line_ID\":\"JRN-LEASE-INIT-LEASE-MTN6WI3R-1\",\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN6WI3R\",\"Account_Code\":\"1100\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Tenant_ID\":\"TEN-MTN52SH8\",\"Debit_Amount\":425,\"Credit_Amount\":0,\"Memo\":\"Initial 1st Month Rent Charge (2026-05)\"},{\"Line_ID\":\"JRN-LEASE-INIT-LEASE-MTN6WI3R-2\",\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN6WI3R\",\"Account_Code\":\"4000\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Tenant_ID\":\"TEN-MTN52SH8\",\"Debit_Amount\":0,\"Credit_Amount\":425,\"Memo\":\"Initial 1st Month Rent Revenue\"},{\"Line_ID\":\"JRN-LEASE-INIT-LEASE-MTN6WI3R-3\",\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN6WI3R\",\"Account_Code\":\"1120\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Tenant_ID\":\"TEN-MTN52SH8\",\"Debit_Amount\":575,\"Credit_Amount\":0,\"Memo\":\"Deposit / Last Month Rent Receivable\"},{\"Line_ID\":\"JRN-LEASE-INIT-LEASE-MTN6WI3R-4\",\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN6WI3R\",\"Account_Code\":\"2200\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Tenant_ID\":\"TEN-MTN52SH8\",\"Debit_Amount\":0,\"Credit_Amount\":575,\"Memo\":\"Tenant Deposit Held Liability (Security & LMR)\"}]}",
+      "Record_ID": "JRN-LEASE-INIT-LEASE-MTN6WI3R"
+    },
+    {
+      "Timestamp": "2026-09-04T16:50:14.070Z",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Audit_ID": "AUD-1788540614070-685",
+      "After_JSON": "{\"Deposit_Txn_ID\":\"DEP-LEASE-MTN6WI3R\",\"Lease_ID\":\"LEASE-MTN6WI3R\",\"Tenant_ID\":\"TEN-MTN52SH8\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Txn_Type\":\"Charge\",\"Due_Amount\":575,\"Paid_Amount\":0,\"Refund_Amount\":0,\"Balance\":575,\"Txn_Date\":\"2026-05-01\",\"Status\":\"Receivable\",\"Journal_Ref_ID\":\"JRN-LEASE-INIT-LEASE-MTN6WI3R\",\"Created_By\":\"rahulrajanmdm@gmail.com\"}",
+      "Module": "Deposits",
+      "Action": "CREATE",
+      "IP_or_Source": "Web ERP Client",
+      "Record_ID": "DEP-LEASE-MTN6WI3R"
+    },
+    {
+      "IP_or_Source": "Web ERP Client",
+      "After_JSON": "{\"Rent_Txn_ID\":\"RENT-202605-UNIT-MTLR08OE-M\",\"Lease_ID\":\"LEASE-MTN6WI3R\",\"Tenant_ID\":\"TEN-MTN52SH8\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Period_Month\":\"2026-05\",\"Due_Date\":\"2026-05-01\",\"Amount_Billed\":425,\"Amount_Paid\":0,\"Balance\":425,\"Status\":\"Unpaid\",\"Journal_Ref_ID\":\"JRN-LEASE-INIT-LEASE-MTN6WI3R\",\"Created_By\":\"rahulrajanmdm@gmail.com\",\"Created_At\":\"2026-09-04T16:50:14.063Z\"}",
+      "Module": "Rent",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Record_ID": "RENT-202605-UNIT-MTLR08OE-M",
+      "Audit_ID": "AUD-1788540614064-590",
+      "Action": "CREATE",
+      "Timestamp": "2026-09-04T16:50:14.064Z"
+    },
+    {
+      "IP_or_Source": "Web ERP Client",
+      "Audit_ID": "AUD-1788540614056-393",
+      "Action": "CREATE",
+      "Record_ID": "LEASE-MTN6WI3R",
+      "Timestamp": "2026-09-04T16:50:14.056Z",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTN52SH8\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Space_ID\":\"SPACE-UUNIT-MTLR08OE-M-R1-A\",\"Space_Name\":\"Room 1 - Bed A (Sharing)\",\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Is_Full_Bedroom\":false,\"Is_Full_Room\":false,\"Occupancy_Type\":\"Single Bed\",\"Occupants_Count\":1,\"Charge_Utilities_Individually\":true,\"Occupants\":[{\"Occupant_ID\":\"TEN-MTN52SH8\",\"Full_Name\":\"ALEENA\",\"Email\":\"Test@gmail.com\",\"Phone\":\"0000\",\"Is_Primary\":true,\"Utility_Share_Percentage\":100,\"Charge_Utilities_Individually\":false}],\"Lease_Start\":\"2026-05-01\",\"Lease_End\":\"2026-12-30\",\"Monthly_Rent\":425,\"Deposit_Required\":150,\"Deposit_Received\":0,\"Last_Month_Rent\":425,\"Drive_Folder_URL\":\"https://drive.google.com/drive/folders/lease-unit-mtlr08oe-m\",\"Notes\":\"Standard Tenancy Agreement. Rent and utilities configured for tenant.\",\"Utilities_Included\":false,\"Lease_ID\":\"LEASE-MTN6WI3R\",\"Status\":\"Active\",\"Created_At\":\"2026-09-04T16:50:14.055Z\"}",
+      "Module": "Leases",
+      "User_Email": "rahulrajanmdm@gmail.com"
+    },
+    {
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTN569R0\",\"Full_Name\":\"Gurminder singh\",\"Email\":\"test@gmail.com\",\"Phone\":\"12\",\"Emergency_Contact\":\"\",\"Status\":\"Active\",\"Created_At\":\"2026-09-04\",\"Notes\":\"\",\"Current_Property_ID\":\"PROP-MTLPM82Q\",\"Current_Unit_ID\":\"UNIT-MTLR08OF-B\",\"Current_Space_Name\":\"Room 1 (Joint Room - Gurminder singh & Shivani Nayyar)\"}",
+      "Audit_ID": "AUD-1788540433643-102",
+      "Timestamp": "2026-09-04T16:47:13.643Z",
+      "Action": "UPDATE",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Record_ID": "TEN-MTN569R0",
+      "IP_or_Source": "Web ERP Client",
+      "Module": "Tenants"
+    },
+    {
+      "Module": "Units",
+      "Timestamp": "2026-09-04T16:47:13.621Z",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Audit_ID": "AUD-1788540433621-506",
+      "IP_or_Source": "Web ERP Client",
+      "Record_ID": "UNIT-MTLR08OF-B",
+      "After_JSON": "{\"Unit_ID\":\"UNIT-MTLR08OF-B\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_Number_Name\":\"Basement Suite\",\"Unit_Number\":\"Basement Suite\",\"Unit_Type\":\"Basement Suite\",\"Floor_Plan\":\"Basement Suite\",\"Division_Level\":\"Basement\",\"Utility_Share_Percentage\":null,\"Target_Rent\":1600,\"Monthly_Rent\":1600,\"Current_Status\":\"Occupied\",\"Bedrooms\":1,\"Bathrooms\":1,\"Square_Feet\":800,\"Kitchens\":1,\"Kitchen_Type\":\"Full Kitchen\",\"Has_Den\":false,\"Dens_Count\":0,\"Den_Details\":null,\"Utilities_Included\":true,\"Included_Utilities\":[\"Hydro / Electricity\",\"Heat / Natural Gas\",\"Municipal Water & Sewage\",\"High-Speed Internet / Fiber\"],\"Utility_Billing_Type\":\"All-Inclusive\",\"Notes\":\"\",\"Bedrooms_List\":[{\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Allocation_Mode\":\"Fully Used\",\"Full_Room_Rent\":1200,\"Sharing_Spaces_Count\":2,\"Sharing_Rent_Per_Space\":800,\"Ensuite_Bath\":false,\"Notes\":\"Room 1 allocation.\"}],\"Spaces_Count\":2,\"Spaces\":[{\"Space_ID\":\"SPC-MTLR08OF-B-BR1-A\",\"Space_Name\":\"Room 1 - Bed A\",\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":800,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Fully Used (Private)\",\"Utilities_Included\":true,\"Current_Status\":\"Occupied\",\"Tenant_ID\":\"TEN-MTN569R0\",\"Tenant_Name\":\"Gurminder singh\",\"Notes\":\"Room 1 allocation.\"},{\"Space_ID\":\"SPC-MTLR08OF-B-BR1-A\",\"Space_Name\":\"Room 1 - Bed B\",\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":800,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Fully Used (Private)\",\"Utilities_Included\":true,\"Current_Status\":\"Occupied\",\"Tenant_ID\":\"TEN-MTN569R0\",\"Tenant_Name\":\"Gurminder singh\",\"Notes\":\"Room 1 allocation.\"}],\"Full_Room_Rent\":1280,\"Allow_Full_Room_Lease\":false}",
+      "Action": "UPDATE"
+    },
+    {
+      "Action": "POST",
+      "Timestamp": "2026-09-04T16:47:13.612Z",
+      "Audit_ID": "AUD-1788540433612-161",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "IP_or_Source": "Web ERP Client",
+      "Module": "Journal",
+      "After_JSON": "{\"header\":{\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN6SMUY\",\"Date\":\"2026-06-01\",\"Description\":\"Lease Inception — LEASE-MTN6SMUY (UNIT-MTLR08OF-B - Room 1 (Joint Room - Gurminder singh & Shivani Nayyar))\",\"Reference_Type\":\"LEASE_INCEPTION\",\"Reference_ID\":\"LEASE-MTN6SMUY\",\"Created_By\":\"rahulrajanmdm@gmail.com\",\"Status\":\"POSTED\",\"Period_ID\":\"PER-2025\",\"Created_At\":\"2026-09-04T16:47:13.611Z\"},\"lines\":[{\"Line_ID\":\"JRN-LEASE-INIT-LEASE-MTN6SMUY-1\",\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN6SMUY\",\"Account_Code\":\"1100\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OF-B\",\"Tenant_ID\":\"TEN-MTN569R0\",\"Debit_Amount\":1600,\"Credit_Amount\":0,\"Memo\":\"Initial 1st Month Rent Charge (2026-06)\"},{\"Line_ID\":\"JRN-LEASE-INIT-LEASE-MTN6SMUY-2\",\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN6SMUY\",\"Account_Code\":\"4000\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OF-B\",\"Tenant_ID\":\"TEN-MTN569R0\",\"Debit_Amount\":0,\"Credit_Amount\":1600,\"Memo\":\"Initial 1st Month Rent Revenue\"},{\"Line_ID\":\"JRN-LEASE-INIT-LEASE-MTN6SMUY-3\",\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN6SMUY\",\"Account_Code\":\"1120\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OF-B\",\"Tenant_ID\":\"TEN-MTN569R0\",\"Debit_Amount\":1750,\"Credit_Amount\":0,\"Memo\":\"Deposit / Last Month Rent Receivable\"},{\"Line_ID\":\"JRN-LEASE-INIT-LEASE-MTN6SMUY-4\",\"Journal_ID\":\"JRN-LEASE-INIT-LEASE-MTN6SMUY\",\"Account_Code\":\"2200\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OF-B\",\"Tenant_ID\":\"TEN-MTN569R0\",\"Debit_Amount\":0,\"Credit_Amount\":1750,\"Memo\":\"Tenant Deposit Held Liability (Security & LMR)\"}]}",
+      "Record_ID": "JRN-LEASE-INIT-LEASE-MTN6SMUY"
+    },
+    {
+      "IP_or_Source": "Web ERP Client",
+      "Module": "Deposits",
+      "Record_ID": "DEP-LEASE-MTN6SMUY",
+      "After_JSON": "{\"Deposit_Txn_ID\":\"DEP-LEASE-MTN6SMUY\",\"Lease_ID\":\"LEASE-MTN6SMUY\",\"Tenant_ID\":\"TEN-MTN569R0\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OF-B\",\"Txn_Type\":\"Charge\",\"Due_Amount\":1750,\"Paid_Amount\":0,\"Refund_Amount\":0,\"Balance\":1750,\"Txn_Date\":\"2026-06-01\",\"Status\":\"Receivable\",\"Journal_Ref_ID\":\"JRN-LEASE-INIT-LEASE-MTN6SMUY\",\"Created_By\":\"rahulrajanmdm@gmail.com\"}",
+      "Timestamp": "2026-09-04T16:47:13.608Z",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Action": "CREATE",
+      "Audit_ID": "AUD-1788540433608-246"
+    },
+    {
+      "Module": "Rent",
+      "Audit_ID": "AUD-1788540433603-470",
+      "Record_ID": "RENT-202606-UNIT-MTLR08OF-B",
+      "After_JSON": "{\"Rent_Txn_ID\":\"RENT-202606-UNIT-MTLR08OF-B\",\"Lease_ID\":\"LEASE-MTN6SMUY\",\"Tenant_ID\":\"TEN-MTN569R0\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OF-B\",\"Period_Month\":\"2026-06\",\"Due_Date\":\"2026-06-01\",\"Amount_Billed\":1600,\"Amount_Paid\":0,\"Balance\":1600,\"Status\":\"Unpaid\",\"Journal_Ref_ID\":\"JRN-LEASE-INIT-LEASE-MTN6SMUY\",\"Created_By\":\"rahulrajanmdm@gmail.com\",\"Created_At\":\"2026-09-04T16:47:13.602Z\"}",
+      "Timestamp": "2026-09-04T16:47:13.603Z",
+      "IP_or_Source": "Web ERP Client",
+      "Action": "CREATE",
+      "User_Email": "rahulrajanmdm@gmail.com"
+    },
+    {
+      "Audit_ID": "AUD-1788540433595-241",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Timestamp": "2026-09-04T16:47:13.595Z",
+      "Action": "CREATE",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTN569R0\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_ID\":\"UNIT-MTLR08OF-B\",\"Space_Name\":\"Room 1 (Joint Room - Gurminder singh & Shivani Nayyar)\",\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Is_Full_Bedroom\":true,\"Is_Full_Room\":false,\"Occupancy_Type\":\"Joint Room (2 People)\",\"Occupants_Count\":2,\"Charge_Utilities_Individually\":true,\"Occupants\":[{\"Occupant_ID\":\"TEN-MTN569R0\",\"Full_Name\":\"Gurminder singh\",\"Email\":\"test@gmail.com\",\"Phone\":\"12\",\"Is_Primary\":true,\"Utility_Share_Percentage\":50,\"Charge_Utilities_Individually\":true,\"Notes\":\"Lead Group Tenant\"},{\"Occupant_ID\":\"TEN-MTN55OUC\",\"Full_Name\":\"Shivani Nayyar\",\"Email\":\"test@gmail.com\",\"Phone\":\"123\",\"Is_Primary\":false,\"Utility_Share_Percentage\":50,\"Charge_Utilities_Individually\":true,\"Notes\":\"Co-Occupant\"}],\"Lease_Start\":\"2026-06-01\",\"Lease_End\":\"2027-05-31\",\"Monthly_Rent\":1600,\"Deposit_Required\":150,\"Deposit_Received\":0,\"Last_Month_Rent\":1600,\"Drive_Folder_URL\":\"https://drive.google.com/drive/folders/lease-unit-mtlr08of-b\",\"Notes\":\"Standard Tenancy Agreement. Rent and utilities configured for tenant.\",\"Utilities_Included\":true,\"Lease_ID\":\"LEASE-MTN6SMUY\",\"Status\":\"Active\",\"Created_At\":\"2026-09-04T16:47:13.594Z\"}",
+      "IP_or_Source": "Web ERP Client",
+      "Record_ID": "LEASE-MTN6SMUY",
+      "Module": "Leases"
+    },
+    {
+      "Module": "Tenants",
+      "Record_ID": "TEN-MTN55OUC",
+      "Audit_ID": "AUD-1788540433584-775",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTN55OUC\",\"Full_Name\":\"Shivani Nayyar\",\"Email\":\"test@gmail.com\",\"Phone\":\"123\",\"Emergency_Contact\":\"\",\"Status\":\"Active\",\"Created_At\":\"2026-09-04\",\"Notes\":\"\",\"Current_Property_ID\":\"PROP-MTLPM82Q\",\"Current_Unit_ID\":\"UNIT-MTLR08OF-B\",\"Current_Space_Name\":\"Room 1 (Co-Occupant)\"}",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Action": "UPDATE",
+      "IP_or_Source": "Web ERP Client",
+      "Timestamp": "2026-09-04T16:47:13.584Z"
+    },
+    {
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Action": "CREATE",
+      "Record_ID": "TEN-MTN569R0",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTN569R0\",\"Full_Name\":\"Gurminder singh\",\"Email\":\"test@gmail.com\",\"Phone\":\"12\",\"Emergency_Contact\":\"\",\"Status\":\"Prospect\",\"Created_At\":\"2026-09-04\",\"Notes\":\"\"}",
+      "Timestamp": "2026-09-04T16:01:50.557Z",
+      "IP_or_Source": "Web ERP Client",
+      "Module": "Tenants",
+      "Audit_ID": "AUD-1788537710557-202"
+    },
+    {
+      "IP_or_Source": "Web ERP Client",
+      "Action": "CREATE",
+      "Timestamp": "2026-09-04T16:01:23.460Z",
+      "Audit_ID": "AUD-1788537683460-747",
+      "Record_ID": "TEN-MTN55OUC",
+      "Module": "Tenants",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTN55OUC\",\"Full_Name\":\"Shivani Nayyar\",\"Email\":\"test@gmail.com\",\"Phone\":\"123\",\"Emergency_Contact\":\"\",\"Status\":\"Active\",\"Created_At\":\"2026-09-04\",\"Notes\":\"\"}"
+    },
+    {
+      "Audit_ID": "AUD-1788537656407-325",
+      "Action": "CREATE",
+      "Record_ID": "TEN-MTN553YV",
+      "IP_or_Source": "Web ERP Client",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTN553YV\",\"Full_Name\":\"Amal\",\"Email\":\"test@gmail.com\",\"Phone\":\"123\",\"Emergency_Contact\":\"\",\"Status\":\"Active\",\"Created_At\":\"2026-09-04\",\"Notes\":\"\"}",
+      "Timestamp": "2026-09-04T16:00:56.407Z",
+      "Module": "Tenants",
+      "User_Email": "rahulrajanmdm@gmail.com"
+    },
+    {
+      "Timestamp": "2026-09-04T16:00:36.154Z",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Audit_ID": "AUD-1788537636154-685",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTN54OCA\",\"Full_Name\":\"Lavina\",\"Email\":\"test@gmail.com\",\"Phone\":\"123\",\"Emergency_Contact\":\"\",\"Status\":\"Active\",\"Created_At\":\"2026-09-04\",\"Notes\":\"\"}",
+      "Action": "CREATE",
+      "Module": "Tenants",
+      "IP_or_Source": "Web ERP Client",
+      "Record_ID": "TEN-MTN54OCA"
+    },
+    {
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTN53Y0W\",\"Full_Name\":\"John\",\"Email\":\"test@gmail.com\",\"Phone\":\"123\",\"Emergency_Contact\":\"\",\"Status\":\"Active\",\"Created_At\":\"2026-09-04\",\"Notes\":\"\"}",
+      "Module": "Tenants",
+      "Audit_ID": "AUD-1788537602048-697",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Record_ID": "TEN-MTN53Y0W",
+      "Timestamp": "2026-09-04T16:00:02.048Z",
+      "IP_or_Source": "Web ERP Client",
+      "Action": "CREATE"
+    },
+    {
+      "Timestamp": "2026-09-04T15:59:42.179Z",
+      "Module": "Tenants",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTN53IOY\",\"Full_Name\":\"ELNA\",\"Email\":\"test@gmail.com\",\"Phone\":\"123\",\"Emergency_Contact\":\"\",\"Status\":\"Active\",\"Created_At\":\"2026-09-04\",\"Notes\":\"\"}",
+      "Audit_ID": "AUD-1788537582178-232",
+      "IP_or_Source": "Web ERP Client",
+      "Action": "CREATE",
+      "Record_ID": "TEN-MTN53IOY"
+    },
+    {
+      "After_JSON": "{\"Tenant_ID\":\"TEN-MTN52SH8\",\"Full_Name\":\"ALEENA\",\"Email\":\"Test@gmail.com\",\"Phone\":\"0000\",\"Emergency_Contact\":\"\",\"Status\":\"Active\",\"Created_At\":\"2026-09-04\",\"Notes\":\"\"}",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "IP_or_Source": "Web ERP Client",
+      "Record_ID": "TEN-MTN52SH8",
+      "Module": "Tenants",
+      "Action": "CREATE",
+      "Audit_ID": "AUD-1788537548205-545",
+      "Timestamp": "2026-09-04T15:59:08.205Z"
+    },
+    {
+      "Audit_ID": "AUD-1788534648447-800",
+      "Action": "LOGIN",
+      "Timestamp": "2026-09-04T15:10:48.447Z",
+      "IP_or_Source": "Web ERP Client",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Module": "Authentication",
+      "Record_ID": "USR-MASTER-ADMIN",
+      "After_JSON": "{\"method\":\"Password + Email OTP\",\"rememberMe\":false,\"timestamp\":\"2026-09-04T15:10:48.447Z\"}"
+    },
+    {
+      "Module": "Authentication",
+      "Record_ID": "SESSION_TERMINATED",
+      "IP_or_Source": "Web ERP Client",
+      "After_JSON": "{\"timestamp\":\"2026-09-04T15:10:25.000Z\"}",
+      "Timestamp": "2026-09-04T15:10:25.000Z",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Action": "LOGOUT",
+      "Audit_ID": "AUD-1788534625000-117"
+    },
+    {
+      "Record_ID": "USR-MASTER-ADMIN",
+      "Module": "Authentication",
+      "After_JSON": "{\"method\":\"Password + Email OTP\",\"rememberMe\":false,\"timestamp\":\"2026-09-04T15:10:00.132Z\"}",
+      "IP_or_Source": "Web ERP Client",
+      "Audit_ID": "AUD-1788534600132-472",
+      "Action": "LOGIN",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Timestamp": "2026-09-04T15:10:00.132Z"
+    },
+    {
+      "Timestamp": "2026-09-04T15:09:20.633Z",
+      "Action": "LOGOUT",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Record_ID": "SESSION_TERMINATED",
+      "Module": "Authentication",
+      "Audit_ID": "AUD-1788534560633-627",
+      "IP_or_Source": "Web ERP Client",
+      "After_JSON": "{\"timestamp\":\"2026-09-04T15:09:20.633Z\"}"
+    },
+    {
+      "Module": "Authentication",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "After_JSON": "{\"method\":\"Password + Email OTP\",\"rememberMe\":false,\"timestamp\":\"2026-09-04T15:07:04.956Z\"}",
+      "Record_ID": "USR-MASTER-ADMIN",
+      "Timestamp": "2026-09-04T15:07:04.956Z",
+      "IP_or_Source": "Web ERP Client",
+      "Action": "LOGIN",
+      "Audit_ID": "AUD-1788534424956-876"
+    },
+    {
+      "Action": "LOGOUT",
+      "After_JSON": "{\"timestamp\":\"2026-09-03T18:39:37.351Z\"}",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Record_ID": "SESSION_TERMINATED",
+      "IP_or_Source": "Web ERP Client",
+      "Audit_ID": "AUD-1788460777351-541",
+      "Timestamp": "2026-09-03T18:39:37.351Z",
+      "Module": "Authentication"
+    },
+    {
+      "Module": "Units",
+      "After_JSON": "{\"Unit_ID\":\"UNIT-MTLR08OF-B\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_Number_Name\":\"Basement Suite\",\"Unit_Number\":\"Basement Suite\",\"Unit_Type\":\"Basement Suite\",\"Floor_Plan\":\"Basement Suite\",\"Division_Level\":\"Basement\",\"Target_Rent\":1600,\"Monthly_Rent\":1600,\"Current_Status\":\"Vacant\",\"Bedrooms\":1,\"Bathrooms\":1,\"Square_Feet\":800,\"Kitchens\":1,\"Kitchen_Type\":\"Full Kitchen\",\"Has_Den\":false,\"Dens_Count\":0,\"Utilities_Included\":true,\"Included_Utilities\":[\"Hydro / Electricity\",\"Heat / Natural Gas\",\"Municipal Water & Sewage\",\"High-Speed Internet / Fiber\"],\"Utility_Billing_Type\":\"All-Inclusive\",\"Notes\":\"\",\"Bedrooms_List\":[{\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Allocation_Mode\":\"Sharing\",\"Full_Room_Rent\":1200,\"Sharing_Spaces_Count\":2,\"Sharing_Rent_Per_Space\":800,\"Ensuite_Bath\":false,\"Notes\":\"Room 1 allocation.\"}],\"Spaces_Count\":2,\"Spaces\":[{\"Space_ID\":\"SPC-MTLR08OF-B-BR1-A\",\"Space_Name\":\"Room 1 - Bed A\",\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":800,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Shared\",\"Utilities_Included\":true,\"Current_Status\":\"Vacant\",\"Notes\":\"Room 1 allocation.\"},{\"Space_ID\":\"SPC-MTLR08OF-B-BR1-A\",\"Space_Name\":\"Room 1 - Bed B\",\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":800,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Shared\",\"Utilities_Included\":true,\"Current_Status\":\"Vacant\",\"Notes\":\"Room 1 allocation.\"}],\"Full_Room_Rent\":1280,\"Allow_Full_Room_Lease\":false}",
+      "Timestamp": "2026-09-03T18:35:36.051Z",
+      "Audit_ID": "AUD-1788460536051-423",
+      "IP_or_Source": "Web ERP Client",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Action": "UPDATE",
+      "Record_ID": "UNIT-MTLR08OF-B"
+    },
+    {
+      "Action": "UPDATE",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "IP_or_Source": "Web ERP Client",
+      "Timestamp": "2026-09-03T18:33:26.819Z",
+      "After_JSON": "{\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_Number_Name\":\"Main Floor\",\"Unit_Number\":\"Main Floor\",\"Unit_Type\":\"Main Floor Suite\",\"Floor_Plan\":\"Main Floor Suite\",\"Division_Level\":\"Main Floor\",\"Target_Rent\":2375,\"Monthly_Rent\":2375,\"Current_Status\":\"Vacant\",\"Bedrooms\":3,\"Bathrooms\":1,\"Square_Feet\":600,\"Kitchens\":1,\"Kitchen_Type\":\"Full Kitchen\",\"Has_Den\":false,\"Dens_Count\":0,\"Utilities_Included\":false,\"Included_Utilities\":[],\"Utility_Billing_Type\":\"All-Inclusive\",\"Notes\":\"\",\"Bedrooms_List\":[{\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Allocation_Mode\":\"Sharing\",\"Full_Room_Rent\":1200,\"Sharing_Spaces_Count\":2,\"Sharing_Rent_Per_Space\":425,\"Ensuite_Bath\":false,\"Notes\":\"Room 1 allocation.\"},{\"Bedroom_ID\":\"BR-2\",\"Bedroom_Name\":\"Room 2\",\"Allocation_Mode\":\"Fully Used\",\"Full_Room_Rent\":675,\"Sharing_Spaces_Count\":2,\"Sharing_Rent_Per_Space\":600,\"Ensuite_Bath\":false,\"Notes\":\"Room 2 allocation.\"},{\"Bedroom_ID\":\"BR-xlmi\",\"Bedroom_Name\":\"Room 3\",\"Allocation_Mode\":\"Sharing\",\"Full_Room_Rent\":1200,\"Sharing_Spaces_Count\":2,\"Sharing_Rent_Per_Space\":425,\"Ensuite_Bath\":false,\"Notes\":\"2 sharing beds or 1 individual full bedroom.\"}],\"Spaces_Count\":5,\"Spaces\":[{\"Space_ID\":\"SPC-MTLR08OE-M-BR1-A\",\"Space_Name\":\"Room 1 - Bed A\",\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":425,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Shared\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Notes\":\"Room 1 allocation.\"},{\"Space_ID\":\"SPC-MTLR08OE-M-BR1-A\",\"Space_Name\":\"Room 1 - Bed B\",\"Bedroom_ID\":\"BR-1\",\"Bedroom_Name\":\"Room 1\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":425,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Shared\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Notes\":\"Room 1 allocation.\"},{\"Space_ID\":\"SPC-MTLR08OE-M-BR2-A\",\"Space_Name\":\"Room 2 (Full Bedroom - Individual)\",\"Bedroom_ID\":\"BR-2\",\"Bedroom_Name\":\"Room 2\",\"Space_Type\":\"Private Bedroom\",\"Target_Rent\":675,\"Full_Room_Rent\":675,\"Occupancy_Mode\":\"Fully Used (Private)\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Notes\":\"Room 2 allocation.\"},{\"Space_ID\":\"SPC-MTLR08OE-M-BR3-A\",\"Space_Name\":\"Room 3 - Bed A\",\"Bedroom_ID\":\"BR-xlmi\",\"Bedroom_Name\":\"Room 3\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":425,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Shared\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Notes\":\"2 sharing beds or 1 individual full bedroom.\"},{\"Space_ID\":\"SPC-MTLR08OE-M-BR3-A\",\"Space_Name\":\"Room 3 - Bed B\",\"Bedroom_ID\":\"BR-xlmi\",\"Bedroom_Name\":\"Room 3\",\"Space_Type\":\"Shared Room Bed\",\"Target_Rent\":425,\"Full_Room_Rent\":1200,\"Occupancy_Mode\":\"Shared\",\"Utilities_Included\":false,\"Current_Status\":\"Vacant\",\"Notes\":\"2 sharing beds or 1 individual full bedroom.\"}],\"Full_Room_Rent\":1920,\"Allow_Full_Room_Lease\":false}",
+      "Record_ID": "UNIT-MTLR08OE-M",
+      "Audit_ID": "AUD-1788460406819-868",
+      "Module": "Units"
+    },
+    {
+      "After_JSON": "{\"Unit_ID\":\"UNIT-MTLR08OF-B\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_Number_Name\":\"Basement Suite\",\"Unit_Type\":\"Basement Suite\",\"Division_Level\":\"Basement\",\"Target_Rent\":1280,\"Current_Status\":\"Vacant\",\"Bedrooms\":1,\"Bathrooms\":1,\"Square_Feet\":800}",
+      "Module": "Units",
+      "Record_ID": "UNIT-MTLR08OF-B",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "IP_or_Source": "Web ERP Client",
+      "Timestamp": "2026-09-03T18:04:12.019Z",
+      "Action": "UPDATE",
+      "Audit_ID": "AUD-1788458652019-313"
+    },
+    {
+      "Record_ID": "UNIT-MTLR08OE-M",
+      "Action": "UPDATE",
+      "Module": "Units",
+      "Audit_ID": "AUD-1788458652018-268",
+      "After_JSON": "{\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_Number_Name\":\"Main Floor\",\"Unit_Type\":\"Main Floor Suite\",\"Division_Level\":\"Main Floor\",\"Target_Rent\":1920,\"Current_Status\":\"Vacant\",\"Bedrooms\":2,\"Bathrooms\":1,\"Square_Feet\":1200}",
+      "Timestamp": "2026-09-03T18:04:12.018Z",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "IP_or_Source": "Web ERP Client"
+    },
+    {
+      "Action": "UPDATE",
+      "Record_ID": "PROP-MTLPM82Q",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Audit_ID": "AUD-1788458652014-252",
+      "After_JSON": "{\"Property_ID\":\"PROP-MTLPM82Q\",\"Property_Name\":\"89 MOSSBANK DR\",\"Address\":\"Scarborough\",\"City\":\"ON\",\"Province\":\"ON\",\"Postal_Code\":\"M1G 2C4\",\"Landlord_ID\":\"LAND-001\",\"Master_Rent_Amount\":3200,\"Has_Divisions\":true,\"Division_Structure\":\"Main_And_Basement\",\"Default_Main_Share_Pct\":60,\"Default_Basement_Share_Pct\":40,\"Division_Type\":\"Basement_Suite\",\"Parent_Property_ID\":\"PROP-MTLPIZRL\",\"Active\":true,\"Parking_Spots\":[{\"Spot_ID\":\"PRK-3lzp-1\",\"Spot_Number_Name\":\"Spot 1\",\"Spot_Type\":\"Driveway\",\"Monthly_Fee\":0,\"Status\":\"Available\"},{\"Spot_ID\":\"PRK-3pwy-2\",\"Spot_Number_Name\":\"Spot 2\",\"Spot_Type\":\"Driveway\",\"Monthly_Fee\":0,\"Status\":\"Available\"}],\"Created_At\":\"2026-09-03\"}",
+      "IP_or_Source": "Web ERP Client",
+      "Module": "Properties",
+      "Timestamp": "2026-09-03T18:04:12.014Z"
+    },
+    {
+      "Record_ID": "USR-MASTER-ADMIN",
+      "Module": "Authentication",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Action": "LOGIN",
+      "Timestamp": "2026-09-03T17:26:43.928Z",
+      "IP_or_Source": "Web ERP Client",
+      "After_JSON": "{\"method\":\"Password + Email OTP\",\"rememberMe\":false,\"timestamp\":\"2026-09-03T17:26:43.928Z\"}",
+      "Audit_ID": "AUD-1788456403928-335"
+    },
+    {
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Module": "Authentication",
+      "After_JSON": "{\"timestamp\":\"2026-09-03T17:26:15.537Z\"}",
+      "Timestamp": "2026-09-03T17:26:15.537Z",
+      "Record_ID": "SESSION_TERMINATED",
+      "Action": "LOGOUT",
+      "Audit_ID": "AUD-1788456375537-309",
+      "IP_or_Source": "Web ERP Client"
+    },
+    {
+      "After_JSON": "{\"Unit_ID\":\"UNIT-MTLR08OF-B\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_Number_Name\":\"Basement Suite\",\"Unit_Type\":\"Basement Suite\",\"Division_Level\":\"Basement\",\"Target_Rent\":1280,\"Current_Status\":\"Vacant\",\"Bedrooms\":1,\"Bathrooms\":1,\"Square_Feet\":800}",
+      "Record_ID": "UNIT-MTLR08OF-B",
+      "Action": "CREATE",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "IP_or_Source": "Web ERP Client",
+      "Module": "Units",
+      "Audit_ID": "AUD-1788453448431-693",
+      "Timestamp": "2026-09-03T16:37:28.431Z"
+    },
+    {
+      "Audit_ID": "AUD-1788453448430-106",
+      "Timestamp": "2026-09-03T16:37:28.430Z",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Action": "CREATE",
+      "After_JSON": "{\"Unit_ID\":\"UNIT-MTLR08OE-M\",\"Property_ID\":\"PROP-MTLPM82Q\",\"Unit_Number_Name\":\"Main Floor\",\"Unit_Type\":\"Main Floor Suite\",\"Division_Level\":\"Main Floor\",\"Target_Rent\":1920,\"Current_Status\":\"Vacant\",\"Bedrooms\":2,\"Bathrooms\":1,\"Square_Feet\":1200}",
+      "Module": "Units",
+      "Record_ID": "UNIT-MTLR08OE-M",
+      "IP_or_Source": "Web ERP Client"
+    },
+    {
+      "After_JSON": "{\"Property_ID\":\"PROP-MTLPM82Q\",\"Property_Name\":\"89 MOSSBANK DR\",\"Address\":\"Scarborough\",\"City\":\"ON\",\"Province\":\"ON\",\"Postal_Code\":\"M1G 2C4\",\"Landlord_ID\":\"LAND-001\",\"Master_Rent_Amount\":3200,\"Has_Divisions\":true,\"Division_Structure\":\"Main_And_Basement\",\"Default_Main_Share_Pct\":60,\"Default_Basement_Share_Pct\":40,\"Division_Type\":\"Basement_Suite\",\"Parent_Property_ID\":\"PROP-MTLPIZRL\",\"Active\":true,\"Created_At\":\"2026-09-03\"}",
+      "Audit_ID": "AUD-1788453448428-273",
+      "Record_ID": "PROP-MTLPM82Q",
+      "Action": "UPDATE",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "IP_or_Source": "Web ERP Client",
+      "Module": "Properties",
+      "Timestamp": "2026-09-03T16:37:28.428Z"
+    },
+    {
+      "Timestamp": "2026-09-03T16:22:30.714Z",
+      "Action": "DELETE",
+      "Audit_ID": "AUD-1788452550714-190",
+      "Module": "Properties",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "IP_or_Source": "Web ERP Client",
+      "After_JSON": null,
+      "Record_ID": "PROP-MTLPIZRL"
+    },
+    {
+      "Record_ID": "PROP-MTLPM82Q",
+      "Module": "Properties",
+      "IP_or_Source": "Web ERP Client",
+      "Action": "CREATE",
+      "After_JSON": "{\"Property_ID\":\"PROP-MTLPM82Q\",\"Property_Name\":\"89 MOSSBANK DR\",\"Address\":\"Scarborough\",\"City\":\"ON\",\"Province\":\"ON\",\"Postal_Code\":\"M1G 2C4\",\"Landlord_ID\":\"LAND-001\",\"Master_Rent_Amount\":0,\"Division_Type\":\"Basement_Suite\",\"Parent_Property_ID\":\"PROP-MTLPIZRL\",\"Active\":true,\"Created_At\":\"2026-09-03\"}",
+      "Audit_ID": "AUD-1788451114850-711",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Timestamp": "2026-09-03T15:58:34.850Z"
+    },
+    {
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "IP_or_Source": "Web ERP Client",
+      "Module": "Properties",
+      "Timestamp": "2026-09-03T15:56:04.113Z",
+      "After_JSON": "{\"Property_ID\":\"PROP-MTLPIZRL\",\"Property_Name\":\"89 MOSSBANK DR\",\"Address\":\"Scarborough\",\"City\":\"ON\",\"Province\":\"ON\",\"Postal_Code\":\"M1G 2C4\",\"Landlord_ID\":\"LAND-001\",\"Master_Rent_Amount\":3200,\"Division_Type\":\"Main_Floor\",\"Active\":true,\"Created_At\":\"2026-09-03\"}",
+      "Audit_ID": "AUD-1788450964113-262",
+      "Record_ID": "PROP-MTLPIZRL",
+      "Action": "CREATE"
+    },
+    {
+      "Record_ID": "LAND-001",
+      "Action": "CREATE",
+      "Audit_ID": "AUD-1788450731331-475",
+      "IP_or_Source": "Web ERP Client",
+      "After_JSON": "{\"Landlord_ID\":\"LAND-001\",\"Full_Name\":\"SUGIRTHA SHANMUGANATHAN\",\"Email\":\"Sshan225@gmail.com\",\"Phone\":\"\",\"Address\":\"\",\"Payment_Method\":\"Interac e-Transfer\",\"Bank_Reference\":\"\",\"Status\":\"Active\",\"Notes\":\"\"}",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Timestamp": "2026-09-03T15:52:11.331Z",
+      "Module": "Landlords"
+    },
+    {
+      "IP_or_Source": "Web ERP Client",
+      "Action": "LOGIN",
+      "Record_ID": "USR-MASTER-ADMIN",
+      "Audit_ID": "AUD-1788449443127-624",
+      "Module": "Authentication",
+      "After_JSON": "{\"method\":\"Password + Email OTP\",\"rememberMe\":false,\"timestamp\":\"2026-09-03T15:30:43.127Z\"}",
+      "Timestamp": "2026-09-03T15:30:43.127Z",
+      "User_Email": "rahulrajanmdm@gmail.com"
+    },
+    {
+      "Record_ID": "USR-MASTER-ADMIN",
+      "After_JSON": "{\"method\":\"Password + Email OTP\",\"rememberMe\":false,\"timestamp\":\"2026-09-03T05:45:15.621Z\"}",
+      "Action": "LOGIN",
+      "IP_or_Source": "Web ERP Client",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Audit_ID": "AUD-1788414315621-18",
+      "Module": "Authentication",
+      "Timestamp": "2026-09-03T05:45:15.621Z"
+    },
+    {
+      "Timestamp": "2026-09-03T05:40:49.074Z",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "After_JSON": "{\"timestamp\":\"2026-09-03T05:40:49.074Z\"}",
+      "Action": "LOGOUT",
+      "Audit_ID": "AUD-1788414049074-180",
+      "Module": "Authentication",
+      "IP_or_Source": "Web ERP Client",
+      "Record_ID": "SESSION_TERMINATED"
+    },
+    {
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Action": "LOGIN",
+      "After_JSON": "{\"method\":\"Password + Email OTP\",\"rememberMe\":false,\"timestamp\":\"2026-09-03T05:39:40.226Z\"}",
+      "Audit_ID": "AUD-1788413980226-476",
+      "Record_ID": "USR-MASTER-ADMIN",
+      "Timestamp": "2026-09-03T05:39:40.226Z",
+      "Module": "Authentication",
+      "IP_or_Source": "Web ERP Client"
+    },
+    {
+      "Audit_ID": "AUD-1788388117676-176",
+      "Record_ID": "SESSION_TERMINATED",
+      "Action": "LOGOUT",
+      "Timestamp": "2026-09-02T22:28:37.676Z",
+      "After_JSON": "{\"timestamp\":\"2026-09-02T22:28:37.676Z\"}",
+      "Module": "Authentication",
+      "IP_or_Source": "Web ERP Client",
+      "User_Email": "rahulrajanmdm@gmail.com"
+    },
+    {
+      "Audit_ID": "AUD-1788380191255-585",
+      "After_JSON": "{\"method\":\"Password + Email OTP\",\"rememberMe\":true,\"timestamp\":\"2026-09-02T20:16:31.255Z\"}",
+      "Action": "LOGIN",
+      "Record_ID": "USR-MASTER-ADMIN",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "IP_or_Source": "Web ERP Client",
+      "Timestamp": "2026-09-02T20:16:31.255Z",
+      "Module": "Authentication"
+    },
+    {
+      "Timestamp": "2026-09-02T20:15:58.994Z",
+      "Module": "Authentication",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Audit_ID": "AUD-1788380158994-982",
+      "Action": "LOGOUT",
+      "After_JSON": "{\"timestamp\":\"2026-09-02T20:15:58.994Z\"}",
+      "IP_or_Source": "Web ERP Client",
+      "Record_ID": "SESSION_TERMINATED"
+    },
+    {
+      "Record_ID": "USR-002",
+      "After_JSON": "[\"Dashboard\",\"CollectionsBoard\",\"Properties\",\"Units\",\"Tenants\",\"Leases\",\"MoveIn\",\"MoveOut\",\"Landlords\",\"LandlordPayments\",\"Bookings\",\"Rent\",\"Deposits\",\"Utilities\",\"Reports\",\"Collections\",\"Accounting\"]",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Module": "UserTabAccess",
+      "Audit_ID": "AUD-1788367217492-242",
+      "Action": "UPDATE",
+      "Timestamp": "2026-09-02T16:40:17.492Z",
+      "IP_or_Source": "Web ERP Client"
+    },
+    {
+      "Module": "UserTabAccess",
+      "After_JSON": "[\"Dashboard\",\"CollectionsBoard\",\"Properties\",\"Units\",\"Tenants\",\"Leases\",\"MoveIn\",\"MoveOut\",\"Landlords\",\"LandlordPayments\",\"Bookings\",\"Rent\",\"Deposits\",\"Utilities\",\"Reports\",\"Collections\"]",
+      "Timestamp": "2026-09-02T16:40:16.084Z",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Record_ID": "USR-002",
+      "IP_or_Source": "Web ERP Client",
+      "Action": "UPDATE",
+      "Audit_ID": "AUD-1788367216084-406"
+    },
+    {
+      "After_JSON": "[\"Dashboard\",\"CollectionsBoard\",\"Properties\",\"Units\",\"Tenants\",\"Leases\",\"MoveIn\",\"MoveOut\",\"Landlords\",\"LandlordPayments\",\"Bookings\",\"Rent\",\"Deposits\",\"Utilities\",\"Reports\"]",
+      "Action": "UPDATE",
+      "Audit_ID": "AUD-1788367213343-295",
+      "Record_ID": "USR-002",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Timestamp": "2026-09-02T16:40:13.343Z",
+      "Module": "UserTabAccess",
+      "IP_or_Source": "Web ERP Client"
+    },
+    {
+      "Audit_ID": "AUD-1788367211694-311",
+      "Module": "UserTabAccess",
+      "Timestamp": "2026-09-02T16:40:11.694Z",
+      "IP_or_Source": "Web ERP Client",
+      "Action": "UPDATE",
+      "Record_ID": "USR-002",
+      "After_JSON": "[\"Dashboard\",\"CollectionsBoard\",\"Properties\",\"Units\",\"Tenants\",\"Leases\",\"MoveIn\",\"MoveOut\",\"Landlords\",\"LandlordPayments\",\"Bookings\",\"Rent\",\"Deposits\",\"Utilities\"]",
+      "User_Email": "rahulrajanmdm@gmail.com"
+    },
+    {
+      "Audit_ID": "AUD-1788367210719-29",
+      "Module": "UserTabAccess",
+      "Record_ID": "USR-002",
+      "Timestamp": "2026-09-02T16:40:10.719Z",
+      "IP_or_Source": "Web ERP Client",
+      "After_JSON": "[\"Dashboard\",\"CollectionsBoard\",\"Properties\",\"Units\",\"Tenants\",\"Leases\",\"MoveIn\",\"MoveOut\",\"Landlords\",\"LandlordPayments\",\"Bookings\",\"Rent\",\"Deposits\"]",
+      "Action": "UPDATE",
+      "User_Email": "rahulrajanmdm@gmail.com"
+    },
+    {
+      "Audit_ID": "AUD-1788367208712-737",
+      "Action": "UPDATE",
+      "After_JSON": "[\"Dashboard\",\"CollectionsBoard\",\"Properties\",\"Units\",\"Tenants\",\"Leases\",\"MoveIn\",\"MoveOut\",\"Landlords\",\"LandlordPayments\",\"Bookings\",\"Rent\"]",
+      "Record_ID": "USR-002",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Timestamp": "2026-09-02T16:40:08.712Z",
+      "Module": "UserTabAccess",
+      "IP_or_Source": "Web ERP Client"
+    },
+    {
+      "Timestamp": "2026-09-02T16:40:08.057Z",
+      "Module": "UserTabAccess",
+      "IP_or_Source": "Web ERP Client",
+      "Audit_ID": "AUD-1788367208057-963",
+      "After_JSON": "[\"Dashboard\",\"CollectionsBoard\",\"Properties\",\"Units\",\"Tenants\",\"Leases\",\"MoveIn\",\"MoveOut\",\"Landlords\",\"LandlordPayments\",\"Bookings\"]",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Record_ID": "USR-002",
+      "Action": "UPDATE"
+    },
+    {
+      "IP_or_Source": "Web ERP Client",
+      "Record_ID": "USR-002",
+      "After_JSON": "[\"Dashboard\",\"CollectionsBoard\",\"Properties\",\"Units\",\"Tenants\",\"Leases\",\"MoveIn\",\"MoveOut\",\"Landlords\",\"LandlordPayments\"]",
+      "Module": "UserTabAccess",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Action": "UPDATE",
+      "Audit_ID": "AUD-1788367206985-105",
+      "Timestamp": "2026-09-02T16:40:06.985Z"
+    },
+    {
+      "After_JSON": "[\"Dashboard\",\"CollectionsBoard\",\"Properties\",\"Units\",\"Tenants\",\"Leases\",\"MoveIn\",\"MoveOut\",\"Landlords\"]",
+      "Audit_ID": "AUD-1788367205730-293",
+      "Record_ID": "USR-002",
+      "Action": "UPDATE",
+      "IP_or_Source": "Web ERP Client",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Timestamp": "2026-09-02T16:40:05.730Z",
+      "Module": "UserTabAccess"
+    },
+    {
+      "Module": "Users",
+      "IP_or_Source": "Web ERP Client",
+      "Timestamp": "2026-09-02T16:39:25.546Z",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Record_ID": "USR-002",
+      "Action": "CREATE",
+      "Audit_ID": "AUD-1788367165546-585",
+      "After_JSON": "{\"User_ID\":\"USR-002\",\"Email\":\"Finances.dreamdwell@gmail.com\",\"Full_Name\":\"Farha\",\"Password\":\"1234\",\"Phone\":\"\",\"Role\":\"Finance\",\"Is_Active\":true,\"Created_At\":\"2026-09-02\",\"EmergencyBackupCode\":\"8492-3105\",\"TwoFactorEnabled\":true,\"TwoFactorMethod\":\"EMAIL_OTP\",\"Assigned_Tabs\":[\"Dashboard\",\"CollectionsBoard\",\"Properties\",\"Units\",\"Tenants\",\"Leases\",\"MoveIn\",\"MoveOut\"]}"
+    },
+    {
+      "Timestamp": "2026-09-02T16:15:22.576Z",
+      "Audit_ID": "AUD-1788365722576-25",
+      "User_Email": "rahulrajanmdm@gmail.com",
+      "Module": "Authentication",
+      "After_JSON": "{\"method\":\"Password + Email OTP\",\"rememberMe\":false,\"timestamp\":\"2026-09-02T16:15:22.576Z\"}",
+      "IP_or_Source": "Web ERP Client",
+      "Action": "LOGIN",
+      "Record_ID": "USR-MASTER-ADMIN"
+    },
+    {
+      "Action": "CREATE",
+      "Timestamp": "2026-09-02T15:36:15.954Z",
+      "Record_ID": "CLEAN_WORKSPACE_INIT",
+      "Audit_ID": "AUD-INIT-001",
+      "Module": "System",
+      "After_JSON": "{\"status\":\"Clean Production Workspace Initialized - Ready for Real Client Data\"}",
+      "User_Email": "admin@dreamdwell.com"
+    }
+  ],
+  "units": [
+    {
+      "Kitchen_Type": "Full Kitchen",
+      "Den_Details": null,
+      "Notes": "",
+      "Has_Den": false,
+      "Utilities_Included": false,
+      "Bedrooms": 2,
+      "Utility_Billing_Type": "Tenant Metered",
+      "Target_Rent": 2400,
+      "Kitchens": 1,
+      "Unit_ID": "UNIT-MTOSLN60-B",
+      "Unit_Number": "Basement Suite",
+      "Unit_Type": "Basement Suite",
+      "Property_ID": "PROP-MTOSLN5B",
+      "Division_Level": "Basement",
+      "Bathrooms": 1,
+      "Current_Status": "Vacant",
+      "Square_Feet": 800,
+      "Dens_Count": 0,
+      "Unit_Number_Name": "Basement Suite",
+      "Floor_Plan": "Basement Suite",
+      "Allow_Full_Room_Lease": true,
+      "Monthly_Rent": 2400
+    },
+    {
+      "Den_Details": null,
+      "Current_Status": "Vacant",
+      "Bathrooms": 3,
+      "Division_Level": "Main Floor",
+      "Utility_Billing_Type": "Tenant Metered",
+      "Kitchen_Type": "Full Kitchen",
+      "Target_Rent": 3600,
+      "Utilities_Included": false,
+      "Unit_Number": "Main Floor",
+      "Floor_Plan": "Main Floor Suite",
+      "Has_Den": false,
+      "Unit_Number_Name": "Main Floor",
+      "Property_ID": "PROP-MTOSLN5B",
+      "Square_Feet": 1200,
+      "Kitchens": 2,
+      "Monthly_Rent": 3600,
+      "Dens_Count": 0,
+      "Notes": "",
+      "Allow_Full_Room_Lease": true,
+      "Unit_ID": "UNIT-MTOSLN5P-M",
+      "Bedrooms": 6,
+      "Unit_Type": "Main Floor Suite"
+    }
+  ],
+  "moveIns": [],
+  "excessPayments": [],
+  "depositTransactions": [],
+  "coa": [
+    {
+      "Is_Active": true,
+      "Account_Type": "Asset",
+      "Account_Group": "Current Assets",
+      "Account_Name": "Cash on Hand",
+      "Is_Control_Account": true,
+      "Normal_Balance": "Debit",
+      "Account_Code": "1000"
+    },
+    {
+      "Is_Control_Account": true,
+      "Account_Code": "1010",
+      "Account_Name": "Operating Bank (TD / RBC)",
+      "Account_Type": "Asset",
+      "Account_Group": "Current Assets",
+      "Normal_Balance": "Debit",
+      "Is_Active": true
+    },
+    {
+      "Account_Code": "1020",
+      "Normal_Balance": "Debit",
+      "Is_Control_Account": true,
+      "Account_Name": "Savings / Trust Account",
+      "Account_Group": "Current Assets",
+      "Account_Type": "Asset",
+      "Is_Active": true
+    },
+    {
+      "Account_Type": "Asset",
+      "Is_Control_Account": true,
+      "Normal_Balance": "Debit",
+      "Is_Active": true,
+      "Account_Code": "1100",
+      "Account_Group": "Current Assets",
+      "Account_Name": "Accounts Receivable - Rent"
+    },
+    {
+      "Account_Name": "Accounts Receivable - Utilities",
+      "Is_Control_Account": true,
+      "Account_Group": "Current Assets",
+      "Is_Active": true,
+      "Account_Code": "1110",
+      "Normal_Balance": "Debit",
+      "Account_Type": "Asset"
+    },
+    {
+      "Is_Active": true,
+      "Account_Type": "Asset",
+      "Normal_Balance": "Debit",
+      "Account_Name": "Security Deposit Receivable",
+      "Is_Control_Account": true,
+      "Account_Code": "1120",
+      "Account_Group": "Current Assets"
+    },
+    {
+      "Is_Control_Account": true,
+      "Account_Type": "Asset",
+      "Account_Group": "Current Assets",
+      "Account_Name": "Prepaid Expenses & Insurance",
+      "Is_Active": true,
+      "Normal_Balance": "Debit",
+      "Account_Code": "1200"
+    },
+    {
+      "Account_Code": "1300",
+      "Is_Active": true,
+      "Normal_Balance": "Debit",
+      "Account_Name": "Property Maintenance Inventory",
+      "Account_Group": "Current Assets",
+      "Account_Type": "Asset",
+      "Is_Control_Account": false
+    },
+    {
+      "Normal_Balance": "Debit",
+      "Account_Type": "Asset",
+      "Account_Group": "Fixed Assets",
+      "Account_Name": "Property Improvements & CapEx",
+      "Is_Active": true,
+      "Account_Code": "1500",
+      "Is_Control_Account": false
+    },
+    {
+      "Normal_Balance": "Credit",
+      "Account_Name": "Accounts Payable - Vendors",
+      "Is_Active": true,
+      "Account_Code": "2000",
+      "Is_Control_Account": true,
+      "Account_Group": "Current Liabilities",
+      "Account_Type": "Liability"
+    },
+    {
+      "Account_Group": "Current Liabilities",
+      "Account_Code": "2100",
+      "Is_Control_Account": true,
+      "Account_Name": "Landlord Payable (Net Rent Payouts)",
+      "Account_Type": "Liability",
+      "Is_Active": true,
+      "Normal_Balance": "Credit"
+    },
+    {
+      "Account_Group": "Current Liabilities",
+      "Normal_Balance": "Credit",
+      "Account_Type": "Liability",
+      "Account_Name": "Tenant Security Deposits Held Liability",
+      "Is_Active": true,
+      "Is_Control_Account": true,
+      "Account_Code": "2200"
+    },
+    {
+      "Account_Type": "Liability",
+      "Is_Active": true,
+      "Account_Group": "Current Liabilities",
+      "Normal_Balance": "Credit",
+      "Account_Code": "2300",
+      "Is_Control_Account": true,
+      "Account_Name": "Unearned Revenue / Excess Payments"
+    },
+    {
+      "Account_Name": "GST / HST Payable (Commercial/Ops)",
+      "Account_Code": "2400",
+      "Is_Active": true,
+      "Is_Control_Account": true,
+      "Account_Group": "Current Liabilities",
+      "Normal_Balance": "Credit",
+      "Account_Type": "Liability"
+    },
+    {
+      "Is_Active": true,
+      "Account_Group": "Capital",
+      "Account_Type": "Equity",
+      "Normal_Balance": "Credit",
+      "Account_Name": "Owner Capital & Equity",
+      "Is_Control_Account": false,
+      "Account_Code": "3000"
+    },
+    {
+      "Account_Type": "Equity",
+      "Normal_Balance": "Credit",
+      "Account_Group": "Retained Earnings",
+      "Account_Code": "3100",
+      "Is_Control_Account": true,
+      "Is_Active": true,
+      "Account_Name": "Retained Earnings"
+    },
+    {
+      "Normal_Balance": "Credit",
+      "Account_Type": "Revenue",
+      "Is_Active": true,
+      "Account_Code": "4000",
+      "Account_Group": "Operating Revenue",
+      "Account_Name": "Gross Rent Revenue",
+      "Is_Control_Account": true
+    },
+    {
+      "Account_Type": "Revenue",
+      "Is_Active": true,
+      "Account_Name": "Utility Recovery Revenue",
+      "Is_Control_Account": true,
+      "Normal_Balance": "Credit",
+      "Account_Group": "Operating Revenue",
+      "Account_Code": "4010"
+    },
+    {
+      "Is_Active": true,
+      "Account_Name": "Late Fees & Parking Income",
+      "Account_Group": "Other Revenue",
+      "Is_Control_Account": false,
+      "Normal_Balance": "Credit",
+      "Account_Code": "4020",
+      "Account_Type": "Revenue"
+    },
+    {
+      "Account_Code": "5000",
+      "Normal_Balance": "Debit",
+      "Is_Active": true,
+      "Account_Name": "Master Lease / Landlord Expense",
+      "Is_Control_Account": false,
+      "Account_Group": "Direct Property Costs",
+      "Account_Type": "Expense"
+    },
+    {
+      "Is_Control_Account": false,
+      "Normal_Balance": "Debit",
+      "Account_Type": "Expense",
+      "Account_Name": "Property Utilities Expense (Hydro/Gas/Water)",
+      "Account_Group": "Operating Expenses",
+      "Account_Code": "5010",
+      "Is_Active": true
+    },
+    {
+      "Account_Group": "Operating Expenses",
+      "Account_Code": "5020",
+      "Is_Control_Account": false,
+      "Account_Name": "Repairs & Maintenance",
+      "Account_Type": "Expense",
+      "Is_Active": true,
+      "Normal_Balance": "Debit"
+    },
+    {
+      "Is_Control_Account": false,
+      "Account_Type": "Expense",
+      "Is_Active": true,
+      "Account_Name": "Cleaning, Turnover & Staging",
+      "Normal_Balance": "Debit",
+      "Account_Code": "5030",
+      "Account_Group": "Operating Expenses"
+    },
+    {
+      "Normal_Balance": "Debit",
+      "Account_Type": "Expense",
+      "Is_Active": true,
+      "Account_Name": "Property Management Commission",
+      "Is_Control_Account": false,
+      "Account_Group": "Operating Expenses",
+      "Account_Code": "5040"
+    },
+    {
+      "Account_Name": "Bank Charges & Payment Processing",
+      "Is_Active": true,
+      "Account_Group": "Administrative Expenses",
+      "Account_Code": "5100",
+      "Is_Control_Account": false,
+      "Normal_Balance": "Debit",
+      "Account_Type": "Expense"
+    },
+    {
+      "Account_Type": "Expense",
+      "Is_Active": true,
+      "Account_Group": "Administrative Expenses",
+      "Is_Control_Account": false,
+      "Account_Name": "Software, Legal & General Office",
+      "Normal_Balance": "Debit",
+      "Account_Code": "5200"
+    },
+    {
+      "Account_Type": "Expense",
+      "Account_Code": "5300",
+      "Is_Active": true,
+      "Normal_Balance": "Debit",
+      "Account_Group": "Administrative Expenses",
+      "Account_Name": "Bad Debt Expense",
+      "Is_Control_Account": false
+    },
+    {
+      "Normal_Balance": "Debit",
+      "Is_Active": true,
+      "Account_Type": "Asset",
+      "Account_Name": "Last Month Rent (LMR) Receivable",
+      "Account_Code": "1125",
+      "Is_Control_Account": true,
+      "Account_Group": "Current Assets"
+    },
+    {
+      "Account_Name": "Last Month Rent (LMR) Held Liability",
+      "Account_Group": "Current Liabilities",
+      "Account_Code": "2210",
+      "Is_Active": true,
+      "Is_Control_Account": true,
+      "Account_Type": "Liability",
+      "Normal_Balance": "Credit"
+    }
+  ],
+  "properties": [
+    {
+      "Property_Name": "4597 BISMARK CRE",
+      "Master_Rent_Amount": 6000,
+      "City": "MISSISSAUGA",
+      "Parking_Spots": [
+        {
+          "Spot_Number_Name": "Spot 1 - Driveway Left",
+          "Spot_Type": "Outdoor Surface",
+          "Monthly_Fee": 0,
+          "Spot_ID": "PRK-fntk-1",
+          "Status": "Available"
+        },
+        {
+          "Spot_Number_Name": "Spot 2 - Driveway Right",
+          "Status": "Available",
+          "Spot_ID": "PRK-fntk-2",
+          "Spot_Type": "Driveway",
+          "Monthly_Fee": 0
+        }
+      ],
+      "Property_ID": "PROP-MTOSLN5B",
+      "Postal_Code": "M5V 2T6",
+      "Active": true,
+      "Default_Basement_Share_Pct": 40,
+      "Division_Type": "None",
+      "Landlord_ID": "LAND-001",
+      "Address": "MISSISSAUGA",
+      "Division_Structure": "Main_And_Basement",
+      "Default_Main_Share_Pct": 60,
+      "Has_Divisions": true,
+      "Parent_Property_ID": null,
+      "Created_At": "2026-09-05"
+    }
+  ],
+  "landlords": [
+    {
+      "Address": "Chanansidhu50@gmail.com",
+      "Landlord_ID": "LAND-001",
+      "Full_Name": "CHANAN SIDHU",
+      "Bank_Reference": "RBC Royal Bank Transit #00002 Acct #",
+      "Payment_Method": "Interac e-Transfer",
+      "Phone": "4162945414",
+      "Email": "Chanansidhu50@gmail.com",
+      "Status": "Active",
+      "Notes": ""
+    }
+  ],
+  "rentTransactions": [],
+  "collections": [],
+  "leases": [],
+  "refunds": [],
+  "landlordPayments": [],
+  "bookings": [],
+  "utilityCatalog": [
+    {
+      "Created_At": "2025-01-01",
+      "Category": "Hot Water Tank",
+      "Description": "Hot water heater tank rental, maintenance, and gas/electric heating unit lease",
+      "Utility_ID": "UTL-HOTWATER",
+      "Default_GL_Account": "5010",
+      "Utility_Name": "Hot Water",
+      "Default_Vendor": "Reliance Home Comfort / Enercare",
+      "Is_Active": true
+    },
+    {
+      "Is_Active": true,
+      "Utility_Name": "Alectra (Hydro)",
+      "Default_GL_Account": "5010",
+      "Utility_ID": "UTL-ALECTRA",
+      "Created_At": "2025-01-01",
+      "Default_Vendor": "Alectra Utilities Corporation",
+      "Description": "Alectra electric grid power and residential hydro consumption",
+      "Category": "Electricity"
+    },
+    {
+      "Created_At": "2025-01-01",
+      "Utility_Name": "Hydro / Electricity",
+      "Utility_ID": "UTL-001",
+      "Default_Vendor": "Toronto Hydro / BC Hydro",
+      "Description": "Standard residential & commercial power and electrical consumption",
+      "Category": "Electricity",
+      "Default_GL_Account": "5010",
+      "Is_Active": true
+    },
+    {
+      "Utility_ID": "UTL-002",
+      "Created_At": "2025-01-01",
+      "Default_GL_Account": "5010",
+      "Is_Active": true,
+      "Utility_Name": "Natural Gas (Enbridge)",
+      "Description": "Central radiator heating, furnace and hot water gas pipeline billing",
+      "Default_Vendor": "Enbridge Gas",
+      "Category": "Natural Gas"
+    },
+    {
+      "Default_Vendor": "City / Municipal Water Department",
+      "Utility_Name": "Water",
+      "Created_At": "2025-01-01",
+      "Utility_ID": "UTL-003",
+      "Description": "Quarterly municipal metered water supply, stormwater, and wastewater services",
+      "Category": "Water & Sewage",
+      "Default_GL_Account": "5010",
+      "Is_Active": true
+    },
+    {
+      "Utility_Name": "WiFi / High-Speed Internet",
+      "Description": "High-speed wireless broadband WiFi and fiber optic internet network",
+      "Default_GL_Account": "5200",
+      "Category": "Internet & Telecom",
+      "Created_At": "2025-01-01",
+      "Default_Vendor": "Rogers / Bell / Telus / Cogeco",
+      "Utility_ID": "UTL-004",
+      "Is_Active": true
+    }
+  ],
+  "lastUpdated": "2026-09-05T20:05:27.412Z",
+  "smtpConfig": {
+    "host": "smtp.gmail.com",
+    "port": 587,
+    "secure": false,
+    "user": "dreamdwell.auth@gmail.com",
+    "pass": "qrai wpsd ktiz jcza",
+    "from": "dreamdwell.auth@gmail.com"
+  }
+}

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   Calendar, Plus, Search, Mail, Phone, Building2,
   DoorOpen, DollarSign, CheckCircle2, XCircle, Clock,
-  UserCheck, ArrowRight, X, Check, Edit3, ShieldAlert, Sparkles, Trash2
+  UserCheck, ArrowRight, X, Check, Edit3, ShieldAlert, Sparkles, Trash2, Split, Home
 } from 'lucide-react';
 import { storage } from '../services/storage';
 import { Booking, Property, Unit, User, Tenant, Lease } from '../types/erp';
@@ -129,36 +129,49 @@ export const BookingsView: React.FC<BookingsViewProps> = ({ currentUser, onToast
         Status: 'Active',
         Current_Property_ID: bkg.Property_ID,
         Current_Unit_ID: bkg.Unit_ID,
+        Current_Space_ID: bkg.Space_ID,
+        Current_Space_Name: bkg.Space_Name,
         Created_At: new Date().toISOString(),
         Notes: `Converted from Applicant Booking ${bkg.Booking_ID}`
       };
       storage.addTenant(newTenant, currentUser.Email);
+    } else if (bkg.Space_ID) {
+      storage.updateTenant({
+        ...existingTenant,
+        Current_Property_ID: bkg.Property_ID,
+        Current_Unit_ID: bkg.Unit_ID,
+        Current_Space_ID: bkg.Space_ID,
+        Current_Space_Name: bkg.Space_Name,
+        Status: 'Active'
+      }, currentUser.Email);
     }
 
-    // 2. Create Lease
-    const leaseId = 'LSE-' + String(storage.getLeases().length + 1).padStart(3, '0');
-    const newLease: Lease = {
-      Lease_ID: leaseId,
-      Tenant_ID: tenantId!,
-      Property_ID: bkg.Property_ID,
-      Unit_ID: bkg.Unit_ID,
-      Lease_Start: bkg.Expected_Move_In,
-      Lease_End: new Date(new Date(bkg.Expected_Move_In).setFullYear(new Date(bkg.Expected_Move_In).getFullYear() + 1)).toISOString().split('T')[0],
-      Monthly_Rent: bkg.Quoted_Rent,
-      Deposit_Required: bkg.Deposit_Required,
-      Deposit_Received: bkg.Deposit_Required,
-      Last_Month_Rent: bkg.Deposit_Required,
-      Status: 'Active',
-      Notes: `Created from converted booking ${bkg.Booking_ID}. Quoted Rent: $${bkg.Quoted_Rent}`,
-      Created_At: new Date().toISOString()
-    };
-    storage.addLease(newLease, currentUser.Email);
+    // 2. Create Lease with double-entry GL accounting and space occupancy sync
+    const res = AccountingEngine.createLeaseWithCharges(
+      {
+        Tenant_ID: tenantId!,
+        Property_ID: bkg.Property_ID,
+        Unit_ID: bkg.Unit_ID,
+        Space_ID: bkg.Space_ID,
+        Space_Name: bkg.Space_Name,
+        Is_Full_Room: bkg.Is_Full_Room,
+        Lease_Start: bkg.Expected_Move_In,
+        Lease_End: new Date(new Date(bkg.Expected_Move_In).setFullYear(new Date(bkg.Expected_Move_In).getFullYear() + 1)).toISOString().split('T')[0],
+        Monthly_Rent: bkg.Quoted_Rent,
+        Deposit_Required: bkg.Deposit_Required,
+        Deposit_Received: bkg.Deposit_Required,
+        Last_Month_Rent: bkg.Deposit_Required,
+        Drive_Folder_URL: `https://drive.google.com/drive/folders/lease-${bkg.Unit_ID.toLowerCase()}`,
+        Notes: `Created from converted booking ${bkg.Booking_ID}. Quoted Rent: $${bkg.Quoted_Rent}`
+      },
+      currentUser.Email
+    );
 
     // 3. Mark booking confirmed
-    const updatedBooking: Booking = { ...bkg, Status: 'Confirmed', Notes: (bkg.Notes ? bkg.Notes + ' · ' : '') + `Converted to Lease ${leaseId}` };
+    const updatedBooking: Booking = { ...bkg, Status: 'Confirmed', Notes: (bkg.Notes ? bkg.Notes + ' · ' : '') + `Converted to Lease ${res.leaseId}` };
     storage.updateBooking(updatedBooking, currentUser.Email);
 
-    onToast(`🎉 Converted ${bkg.Applicant_Name} into active Lease ${leaseId}! Unit marked Occupied.`, 'success');
+    onToast(`🎉 Converted ${bkg.Applicant_Name} into active Lease ${res.leaseId}! ${bkg.Space_Name ? `Space: ${bkg.Space_Name} allotted.` : 'Unit marked Occupied.'}`, 'success');
   };
 
   const getStatusBadge = (status: Booking['Status']) => {
@@ -320,8 +333,17 @@ export const BookingsView: React.FC<BookingsViewProps> = ({ currentUser, onToast
                     <span className="text-slate-500 flex items-center gap-1">
                       <Building2 className="w-3.5 h-3.5 text-indigo-600" /> Target Unit:
                     </span>
-                    <span className="font-bold text-slate-900">
-                      {unit ? (unit.Unit_Number_Name || unit.Unit_Number || unit.Unit_ID) : bkg.Unit_ID}
+                    <span className="font-bold text-slate-900 flex items-center gap-1.5">
+                      <span>{unit ? (unit.Unit_Number_Name || unit.Unit_Number || unit.Unit_ID) : bkg.Unit_ID}</span>
+                      {bkg.Is_Full_Room ? (
+                        <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                          <Home className="w-2.5 h-2.5" /> Full Room
+                        </span>
+                      ) : bkg.Space_Name ? (
+                        <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">
+                          <Split className="w-2.5 h-2.5" /> {bkg.Space_Name}
+                        </span>
+                      ) : null}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">

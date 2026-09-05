@@ -55,16 +55,18 @@ function setupDatabase() {
   const coa = [
     ['1000','Cash on Hand','Asset','Current Assets','Debit','TRUE'],
     ['1010','Operating Bank (TD / RBC)','Asset','Current Assets','Debit','TRUE'],
-    ['1020','Savings / Trust Account','Asset','Current Assets','Debit','TRUE'],
+    ['1020','Savings / Deposit Account','Asset','Current Assets','Debit','TRUE'],
     ['1100','Accounts Receivable - Rent','Asset','Current Assets','Debit','TRUE'],
     ['1110','Accounts Receivable - Utilities','Asset','Current Assets','Debit','TRUE'],
-    ['1120','Deposit Receivable','Asset','Current Assets','Debit','TRUE'],
+    ['1120','Security Deposit Receivable','Asset','Current Assets','Debit','TRUE'],
+    ['1125','Last Month Rent (LMR) Receivable','Asset','Current Assets','Debit','TRUE'],
     ['1200','Prepaid Expenses & Insurance','Asset','Current Assets','Debit','TRUE'],
     ['1300','Property Maintenance Inventory','Asset','Current Assets','Debit','TRUE'],
     ['1500','Property Improvements & CapEx','Asset','Fixed Assets','Debit','TRUE'],
     ['2000','Accounts Payable - Vendors','Liability','Current Liabilities','Credit','TRUE'],
     ['2100','Landlord Payable (Net Rent Payouts)','Liability','Current Liabilities','Credit','TRUE'],
-    ['2200','Tenant Deposits Held (Security/LMR)','Liability','Current Liabilities','Credit','TRUE'],
+    ['2200','Tenant Security Deposits Held Liability','Liability','Current Liabilities','Credit','TRUE'],
+    ['2210','Last Month Rent (LMR) Held Liability','Liability','Current Liabilities','Credit','TRUE'],
     ['2300','Unearned Revenue / Excess Payments','Liability','Current Liabilities','Credit','TRUE'],
     ['2400','GST / HST Payable','Liability','Current Liabilities','Credit','TRUE'],
     ['3000','Owner Capital & Equity','Equity','Capital','Credit','TRUE'],
@@ -202,19 +204,32 @@ function getTrialBalance(dateStr) {
     balances[line.Account_Code].Credit += Number(line.Credit_Amount) || 0;
   });
 
-  // Normal Balance Nature:
-  // Assets & Expenses: Net Debit = Debit - Credit
-  // Liabilities, Equity, Revenue: Net Credit = Credit - Debit
+  // Net of debit and credit per ledger:
+  // Each ledger account in the Trial Balance displays its net balance on either Debit or Credit
   Object.keys(balances).forEach(code => {
     const acc = balances[code];
-    if (['Asset', 'Expense'].includes(acc.Type)) {
-      acc.Balance = acc.Debit - acc.Credit;
+    const grossD = acc.Debit;
+    const grossC = acc.Credit;
+
+    if (grossD > grossC) {
+      acc.Debit = Math.round((grossD - grossC) * 100) / 100;
+      acc.Credit = 0;
+    } else if (grossC > grossD) {
+      acc.Credit = Math.round((grossC - grossD) * 100) / 100;
+      acc.Debit = 0;
     } else {
-      acc.Balance = acc.Credit - acc.Debit;
+      acc.Debit = 0;
+      acc.Credit = 0;
+    }
+
+    if (['Asset', 'Expense'].includes(acc.Type)) {
+      acc.Balance = Math.round((grossD - grossC) * 100) / 100;
+    } else {
+      acc.Balance = Math.round((grossC - grossD) * 100) / 100;
     }
   });
 
-  const result = Object.values(balances);
+  const result = Object.values(balances).filter(a => a.Debit > 0 || a.Credit > 0 || a.Code === '1010');
   const totalDebits = result.reduce((s, a) => s + (a.Debit || 0), 0);
   const totalCredits = result.reduce((s, a) => s + (a.Credit || 0), 0);
 

@@ -46,7 +46,7 @@ export const REGIONAL_PROVINCE_TAX: Record<RegionalProvince, RegionalTaxConfig> 
     province: 'AB',
     name: 'Alberta',
     taxType: '5% GST',
-    depositRule: 'Security deposit max 1 month rent; must be held in interest-bearing trust.',
+    depositRule: 'Security deposit max 1 month rent; must be held in interest-bearing account.',
     rentIncreaseGuideline: 'No statutory percentage cap; max 1 increase per 365 days.',
     gstRate: 0.05,
     pstRate: 0,
@@ -130,7 +130,7 @@ export const REGIONAL_PROVINCE_TAX: Record<RegionalProvince, RegionalTaxConfig> 
     province: 'PE',
     name: 'Prince Edward Island',
     taxType: '15% HST',
-    depositRule: 'Security deposit max 1 month rent; held in trust.',
+    depositRule: 'Security deposit max 1 month rent; held on deposit.',
     rentIncreaseGuideline: 'IRAC approved annual percentage (approx 2.3% - 3.0%).',
     gstRate: 0,
     pstRate: 0,
@@ -218,7 +218,7 @@ export interface User {
   TwoFactorOtpEmail?: string;
 }
 
-export type UtilityCategory = 'Electricity' | 'Natural Gas' | 'Water & Sewage' | 'Internet & Telecom' | 'Waste Management' | 'Heating Oil' | 'Other';
+export type UtilityCategory = 'Electricity' | 'Natural Gas' | 'Hot Water Tank' | 'Water & Sewage' | 'Internet & Telecom' | 'Waste Management' | 'Heating Oil' | 'Custom' | 'Other';
 
 export interface UtilityCatalogItem {
   Utility_ID: string;
@@ -249,12 +249,25 @@ export type PropertyDivisionType =
   | 'Commercial Unit'
   | 'Custom Suite';
 
+export interface ParkingSpot {
+  Spot_ID: string;
+  Spot_Number_Name: string; // e.g. "Driveway Spot 1", "Garage Stall A"
+  Spot_Type: 'Driveway' | 'Garage' | 'Carport' | 'Covered' | 'Surface' | 'Street Permit' | 'Underground' | 'Outdoor Surface';
+  Monthly_Fee: number; // e.g. 0 or 75
+  Status: 'Available' | 'Assigned' | 'Reserved' | 'Maintenance';
+  Assigned_Tenant_ID?: string;
+  Assigned_Tenant_Name?: string;
+  Assigned_Unit_ID?: string;
+  Vehicle_Plate?: string;
+  Notes?: string;
+}
+
 export interface Property {
   Property_ID: string;
   Property_Name: string;
   Address: string;
   City: string;
-  Province: RegionalProvince;
+  Province?: RegionalProvince | string;
   Postal_Code: string;
   Landlord_ID: string;
   Property_Status?: 'Active' | 'Inactive';
@@ -266,6 +279,40 @@ export interface Property {
   Parent_Property_ID?: string;
   Division_Type?: PropertyDivisionType;
   Meter_Tag?: string;
+  Has_Divisions?: boolean;
+  Division_Structure?: 'None' | 'Main_And_Basement' | 'Multi_Level' | 'Custom';
+  Default_Main_Share_Pct?: number;
+  Default_Basement_Share_Pct?: number;
+  Total_Parking_Spots?: number;
+  Parking_Spots?: ParkingSpot[];
+}
+
+export interface BedroomAllocation {
+  Bedroom_ID: string; // e.g. "BR-1", "BR-2", "BR-3"
+  Bedroom_Name: string; // e.g. "Room 1", "Room 2", "Room 3 (Master)"
+  Allocation_Mode: 'Fully Used' | 'Sharing'; // 'Fully Used' = 1 individual full room; 'Sharing' = Split into 2 sharing spaces
+  Full_Room_Rent: number; // Rent when rented fully to 1 person (e.g. $1,200)
+  Sharing_Spaces_Count: number; // Number of sharing spaces/beds (default 2)
+  Sharing_Rent_Per_Space: number; // Rent per sharing bed/space (e.g. $600)
+  Ensuite_Bath?: boolean;
+  Notes?: string;
+  Spaces?: UnitSpace[];
+}
+
+export interface UnitSpace {
+  Space_ID: string;
+  Space_Name: string; // e.g. "Room 1 - Bed A", "Room 1 (Full Bedroom)"
+  Bedroom_ID?: string; // Parent Bedroom ID
+  Bedroom_Name?: string; // Parent Bedroom Name
+  Space_Type?: 'Private Bedroom' | 'Shared Room Bed' | 'Den / Flex Space' | 'Master Ensuite';
+  Target_Rent: number; // Individual monthly rent for this space (shared bed/desk/space)
+  Full_Room_Rent?: number; // Rent if this room/space is leased exclusively by 1 tenant
+  Occupancy_Mode?: 'Shared' | 'Fully Used (Private)';
+  Utilities_Included?: boolean;
+  Current_Status: 'Vacant' | 'Occupied' | 'Maintenance';
+  Tenant_ID?: string;
+  Tenant_Name?: string;
+  Notes?: string;
 }
 
 export interface Unit {
@@ -280,9 +327,26 @@ export interface Unit {
   Current_Status: 'Vacant' | 'Occupied' | 'Maintenance' | 'Inactive';
   Bedrooms: number;
   Bathrooms: number;
+  Kitchens?: number;
+  Kitchen_Type?: 'Full Kitchen' | 'Kitchenette' | 'Shared Kitchen' | 'None';
+  Has_Den?: boolean;
+  Dens_Count?: number;
+  Den_Details?: string;
+  // Utilities inclusion
+  Utilities_Included?: boolean;
+  Included_Utilities?: string[]; // e.g. ['Hydro / Electricity', 'Heat / Natural Gas', 'Water & Sewage', 'High-Speed Internet']
+  Utility_Billing_Type?: 'All-Inclusive' | 'Shared Split' | 'Tenant Metered' | 'Not Included';
   Square_Feet?: number;
   Notes?: string;
   Created_At?: string;
+  Division_Level?: 'Main Floor' | 'Basement' | 'Upper Floor' | 'Entire Property' | 'Attic / Loft' | 'Laneway House' | string;
+  Utility_Share_Percentage?: number;
+  // Space and room allotment
+  Bedrooms_List?: BedroomAllocation[];
+  Spaces_Count?: number;
+  Spaces?: UnitSpace[];
+  Full_Room_Rent?: number; // Rent rate if a single tenant opts to take the full room / all spaces
+  Allow_Full_Room_Lease?: boolean;
 }
 
 
@@ -307,8 +371,66 @@ export interface Tenant {
   Status: 'Prospect' | 'Active' | 'Inactive';
   Current_Property_ID?: string;
   Current_Unit_ID?: string;
+  Current_Space_ID?: string;
+  Current_Space_Name?: string;
+  Floor_Division?: 'Main Floor' | 'Basement' | 'Entire Property' | string;
+  Assigned_Parking_Spot_ID?: string;
+  Assigned_Parking_Spot_Name?: string;
+  Parking_Monthly_Fee?: number;
+  Is_Co_Occupant?: boolean;
+  Primary_Tenant_ID?: string;
+  Co_Occupant_Names?: string[];
+  Current_Room_Name?: string;
+  Current_Room_Index?: number;
+  Individual_Utility_Billing?: boolean;
   Created_At: string;
   Notes?: string;
+}
+
+export interface RoomOccupant {
+  Occupant_ID: string;
+  Full_Name: string;
+  Email?: string;
+  Phone?: string;
+  Emergency_Contact?: string;
+  Is_Primary?: boolean;
+  Tenant_ID?: string;
+  Utility_Share_Percentage?: number; // e.g. 50 or 33.33%
+  Individual_Rent_Portion?: number;
+  Charge_Utilities_Individually?: boolean;
+  Charge_Expenses_Individually?: boolean;
+  Notes?: string;
+}
+
+export interface IndividualExpenseCharge {
+  Charge_ID: string;
+  Lease_ID: string;
+  Property_ID?: string;
+  Unit_ID?: string;
+  Room_Name?: string;
+  Occupant_ID: string;
+  Occupant_Name: string;
+  Charge_Type?: 'Utility Share' | 'Electricity / Hydro' | 'Water' | 'Gas' | 'Internet' | 'Parking' | 'Key Deposit' | 'Cleaning / Repair' | 'Other Expense' | string;
+  Category?: 'Utility' | 'Electricity' | 'Water' | 'Gas' | 'Internet' | 'Cleaning' | 'Key Deposit' | 'Parking' | 'Damage' | 'Other' | string;
+  Expense_Type?: string;
+  Utility_Type?: string;
+  Description?: string;
+  Amount: number;
+  Amount_Paid: number;
+  Balance: number;
+  Due_Date: string;
+  Charge_Date?: string;
+  Period_Month?: string;
+  Billing_Date?: string;
+  Status: 'Unpaid' | 'Partial' | 'Paid';
+  Payment_Method?: string;
+  Payment_Date?: string;
+  Reference?: string;
+  Reference_ID?: string;
+  Journal_Ref_ID?: string;
+  Created_By?: string;
+  Notes?: string;
+  Created_At: string;
 }
 
 export interface Booking {
@@ -318,6 +440,12 @@ export interface Booking {
   Phone: string;
   Property_ID: string;
   Unit_ID: string;
+  Bedroom_ID?: string;
+  Bedroom_Name?: string;
+  Is_Full_Bedroom?: boolean;
+  Space_ID?: string;
+  Space_Name?: string;
+  Is_Full_Room?: boolean;
   Booking_Date: string;
   Expected_Move_In: string;
   Quoted_Rent: number;
@@ -332,6 +460,12 @@ export interface Lease {
   Lease_ID: string;
   Tenant_ID: string;
   Unit_ID: string;
+  Bedroom_ID?: string;
+  Bedroom_Name?: string;
+  Is_Full_Bedroom?: boolean;
+  Space_ID?: string;
+  Space_Name?: string;
+  Is_Full_Room?: boolean;
   Property_ID: string;
   Lease_Start: string;
   Lease_End: string;
@@ -339,10 +473,27 @@ export interface Lease {
   Deposit_Required: number;
   Deposit_Received: number;
   Last_Month_Rent: number;
+  Security_Deposit_Amount?: number;
+  Last_Month_Rent_Amount?: number;
+  Security_Deposit?: number;
   Status: 'Active' | 'Ended' | 'Draft';
   Drive_Folder_URL?: string;
+  Parking_Spot_ID?: string;
+  Parking_Spot_Name?: string;
+  Parking_Fee?: number;
+  Vehicle_Plate?: string;
+  Utilities_Included?: boolean;
+  Included_Utilities?: string[];
   Notes?: string;
   Created_At: string;
+
+  // Joint Room Occupancy & Individual Utility/Expense Billing
+  Occupancy_Type?: 'Single Bed' | 'Full Room (1 Person)' | 'Joint Room (2 People)' | 'Joint Room (3 People)';
+  Occupants_Count?: number; // 1, 2, or 3
+  Occupants?: RoomOccupant[];
+  Charge_Utilities_Individually?: boolean;
+  Utility_Split_Method?: 'Equal' | 'Custom Percentage' | 'Fixed per Occupant';
+  Individual_Expenses?: IndividualExpenseCharge[];
 }
 
 export interface LandlordPayment {
@@ -371,6 +522,8 @@ export interface RentTransaction {
   Period_Month: string; // YYYY-MM
   Due_Date: string;
   Amount_Billed: number;
+  Discount_Amount?: number;
+  Discount_Reason?: string;
   Amount_Paid: number;
   Balance: number;
   Payment_Date?: string;
@@ -388,6 +541,7 @@ export interface DepositTransaction {
   Tenant_ID: string;
   Property_ID: string;
   Unit_ID: string;
+  Deposit_Type: 'Security Deposit' | 'Last Month Rent';
   Txn_Type: 'Charge' | 'Payment';
   Due_Amount: number;
   Paid_Amount: number;
@@ -397,7 +551,32 @@ export interface DepositTransaction {
   Status: 'Receivable' | 'Partial' | 'Received' | 'Refunded' | 'Settled';
   Journal_Ref_ID?: string;
   Reference?: string;
+  Notes?: string;
   Created_By: string;
+}
+
+export interface PaymentAllocationItem {
+  type: 'Rent' | 'LMR' | 'Security Deposit' | 'Utility';
+  id: string;
+  description: string;
+  originalDue: number;
+  currentBalance: number;
+  allocatedAmount: number;
+}
+
+export interface BankPaymentAllocationParams {
+  bankAccountCode: string;
+  tenantId: string;
+  propertyId: string;
+  unitId: string;
+  leaseId: string;
+  totalReceived: number;
+  paymentDate: string;
+  paymentMethod: string;
+  reference: string;
+  allocations: PaymentAllocationItem[];
+  notes?: string;
+  userEmail: string;
 }
 
 export interface UtilityBill {
@@ -429,6 +608,12 @@ export interface UtilitySplit {
   Property_ID: string;
   Unit_ID: string;
   Tenant_ID: string;
+  Lease_ID?: string;
+  Occupant_ID?: string;
+  Occupant_Name?: string;
+  Is_Co_Occupant?: boolean;
+  Room_Name?: string;
+  Division_Level?: 'Main Floor' | 'Basement' | 'Entire Property' | string;
   Allocated_Amount: number;
   Percentage_Share?: number;
   Amount_Paid: number;
@@ -562,6 +747,7 @@ export interface JournalLine {
   Property_ID?: string;
   Unit_ID?: string;
   Tenant_ID?: string;
+  Division_Level?: 'Main Floor' | 'Basement' | 'Entire Property' | string;
   Debit_Amount: number;
   Credit_Amount: number;
   Memo?: string;

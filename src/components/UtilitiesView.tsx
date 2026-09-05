@@ -3,15 +3,46 @@ import {
   Zap, Plus, Split, CheckCircle2, DollarSign, Building,
   Calendar, ArrowRight, FileText, Edit3, Trash2, X, ShieldAlert,
   ShieldCheck, HelpCircle, Layers, Settings2, UserMinus, UserCheck,
-  Percent, ArrowDownRight, Sparkles, AlertCircle, RefreshCw, Eye
+  Percent, ArrowDownRight, Sparkles, AlertCircle, RefreshCw, Eye,
+  Users, Receipt, Landmark, Flame, Wifi, Droplets, Thermometer
 } from 'lucide-react';
 import { storage } from '../services/storage';
 import { AccountingEngine } from '../services/accountingEngine';
 import {
   User, UtilityType, MasterUtilityBill, UtilitySplit,
-  UtilityCatalogItem, Property, Tenant, Unit
+  UtilityCatalogItem, Property, Tenant, Unit, Lease, IndividualExpenseCharge
 } from '../types/erp';
 import { ConfirmDeleteModal } from './ConfirmDeleteModal';
+import { IndividualExpensesModal } from './IndividualExpensesModal';
+import { BankPaymentAllocationModal } from './BankPaymentAllocationModal';
+
+export const CORE_CANADIAN_UTILITIES = [
+  { key: 'enbridge', name: 'Enbridge (Natural Gas)', icon: Flame, color: 'text-amber-500 bg-amber-50 border-amber-200', vendor: 'Enbridge Gas Inc.' },
+  { key: 'alectra', name: 'Alectra (Electricity / Hydro)', icon: Zap, color: 'text-amber-600 bg-amber-50 border-amber-200', vendor: 'Alectra Utilities Corporation' },
+  { key: 'hot water', name: 'Hot Water Tank Rental', icon: Thermometer, color: 'text-rose-500 bg-rose-50 border-rose-200', vendor: 'Reliance Home Comfort / Enercare' },
+  { key: 'water', name: 'Municipal Water & Sewage', icon: Droplets, color: 'text-sky-500 bg-sky-50 border-sky-200', vendor: 'City / Municipal Water Department' },
+  { key: 'wifi', name: 'WiFi / High-Speed Internet', icon: Wifi, color: 'text-indigo-500 bg-indigo-50 border-indigo-200', vendor: 'Rogers / Bell / Telus / Cogeco' }
+];
+
+export const renderUtilityIcon = (name: string, category: string = '', className = 'w-5 h-5') => {
+  const lower = (name + ' ' + category).toLowerCase();
+  if (lower.includes('enbridge') || lower.includes('natural gas') || lower.includes('gas pipeline') || lower.includes('furnace')) {
+    return <Flame className={`${className} text-amber-500`} />;
+  }
+  if (lower.includes('alectra') || lower.includes('electric') || lower.includes('hydro') || lower.includes('power')) {
+    return <Zap className={`${className} text-amber-600`} />;
+  }
+  if (lower.includes('hot water') || category === 'Hot Water Tank') {
+    return <Thermometer className={`${className} text-rose-500`} />;
+  }
+  if (lower.includes('water') || lower.includes('sewer') || lower.includes('sewage')) {
+    return <Droplets className={`${className} text-sky-500`} />;
+  }
+  if (lower.includes('wifi') || lower.includes('wi-fi') || lower.includes('internet') || lower.includes('fiber') || lower.includes('telecom')) {
+    return <Wifi className={`${className} text-indigo-500`} />;
+  }
+  return <Zap className={`${className} text-slate-500`} />;
+};
 
 interface UtilitiesViewProps {
   currentUser: User;
@@ -29,12 +60,14 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
   const utilityCatalog = storage.getUtilityCatalog();
 
   // Active View Tab
-  const [activeTab, setActiveTab] = useState<'SPLITS' | 'CATALOG' | 'DIVISIONS'>('SPLITS');
+  const [activeTab, setActiveTab] = useState<'SPLITS' | 'CATALOG' | 'DIVISIONS' | 'OCCUPANTS'>('SPLITS');
+  const [activeExpensesLease, setActiveExpensesLease] = useState<Lease | null>(null);
 
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState('');
   const [filterProperty, setFilterProperty] = useState('ALL');
   const [filterStatus, setFilterStatus] = useState('ALL');
+  const [filterUtilityType, setFilterUtilityType] = useState('ALL');
 
   // Master Bill Creation & Edit Modal
   const [showBillModal, setShowBillModal] = useState(false);
@@ -47,6 +80,10 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
 
   // Security Deposit Offset Action Modal
   const [offsetSplitTarget, setOffsetSplitTarget] = useState<UtilitySplit | null>(null);
+
+  // Bank Payment & Allocation Modal State
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentModalTenantId, setPaymentModalTenantId] = useState<string | undefined>(undefined);
 
   // Catalog Item Creation & Edit Modal
   const [showCatalogModal, setShowCatalogModal] = useState(false);
@@ -109,6 +146,11 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
     availableDeposit: number;
     notes: string;
     selected: boolean;
+    occupantId?: string;
+    occupantName?: string;
+    isCoOccupant?: boolean;
+    roomName?: string;
+    leaseId?: string;
   }
 
   const [formSplits, setFormSplits] = useState<FormSplitRow[]>([]);
@@ -125,6 +167,20 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
     status: 'Unpaid',
     notes: ''
   });
+
+  // Individual Co-Occupant Expenses Across All Leases
+  const allIndividualCharges = useMemo(() => {
+    const list: { charge: IndividualExpenseCharge; lease: Lease; property?: Property }[] = [];
+    leases.forEach(l => {
+      if (l.Individual_Expenses && l.Individual_Expenses.length > 0) {
+        const prop = properties.find(p => p.Property_ID === l.Property_ID);
+        l.Individual_Expenses.forEach(c => {
+          list.push({ charge: c, lease: l, property: prop });
+        });
+      }
+    });
+    return list;
+  }, [leases, properties]);
 
   const propertyName = (id: string) => properties.find(p => p.Property_ID === id)?.Property_Name || id;
   const tenantName = (id: string) => tenants.find(t => t.Tenant_ID === id)?.Full_Name || id;
@@ -173,27 +229,64 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
       const propUnits = units.filter(u => u.Property_ID === pId);
 
       propUnits.forEach(u => {
-        // Active Leases
-        const activeLease = leases.find(l => l.Unit_ID === u.Unit_ID && l.Status === 'Active');
-        if (activeLease) {
+        // Active Leases - support multiple leases per unit & individual co-occupants
+        const unitActiveLeases = leases.filter(l => l.Unit_ID === u.Unit_ID && l.Status === 'Active');
+        unitActiveLeases.forEach(activeLease => {
           const t = tenants.find(ten => ten.Tenant_ID === activeLease.Tenant_ID);
           const depBal = getTenantDepositBalance(activeLease.Tenant_ID);
-          rows.push({
-            propertyId: pId,
-            propertyName: prop?.Property_Name || pId,
-            unitId: u.Unit_ID,
-            unitName: u.Unit_Number_Name || u.Unit_ID,
-            tenantId: activeLease.Tenant_ID,
-            tenantName: t?.Full_Name || activeLease.Tenant_ID,
-            isPastTenant: false,
-            allocatedAmount: 0,
-            percentageShare: 0,
-            offsetFromDeposit: false,
-            availableDeposit: depBal,
-            notes: '',
-            selected: true
-          });
-        }
+
+          // If this is a Joint Group lease with multiple occupants charged individually
+          if (activeLease.Occupants && activeLease.Occupants.length > 1 && activeLease.Charge_Utilities_Individually !== false) {
+            activeLease.Occupants.forEach(occ => {
+              const defaultPct = occ.Utility_Share_Percentage !== undefined && occ.Utility_Share_Percentage > 0
+                ? occ.Utility_Share_Percentage
+                : Math.round(100 / activeLease.Occupants!.length);
+
+              rows.push({
+                propertyId: pId,
+                propertyName: prop?.Property_Name || pId,
+                unitId: u.Unit_ID,
+                unitName: u.Unit_Number_Name || u.Unit_ID,
+                tenantId: activeLease.Tenant_ID,
+                tenantName: occ.Is_Primary
+                  ? `${t?.Full_Name || activeLease.Tenant_ID} (${occ.Full_Name})`
+                  : `${occ.Full_Name} (Co-Occupant)`,
+                isPastTenant: false,
+                allocatedAmount: 0,
+                percentageShare: defaultPct,
+                offsetFromDeposit: false,
+                availableDeposit: occ.Is_Primary ? depBal : 0,
+                notes: `Room Occupant: ${occ.Full_Name} (${activeLease.Bedroom_Name || activeLease.Space_Name || 'Room Space'})`,
+                selected: true,
+                occupantId: occ.Occupant_ID,
+                occupantName: occ.Full_Name,
+                isCoOccupant: !occ.Is_Primary,
+                roomName: activeLease.Bedroom_Name || activeLease.Space_Name,
+                leaseId: activeLease.Lease_ID
+              });
+            });
+          } else {
+            rows.push({
+              propertyId: pId,
+              propertyName: prop?.Property_Name || pId,
+              unitId: u.Unit_ID,
+              unitName: u.Unit_Number_Name || u.Unit_ID,
+              tenantId: activeLease.Tenant_ID,
+              tenantName: t?.Full_Name || activeLease.Tenant_ID,
+              isPastTenant: false,
+              allocatedAmount: 0,
+              percentageShare: 0,
+              offsetFromDeposit: false,
+              availableDeposit: depBal,
+              notes: activeLease.Bedroom_Name ? `Space: ${activeLease.Bedroom_Name}` : '',
+              selected: true,
+              occupantId: activeLease.Occupants?.[0]?.Occupant_ID,
+              occupantName: activeLease.Occupants?.[0]?.Full_Name,
+              roomName: activeLease.Bedroom_Name || activeLease.Space_Name,
+              leaseId: activeLease.Lease_ID
+            });
+          }
+        });
 
         // Past Tenants (Vacated or Moved-Out)
         if (includePast) {
@@ -305,6 +398,29 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
     setFormSplits(updated);
   };
 
+  // Distribute Splits by Agreed Co-Occupant / Lease Share %
+  const handleApplyAgreedShares = () => {
+    const selectedRows = formSplits.filter(r => r.selected);
+    if (selectedRows.length === 0) return;
+    const totalPct = selectedRows.reduce((sum, r) => sum + (r.percentageShare || 0), 0);
+
+    const updated = formSplits.map(r => {
+      if (r.selected) {
+        let amt = 0;
+        if (totalPct > 0 && (r.percentageShare || 0) > 0) {
+          // Normalize share according to active selections
+          const normalizedPct = (r.percentageShare / totalPct);
+          amt = Number((billForm.amount * normalizedPct).toFixed(2));
+        } else {
+          amt = Number((billForm.amount / selectedRows.length).toFixed(2));
+        }
+        return { ...r, allocatedAmount: amt };
+      }
+      return { ...r, allocatedAmount: 0 };
+    });
+    setFormSplits(updated);
+  };
+
   // Auto-calculate remaining balance into a specific row
   const handleFillRemaining = (index: number) => {
     const totalAllocatedOther = formSplits
@@ -383,7 +499,11 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
           percentageShare: s.percentageShare,
           isPastTenant: s.isPastTenant,
           offsetFromDeposit: s.offsetFromDeposit,
-          notes: s.notes
+          notes: s.notes,
+          occupantId: s.occupantId,
+          occupantName: s.occupantName,
+          isCoOccupant: s.isCoOccupant,
+          roomName: s.roomName
         })),
         billForm.notes,
         prop?.Parent_Property_ID,
@@ -490,9 +610,15 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
         (b.Utility_Type || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         (b.Provider_Name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         (b.Utility_Bill_ID || '').toLowerCase().includes(searchQuery.toLowerCase());
-      return matchProp && matchSearch;
+      const matchUtility = filterUtilityType === 'ALL' || b.Utility_Type === filterUtilityType ||
+        (filterUtilityType === 'Enbridge' && (b.Utility_Type || '').toLowerCase().includes('enbridge')) ||
+        (filterUtilityType === 'Alectra' && (b.Utility_Type || '').toLowerCase().includes('alectra')) ||
+        (filterUtilityType === 'Hot Water' && (b.Utility_Type || '').toLowerCase().includes('hot water')) ||
+        (filterUtilityType === 'Water' && (b.Utility_Type || '').toLowerCase().includes('water') && !(b.Utility_Type || '').toLowerCase().includes('hot')) ||
+        (filterUtilityType === 'WiFi' && ((b.Utility_Type || '').toLowerCase().includes('wifi') || (b.Utility_Type || '').toLowerCase().includes('wi-fi') || (b.Utility_Type || '').toLowerCase().includes('internet')));
+      return matchProp && matchSearch && matchUtility;
     });
-  }, [masterBills, filterProperty, searchQuery]);
+  }, [masterBills, filterProperty, filterUtilityType, searchQuery]);
 
   const filteredSplits = useMemo(() => {
     return splits.filter(s => {
@@ -503,9 +629,15 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
         s.Utility_Name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         tenantName(s.Tenant_ID).toLowerCase().includes(searchQuery.toLowerCase()) ||
         s.Unit_ID.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchProp && matchStatus && matchSearch;
+      const matchUtility = filterUtilityType === 'ALL' || s.Utility_Name === filterUtilityType ||
+        (filterUtilityType === 'Enbridge' && (s.Utility_Name || '').toLowerCase().includes('enbridge')) ||
+        (filterUtilityType === 'Alectra' && (s.Utility_Name || '').toLowerCase().includes('alectra')) ||
+        (filterUtilityType === 'Hot Water' && (s.Utility_Name || '').toLowerCase().includes('hot water')) ||
+        (filterUtilityType === 'Water' && (s.Utility_Name || '').toLowerCase().includes('water') && !(s.Utility_Name || '').toLowerCase().includes('hot')) ||
+        (filterUtilityType === 'WiFi' && ((s.Utility_Name || '').toLowerCase().includes('wifi') || (s.Utility_Name || '').toLowerCase().includes('wi-fi') || (s.Utility_Name || '').toLowerCase().includes('internet')));
+      return matchProp && matchStatus && matchSearch && matchUtility;
     });
-  }, [splits, filterProperty, filterStatus, searchQuery]);
+  }, [splits, filterProperty, filterStatus, filterUtilityType, searchQuery]);
 
   // Sum calculations for split modal validation
   const currentTotalSplitAllocated = formSplits
@@ -534,7 +666,18 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => {
+              setPaymentModalTenantId(undefined);
+              setShowPaymentModal(true);
+            }}
+            className="px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-colors flex items-center gap-1.5"
+            title="Allocate single bank payment across Utilities, Rent, and Deposits"
+          >
+            <Landmark className="w-3.5 h-3.5" />
+            Allocate Bank Payment
+          </button>
           {activeTab === 'CATALOG' ? (
             <button
               onClick={handleOpenAddCatalog}
@@ -592,6 +735,18 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
           <Layers className="w-4 h-4" />
           Property Divisions & Meter Grouping
         </button>
+
+        <button
+          onClick={() => setActiveTab('OCCUPANTS')}
+          className={`py-3 px-4 text-xs font-bold border-b-2 transition-all flex items-center gap-2 ${
+            activeTab === 'OCCUPANTS'
+              ? 'border-indigo-600 text-indigo-700'
+              : 'border-transparent text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <Users className="w-4 h-4" />
+          Co-Occupant Individual Expenses ({allIndividualCharges.length})
+        </button>
       </div>
 
       {/* TAB 1: MASTER BILLS & TENANT SPLITS */}
@@ -627,6 +782,25 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
                 <option value="ALL">All Split Statuses</option>
                 <option value="Unpaid">Unpaid / Arrears</option>
                 <option value="Paid">Paid / Settled</option>
+              </select>
+
+              <select
+                value={filterUtilityType}
+                onChange={(e) => setFilterUtilityType(e.target.value)}
+                className="px-3 py-1.5 rounded-lg border border-slate-200 outline-none focus:border-indigo-600 bg-white font-medium"
+              >
+                <option value="ALL">All Utilities</option>
+                <option value="Enbridge">🔥 Enbridge (Gas)</option>
+                <option value="Alectra">⚡ Alectra (Hydro)</option>
+                <option value="Hot Water">♨️ Hot Water Tank</option>
+                <option value="Water">💧 Municipal Water</option>
+                <option value="WiFi">📶 WiFi / Internet</option>
+                {utilityCatalog
+                  .filter(u => !['enbridge', 'alectra', 'hot water', 'water', 'wifi'].some(k => u.Utility_Name.toLowerCase().includes(k)))
+                  .map(u => (
+                    <option key={u.Utility_ID} value={u.Utility_Name}>{u.Utility_Name}</option>
+                  ))
+                }
               </select>
             </div>
             <div className="text-slate-500 font-semibold text-[11px] self-end sm:self-auto">
@@ -665,7 +839,7 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
                       <div key={b.Utility_Bill_ID} className="p-4 space-y-2 hover:bg-slate-50/80 transition-colors">
                         <div className="flex items-center justify-between">
                           <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                            <Zap className="w-3.5 h-3.5 text-indigo-600" />
+                            {renderUtilityIcon(b.Utility_Type || b.Utility_ID, '', 'w-3.5 h-3.5')}
                             {b.Utility_Type || b.Utility_ID}
                           </span>
                           <span className="text-xs font-mono font-bold text-indigo-700">
@@ -751,7 +925,10 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
                               {s.Split_ID}
                             </td>
                             <td className="py-3 px-3 font-medium text-slate-900">
-                              {s.Utility_Name}
+                              <div className="flex items-center gap-1.5">
+                                {renderUtilityIcon(s.Utility_Name, '', 'w-3.5 h-3.5')}
+                                <span>{s.Utility_Name}</span>
+                              </div>
                             </td>
                             <td className="py-3 px-3 text-slate-700">
                               <div className="flex items-center gap-1.5">
@@ -768,6 +945,16 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
                                 <span>·</span>
                                 <span className="font-semibold text-slate-700">{s.Unit_ID}</span>
                               </div>
+                              {s.Occupant_Name && (
+                                <div className="text-[10px] text-purple-700 font-bold flex items-center gap-1 mt-0.5">
+                                  <Users className="w-3 h-3 text-purple-600" />
+                                  <span>{s.Occupant_Name}</span>
+                                  <span className="text-[9px] font-medium px-1 py-0.2 rounded bg-purple-100 text-purple-800">
+                                    {s.Is_Co_Occupant ? 'Co-Occupant' : 'Lead Occupant'}
+                                  </span>
+                                  {s.Room_Name && <span className="text-slate-500 font-normal">· {s.Room_Name}</span>}
+                                </div>
+                              )}
                             </td>
                             <td className="py-3 px-3 text-right font-mono text-slate-600">
                               {s.Percentage_Share ? `${s.Percentage_Share}%` : 'Manual'}
@@ -792,15 +979,47 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
                             </td>
                             <td className="py-3 px-3 text-right">
                               <div className="flex items-center justify-end gap-1.5">
+                                {(() => {
+                                  const matchedLease = leases.find(l =>
+                                    (l.Occupants?.some(o => o.Occupant_ID === s.Occupant_ID) || l.Tenant_ID === s.Tenant_ID) &&
+                                    (l.Unit_ID === s.Unit_ID || l.Property_ID === s.Property_ID)
+                                  );
+                                  if (matchedLease && ((matchedLease.Occupants && matchedLease.Occupants.length > 1) || (matchedLease.Individual_Expenses && matchedLease.Individual_Expenses.length > 0))) {
+                                    return (
+                                      <button
+                                        onClick={() => setActiveExpensesLease(matchedLease)}
+                                        className="px-2 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded text-[10px] font-bold transition-colors flex items-center gap-1"
+                                        title="View & manage individual occupant expense ledger"
+                                      >
+                                        <Receipt className="w-3 h-3 text-purple-600" />
+                                        <span>Occupant Ledger</span>
+                                      </button>
+                                    );
+                                  }
+                                  return null;
+                                })()}
                                 {!isPaid && (
-                                  <button
-                                    onClick={() => setOffsetSplitTarget(s)}
-                                    className="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded text-[10px] font-bold transition-colors flex items-center gap-1"
-                                    title={`Set-off against held security deposit (Avail: $${depBal.toFixed(2)})`}
-                                  >
-                                    <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                                    <span>Offset Deposit</span>
-                                  </button>
+                                  <>
+                                    <button
+                                      onClick={() => {
+                                        setPaymentModalTenantId(s.Tenant_ID);
+                                        setShowPaymentModal(true);
+                                      }}
+                                      className="px-2 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded text-[10px] font-bold transition-colors flex items-center gap-1"
+                                      title="Allocate bank payment directly to this tenant"
+                                    >
+                                      <Landmark className="w-3 h-3 text-indigo-600" />
+                                      <span>Pay / Allocate</span>
+                                    </button>
+                                    <button
+                                      onClick={() => setOffsetSplitTarget(s)}
+                                      className="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded text-[10px] font-bold transition-colors flex items-center gap-1"
+                                      title={`Set-off against held security deposit (Avail: $${depBal.toFixed(2)})`}
+                                    >
+                                      <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                                      <span>Offset Deposit</span>
+                                    </button>
+                                  </>
                                 )}
                                 <button
                                   onClick={() => {
@@ -841,72 +1060,126 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
       {/* TAB 2: UTILITY TYPES & CATALOG */}
       {activeTab === 'CATALOG' && (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {utilityCatalog.map(item => (
-              <div
-                key={item.Utility_ID}
-                className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between space-y-4 hover:border-indigo-300 transition-all group"
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="p-2.5 bg-indigo-50 text-indigo-700 rounded-xl">
-                      <Zap className="w-5 h-5" />
-                    </span>
-                    <div className="flex items-center gap-1.5">
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                        item.Is_Active ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'
-                      }`}>
-                        {item.Is_Active ? 'Active Service' : 'Inactive'}
-                      </span>
-                      <button
-                        onClick={() => handleOpenEditCatalog(item)}
-                        className="p-1 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded"
-                        title="Edit Utility Type"
-                      >
-                        <Edit3 className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        onClick={() => setDeletingCatalogItem(item)}
-                        className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded"
-                        title="Delete Utility Type"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-900">{item.Utility_Name}</h3>
-                    <p className="text-xs text-slate-500 mt-0.5">{item.Description || 'Standard recurring property utility service'}</p>
-                  </div>
-
-                  <div className="pt-2 border-t border-slate-100 text-xs space-y-1.5">
-                    <div className="flex justify-between text-slate-600">
-                      <span>Category:</span>
-                      <span className="font-semibold text-slate-900">{item.Category}</span>
-                    </div>
-                    <div className="flex justify-between text-slate-600">
-                      <span>Default Vendor:</span>
-                      <span className="font-semibold text-slate-900">{item.Default_Vendor || '—'}</span>
-                    </div>
-                    <div className="flex justify-between text-slate-600">
-                      <span>GL Account Code:</span>
-                      <span className="font-mono font-bold text-indigo-700">{item.Default_GL_Account || '5010'}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-2 border-t border-slate-50 flex items-center justify-between text-[11px] text-slate-400">
-                  <span>ID: {item.Utility_ID}</span>
-                  <button
-                    onClick={() => handleOpenEditCatalog(item)}
-                    className="text-indigo-600 font-semibold hover:underline"
-                  >
-                    Configure
-                  </button>
-                </div>
+          {/* Main Canadian Utilities Overview Banner */}
+          <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-2xl p-5 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider bg-indigo-500/30 text-indigo-300 border border-indigo-500/40">
+                  Standard Utilities
+                </span>
+                <h3 className="text-sm font-bold text-white">Main Canadian Property Utilities</h3>
               </div>
-            ))}
+              <p className="text-xs text-slate-300">
+                Primary utility providers & meter accounts: Enbridge, Alectra, Hot Water Tank, Municipal Water, WiFi
+              </p>
+              <div className="flex flex-wrap gap-2 pt-1">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold bg-white/10 px-2.5 py-1 rounded-lg border border-white/10">
+                  <Flame className="w-3.5 h-3.5 text-amber-400" /> Enbridge (Gas)
+                </span>
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold bg-white/10 px-2.5 py-1 rounded-lg border border-white/10">
+                  <Zap className="w-3.5 h-3.5 text-amber-400" /> Alectra (Hydro)
+                </span>
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold bg-white/10 px-2.5 py-1 rounded-lg border border-white/10">
+                  <Thermometer className="w-3.5 h-3.5 text-rose-400" /> Hot Water Tank
+                </span>
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold bg-white/10 px-2.5 py-1 rounded-lg border border-white/10">
+                  <Droplets className="w-3.5 h-3.5 text-sky-400" /> Municipal Water
+                </span>
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold bg-white/10 px-2.5 py-1 rounded-lg border border-white/10">
+                  <Wifi className="w-3.5 h-3.5 text-indigo-300" /> WiFi / Internet
+                </span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                storage.ensureCoreCanadianUtilities(currentUser.Email);
+                onToast('Main Canadian utilities catalog (Enbridge, Alectra, Hot Water, Water, WiFi) refreshed and active!', 'success');
+              }}
+              className="px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs transition-colors flex items-center gap-1.5 whitespace-nowrap self-stretch md:self-auto justify-center"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              Ensure Main Utilities
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {utilityCatalog.map(item => {
+              const isCore = ['enbridge', 'alectra', 'hot water', 'water', 'wifi'].some(k =>
+                item.Utility_Name.toLowerCase().includes(k) || item.Category.toLowerCase().includes(k)
+              );
+
+              return (
+                <div
+                  key={item.Utility_ID}
+                  className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between space-y-4 hover:border-indigo-300 transition-all group"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="p-2.5 bg-indigo-50 text-indigo-700 rounded-xl">
+                        {renderUtilityIcon(item.Utility_Name, item.Category, 'w-5 h-5')}
+                      </span>
+                      <div className="flex items-center gap-1.5">
+                        {isCore && (
+                          <span className="text-[9px] font-extrabold px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
+                            Core Utility
+                          </span>
+                        )}
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                          item.Is_Active ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'
+                        }`}>
+                          {item.Is_Active ? 'Active Service' : 'Inactive'}
+                        </span>
+                        <button
+                          onClick={() => handleOpenEditCatalog(item)}
+                          className="p-1 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded"
+                          title="Edit Utility Type"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => setDeletingCatalogItem(item)}
+                          className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded"
+                          title="Delete Utility Type"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-900">{item.Utility_Name}</h3>
+                      <p className="text-xs text-slate-500 mt-0.5">{item.Description || 'Standard recurring property utility service'}</p>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-100 text-xs space-y-1.5">
+                      <div className="flex justify-between text-slate-600">
+                        <span>Category:</span>
+                        <span className="font-semibold text-slate-900">{item.Category}</span>
+                      </div>
+                      <div className="flex justify-between text-slate-600">
+                        <span>Default Vendor:</span>
+                        <span className="font-semibold text-slate-900">{item.Default_Vendor || '—'}</span>
+                      </div>
+                      <div className="flex justify-between text-slate-600">
+                        <span>GL Account Code:</span>
+                        <span className="font-mono font-bold text-indigo-700">{item.Default_GL_Account || '5010'}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-2 border-t border-slate-50 flex items-center justify-between text-[11px] text-slate-400">
+                    <span>ID: {item.Utility_ID}</span>
+                    <button
+                      onClick={() => handleOpenEditCatalog(item)}
+                      className="text-indigo-600 font-semibold hover:underline"
+                    >
+                      Configure
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
@@ -924,7 +1197,7 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
                   Divided Property Single-Bill Meter Apportionment (Main Floor & Basement Suites)
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  In many detached and multi-suite properties (e.g. single triplex or house), there is a single shared utility meter (Electric, Gas, Water) that must be split between Main Floor and Basement suites with customized split ratios (e.g. 60% / 40%).
+                  In many detached and multi-suite properties (such as a single house with main floor and basement), utility bills and maintenance expenses are manually allocated to each floor division without fixed percentage ratios.
                 </p>
               </div>
             </div>
@@ -954,6 +1227,163 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
                     </div>
                   );
                 })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: CO-OCCUPANT INDIVIDUAL EXPENSES */}
+      {activeTab === 'OCCUPANTS' && (
+        <div className="space-y-6">
+          {/* Overview Banner */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className="p-2.5 bg-purple-50 text-purple-700 rounded-xl">
+                  <Users className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">
+                    Joint Room Co-Occupant Expenses & Individual Utility Sub-Ledger
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    When multiple people book or share the same room under a single joint lease, their utility shares, cleaning fees, and individual expenses are tracked separately here.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Metrics */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-slate-100">
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Individual Charges</div>
+                <div className="text-xl font-black text-slate-900 mt-1">
+                  {AccountingEngine.formatCurrency(allIndividualCharges.reduce((sum, item) => sum + item.charge.Amount, 0))}
+                </div>
+                <div className="text-[10px] text-slate-500 mt-0.5">{allIndividualCharges.length} total charge line items</div>
+              </div>
+
+              <div className="bg-emerald-50/60 p-4 rounded-xl border border-emerald-200">
+                <div className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider">Collected Payments</div>
+                <div className="text-xl font-black text-emerald-700 mt-1">
+                  {AccountingEngine.formatCurrency(allIndividualCharges.reduce((sum, item) => sum + (item.charge.Amount_Paid || 0), 0))}
+                </div>
+                <div className="text-[10px] text-emerald-700 mt-0.5">Paid directly or offset</div>
+              </div>
+
+              <div className="bg-rose-50/60 p-4 rounded-xl border border-rose-200">
+                <div className="text-[11px] font-bold text-rose-800 uppercase tracking-wider">Outstanding Balance</div>
+                <div className="text-xl font-black text-rose-700 mt-1">
+                  {AccountingEngine.formatCurrency(allIndividualCharges.reduce((sum, item) => sum + Math.max(0, item.charge.Amount - (item.charge.Amount_Paid || 0)), 0))}
+                </div>
+                <div className="text-[10px] text-rose-700 mt-0.5">Unpaid co-occupant receivables</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Charges Table */}
+          <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
+            <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
+              <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <Receipt className="w-4 h-4 text-purple-600" />
+                <span>All Co-Occupant Itemized Charges</span>
+              </div>
+              <span className="text-[11px] text-slate-500">
+                {allIndividualCharges.length} records across active leases
+              </span>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-100 text-slate-600 uppercase tracking-wider font-bold border-b border-slate-200 text-[10px]">
+                  <tr>
+                    <th className="py-3 px-3">Occupant</th>
+                    <th className="py-3 px-3">Property / Suite</th>
+                    <th className="py-3 px-3">Category</th>
+                    <th className="py-3 px-3">Description & Ref</th>
+                    <th className="py-3 px-3 text-right">Amount</th>
+                    <th className="py-3 px-3 text-right">Paid</th>
+                    <th className="py-3 px-3 text-right">Balance</th>
+                    <th className="py-3 px-3">Status</th>
+                    <th className="py-3 px-3 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {allIndividualCharges.length === 0 ? (
+                    <tr>
+                      <td colSpan={9} className="py-12 text-center text-slate-400">
+                        No individual co-occupant charges found. When creating master utility bills or lease agreements with multiple occupants in the same room, utility and custom expense splits will appear here.
+                      </td>
+                    </tr>
+                  ) : (
+                    allIndividualCharges.map(({ charge, lease, property }) => {
+                      const occ = lease.Occupants?.find(o => o.Occupant_ID === charge.Occupant_ID);
+                      const balance = Math.max(0, charge.Amount - (charge.Amount_Paid || 0));
+                      const isPaid = charge.Status === 'Paid' || balance <= 0;
+
+                      return (
+                        <tr key={charge.Charge_ID} className="hover:bg-slate-50/80 transition-colors">
+                          <td className="py-3 px-3 text-slate-900">
+                            <div className="font-bold flex items-center gap-1">
+                              <span>{charge.Occupant_Name || occ?.Full_Name || charge.Occupant_ID}</span>
+                              <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded ${
+                                occ?.Is_Primary ? 'bg-slate-100 text-slate-700' : 'bg-purple-100 text-purple-800'
+                              }`}>
+                                {occ?.Is_Primary ? 'Lead' : 'Co-Occupant'}
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-slate-500">
+                              ID: {charge.Occupant_ID}
+                            </div>
+                          </td>
+                          <td className="py-3 px-3 text-slate-700">
+                            <div className="font-semibold text-slate-900">{property?.Property_Name || lease.Property_ID}</div>
+                            <div className="text-[10px] text-slate-500">
+                              Unit {lease.Unit_ID} {lease.Bedroom_Name ? `· ${lease.Bedroom_Name}` : ''}
+                            </div>
+                          </td>
+                          <td className="py-3 px-3">
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-100">
+                              {charge.Category}
+                            </span>
+                          </td>
+                          <td className="py-3 px-3 text-slate-700">
+                            <div className="font-medium text-slate-900">{charge.Description}</div>
+                            {charge.Reference_ID && (
+                              <div className="text-[10px] text-slate-500 font-mono">Ref: {charge.Reference_ID}</div>
+                            )}
+                          </td>
+                          <td className="py-3 px-3 text-right font-bold text-slate-900">
+                            {AccountingEngine.formatCurrency(charge.Amount)}
+                          </td>
+                          <td className="py-3 px-3 text-right font-mono text-emerald-700 font-semibold">
+                            {AccountingEngine.formatCurrency(charge.Amount_Paid || 0)}
+                          </td>
+                          <td className="py-3 px-3 text-right font-mono font-bold text-slate-900">
+                            {AccountingEngine.formatCurrency(balance)}
+                          </td>
+                          <td className="py-3 px-3">
+                            <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                              isPaid ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+                            }`}>
+                              {charge.Status || (isPaid ? 'Paid' : 'Unpaid')}
+                            </span>
+                          </td>
+                          <td className="py-3 px-3 text-right">
+                            <button
+                              onClick={() => setActiveExpensesLease(lease)}
+                              className="px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded text-[10px] font-bold transition-colors flex items-center gap-1 ml-auto"
+                            >
+                              <Receipt className="w-3 h-3 text-purple-600" />
+                              <span>Manage</span>
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -1014,7 +1444,45 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
                   </div>
 
                   <div>
-                    <label className="font-semibold text-slate-700 block mb-1">Utility Service Type</label>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="font-semibold text-slate-700 block">Utility Service Type</label>
+                      <span className="text-[10px] text-slate-500 font-medium">Quick Presets:</span>
+                    </div>
+
+                    {/* Quick Preset Buttons for Main Utilities */}
+                    <div className="flex flex-wrap gap-1 mb-2">
+                      {[
+                        { label: '🔥 Enbridge', match: 'enbridge', name: 'Enbridge (Natural Gas)', vendor: 'Enbridge Gas Inc.' },
+                        { label: '⚡ Alectra', match: 'alectra', name: 'Alectra (Electricity / Hydro)', vendor: 'Alectra Utilities Corporation' },
+                        { label: '♨️ Hot Water', match: 'hot water', name: 'Hot Water Tank Rental', vendor: 'Reliance Home Comfort / Enercare' },
+                        { label: '💧 Water', match: 'water', name: 'Municipal Water & Sewage', vendor: 'City / Municipal Water Department' },
+                        { label: '📶 WiFi', match: 'wifi', name: 'WiFi / High-Speed Internet', vendor: 'Rogers / Bell / Telus / Cogeco' }
+                      ].map(preset => {
+                        const isSelected = billForm.utilityType.toLowerCase().includes(preset.match);
+                        return (
+                          <button
+                            key={preset.label}
+                            type="button"
+                            onClick={() => {
+                              const existing = utilityCatalog.find(u => u.Utility_Name.toLowerCase().includes(preset.match));
+                              setBillForm({
+                                ...billForm,
+                                utilityType: existing?.Utility_Name || preset.name,
+                                provider: existing?.Default_Vendor || preset.vendor
+                              });
+                            }}
+                            className={`px-2 py-0.5 rounded text-[10px] font-bold border transition-colors ${
+                              isSelected
+                                ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
+                                : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
+                            }`}
+                          >
+                            {preset.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+
                     <select
                       value={billForm.utilityType}
                       onChange={(e) => {
@@ -1061,15 +1529,15 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
                     <label className="font-semibold text-slate-700 block mb-1">Total Bill Amount ($)</label>
                     <input
                       type="number"
-                      step="0.01"
-                      min="0.01"
+                      step="any"
+                      min="0"
                       required
                       value={billForm.amount}
                       onChange={(e) => {
                         const newAmt = Number(e.target.value);
                         setBillForm({ ...billForm, amount: newAmt });
                       }}
-                      className="w-full text-xs rounded-xl border border-slate-200 p-2.5 outline-none focus:border-indigo-600 bg-white font-bold text-indigo-700 text-sm"
+                      className="w-full text-xs rounded-xl border border-slate-200 p-2.5 outline-none focus:border-indigo-600 bg-white font-bold text-indigo-700 text-sm font-mono"
                     />
                   </div>
                 </div>
@@ -1116,11 +1584,11 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
                     <h4 className="font-bold text-slate-900 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-                      <Split className="w-3.5 h-3.5 text-indigo-600" />
-                      2. Custom Tenant Split Allocation
+                      <Layers className="w-3.5 h-3.5 text-indigo-600" />
+                      2. Manual Tenant Split Allocation
                     </h4>
                     <p className="text-[11px] text-slate-500">
-                      Specify exact dollar amounts or percentage shares for each active or past tenant suite
+                      Specify exact dollar amounts manually for each active or past tenant suite without fixed percentage ratios
                     </p>
                   </div>
 
@@ -1133,6 +1601,15 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
                     >
                       Distribute Evenly
                     </button>
+                    <button
+                      type="button"
+                      onClick={handleApplyAgreedShares}
+                      className="px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-lg text-[11px] font-semibold transition-colors flex items-center gap-1"
+                      title="Distribute bill by agreed co-occupant % share specified in room leases"
+                    >
+                      <Percent className="w-3 h-3" />
+                      Apply Agreed Lease %
+                    </button>
                   </div>
                 </div>
 
@@ -1144,8 +1621,7 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
                         <th className="py-2.5 px-3 w-8">Include</th>
                         <th className="py-2.5 px-3">Unit / Division</th>
                         <th className="py-2.5 px-3">Tenant Name</th>
-                        <th className="py-2.5 px-3 text-right w-24">Share (%)</th>
-                        <th className="py-2.5 px-3 text-right w-32">Allocated ($)</th>
+                        <th className="py-2.5 px-3 text-right w-36">Allocated Amount ($)</th>
                         <th className="py-2.5 px-3 w-48">Deposit Offset</th>
                         <th className="py-2.5 px-2 text-right w-16">Auto-fill</th>
                       </tr>
@@ -1153,7 +1629,7 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
                     <tbody className="divide-y divide-slate-100">
                       {formSplits.length === 0 ? (
                         <tr>
-                          <td colSpan={7} className="py-8 text-center text-slate-400">
+                          <td colSpan={6} className="py-8 text-center text-slate-400">
                             No active or past tenants found for selected properties.
                           </td>
                         </tr>
@@ -1178,9 +1654,24 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
                               <div className="text-[10px] text-slate-400 font-normal">{row.propertyName}</div>
                             </td>
                             <td className="py-2.5 px-3">
-                              <div className="flex items-center gap-1 font-bold text-slate-900">
+                              <div className="flex items-center gap-1.5 font-bold text-slate-900">
                                 <span>{row.tenantName}</span>
+                                {row.isCoOccupant && (
+                                  <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-purple-100 text-purple-800">
+                                    Co-Occupant
+                                  </span>
+                                )}
                               </div>
+                              {row.roomName && (
+                                <div className="text-[10px] text-purple-700 font-medium">
+                                  Room Space: {row.roomName}
+                                </div>
+                              )}
+                              {row.percentageShare !== undefined && row.percentageShare > 0 && (
+                                <div className="text-[10px] text-slate-500 font-mono">
+                                  Agreed Share: {row.percentageShare}%
+                                </div>
+                              )}
                               {row.isPastTenant && (
                                 <div className="text-[10px] text-amber-700 font-medium">
                                   Moved-Out Tenant
@@ -1189,30 +1680,15 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
                             </td>
                             <td className="py-2.5 px-3 text-right">
                               <div className="relative">
+                                <span className="absolute left-2.5 top-2 text-slate-400 text-xs font-semibold">$</span>
                                 <input
                                   type="number"
-                                  step="0.1"
-                                  min="0"
-                                  max="100"
-                                  disabled={!row.selected}
-                                  value={row.percentageShare}
-                                  onChange={(e) => handleUpdateSplitPct(idx, Number(e.target.value))}
-                                  className="w-20 text-right text-xs rounded-lg border border-slate-200 p-1.5 outline-none focus:border-indigo-600 bg-white font-mono"
-                                />
-                                <span className="absolute right-2 top-2 text-slate-400 text-[10px]">%</span>
-                              </div>
-                            </td>
-                            <td className="py-2.5 px-3 text-right">
-                              <div className="relative">
-                                <span className="absolute left-2 top-2 text-slate-400 text-[10px]">$</span>
-                                <input
-                                  type="number"
-                                  step="0.01"
+                                  step="any"
                                   min="0"
                                   disabled={!row.selected}
                                   value={row.allocatedAmount}
                                   onChange={(e) => handleUpdateSplitAmount(idx, Number(e.target.value))}
-                                  className="w-28 text-right text-xs rounded-lg border border-slate-200 p-1.5 pl-5 outline-none focus:border-indigo-600 bg-white font-mono font-bold text-slate-900"
+                                  className="w-32 text-right text-xs rounded-lg border border-slate-200 p-1.5 pl-6 outline-none focus:border-indigo-600 bg-white font-mono font-bold text-slate-900"
                                 />
                               </div>
                             </td>
@@ -1391,13 +1867,45 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
 
             <form onSubmit={handleSaveCatalogItem} className="space-y-3.5">
               <div>
-                <label className="font-semibold text-slate-700 block mb-1">Utility Service Name</label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="font-semibold text-slate-700 block">Utility Service Name</label>
+                  <span className="text-[10px] text-slate-500 font-medium">Quick Template:</span>
+                </div>
+
+                <div className="flex flex-wrap gap-1 mb-2">
+                  {[
+                    { label: '🔥 Enbridge', name: 'Enbridge (Natural Gas)', cat: 'Natural Gas', gl: '5010', vendor: 'Enbridge Gas Inc.', desc: 'Central radiator heating, furnace, and natural gas pipeline billing' },
+                    { label: '⚡ Alectra', name: 'Alectra (Electricity / Hydro)', cat: 'Electricity', gl: '5010', vendor: 'Alectra Utilities Corporation', desc: 'Alectra electric grid power and residential hydro consumption' },
+                    { label: '♨️ Hot Water', name: 'Hot Water Tank Rental', cat: 'Hot Water Tank', gl: '5010', vendor: 'Reliance Home Comfort / Enercare', desc: 'Hot water heater tank rental, maintenance, and gas/electric heating unit lease' },
+                    { label: '💧 Water', name: 'Municipal Water & Sewage', cat: 'Water & Sewage', gl: '5010', vendor: 'City / Municipal Water Department', desc: 'Quarterly municipal metered water supply, stormwater, and wastewater services' },
+                    { label: '📶 WiFi', name: 'WiFi / High-Speed Internet', cat: 'Internet & Telecom', gl: '5200', vendor: 'Rogers / Bell / Telus / Cogeco', desc: 'High-speed wireless broadband WiFi and fiber optic internet network' }
+                  ].map(tmpl => (
+                    <button
+                      key={tmpl.label}
+                      type="button"
+                      onClick={() => {
+                        setCatalogForm({
+                          Utility_Name: tmpl.name,
+                          Category: tmpl.cat as any,
+                          Default_GL_Account: tmpl.gl,
+                          Default_Vendor: tmpl.vendor,
+                          Description: tmpl.desc,
+                          Is_Active: true
+                        });
+                      }}
+                      className="px-2 py-0.5 rounded text-[10px] font-bold border border-slate-200 bg-slate-50 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-300 text-slate-700 transition-colors"
+                    >
+                      {tmpl.label}
+                    </button>
+                  ))}
+                </div>
+
                 <input
                   type="text"
                   required
                   value={catalogForm.Utility_Name}
                   onChange={(e) => setCatalogForm({ ...catalogForm, Utility_Name: e.target.value })}
-                  placeholder="e.g. Solar Power Grid Surcharge, District Steam Heating"
+                  placeholder="e.g. Enbridge (Natural Gas), Alectra Utilities"
                   className="w-full text-xs rounded-xl border border-slate-200 p-2.5 outline-none focus:border-indigo-600 font-medium"
                 />
               </div>
@@ -1410,10 +1918,11 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
                     onChange={(e) => setCatalogForm({ ...catalogForm, Category: e.target.value as any })}
                     className="w-full text-xs rounded-xl border border-slate-200 p-2.5 outline-none focus:border-indigo-600 bg-white"
                   >
-                    <option value="Electricity">Electricity / Hydro</option>
-                    <option value="Natural Gas">Natural Gas / Pipeline</option>
+                    <option value="Electricity">Electricity / Hydro (e.g. Alectra)</option>
+                    <option value="Natural Gas">Natural Gas / Pipeline (e.g. Enbridge)</option>
+                    <option value="Hot Water Tank">Hot Water Tank (Rental / Heater)</option>
                     <option value="Water & Sewage">Water & Municipal Sewage</option>
-                    <option value="Internet & Telecom">Internet & Telecom</option>
+                    <option value="Internet & Telecom">Internet & Telecom / WiFi</option>
                     <option value="Waste Management">Waste & Recycling</option>
                     <option value="Heating Oil">Heating Oil & Bulk Fuel</option>
                     <option value="Custom">Custom Utility Service</option>
@@ -1512,11 +2021,12 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
                 <label className="font-semibold text-slate-700 block mb-1">Allocated Amount ($)</label>
                 <input
                   type="number"
-                  step="0.01"
+                  step="any"
+                  min="0"
                   required
                   value={splitForm.allocatedAmount}
                   onChange={(e) => setSplitForm({ ...splitForm, allocatedAmount: Number(e.target.value) })}
-                  className="w-full text-xs rounded-xl border border-slate-200 p-2.5 outline-none focus:border-indigo-600 font-bold"
+                  className="w-full text-xs rounded-xl border border-slate-200 p-2.5 outline-none focus:border-indigo-600 font-bold font-mono"
                 />
               </div>
 
@@ -1524,11 +2034,12 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
                 <label className="font-semibold text-slate-700 block mb-1">Amount Paid ($)</label>
                 <input
                   type="number"
-                  step="0.01"
+                  step="any"
+                  min="0"
                   required
                   value={splitForm.amountPaid}
                   onChange={(e) => setSplitForm({ ...splitForm, amountPaid: Number(e.target.value) })}
-                  className="w-full text-xs rounded-xl border border-slate-200 p-2.5 outline-none focus:border-indigo-600 text-emerald-700 font-bold"
+                  className="w-full text-xs rounded-xl border border-slate-200 p-2.5 outline-none focus:border-indigo-600 text-emerald-700 font-bold font-mono"
                 />
               </div>
 
@@ -1616,6 +2127,39 @@ export const UtilitiesView: React.FC<UtilitiesViewProps> = ({ currentUser, onToa
         onConfirm={handleDeleteCatalogConfirm}
         onCancel={() => setDeletingCatalogItem(null)}
       />
+
+      {/* Individual Expenses & Utilities Ledger Modal for Room Co-Occupants */}
+      {activeExpensesLease && (
+        <IndividualExpensesModal
+          lease={activeExpensesLease}
+          onClose={() => setActiveExpensesLease(null)}
+          onUpdate={() => {
+            const refreshed = storage.getLeases().find(l => l.Lease_ID === activeExpensesLease.Lease_ID) || null;
+            setActiveExpensesLease(refreshed);
+          }}
+          onToast={onToast}
+          currentUserEmail={currentUser.Email}
+        />
+      )}
+
+      {/* Bank Payment Allocation Modal */}
+      {showPaymentModal && (
+        <BankPaymentAllocationModal
+          isOpen={showPaymentModal}
+          onClose={() => {
+            setShowPaymentModal(false);
+            setPaymentModalTenantId(undefined);
+          }}
+          onSuccess={() => {
+            setShowPaymentModal(false);
+            setPaymentModalTenantId(undefined);
+            onToast('Payment successfully allocated across tenant charges!', 'success');
+          }}
+          onToast={onToast}
+          currentUser={currentUser}
+          preselectedTenantId={paymentModalTenantId}
+        />
+      )}
     </div>
   );
 };

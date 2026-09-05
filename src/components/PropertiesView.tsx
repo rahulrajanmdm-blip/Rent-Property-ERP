@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import {
   Building2, DoorOpen, Plus, MapPin, DollarSign,
-  UserCheck, ShieldCheck, Home, CheckCircle2, Edit3, Trash2
+  UserCheck, ShieldCheck, Home, CheckCircle2, Edit3, Trash2,
+  Car, Key, Check, X
 } from 'lucide-react';
 import { storage } from '../services/storage';
 import { AccountingEngine } from '../services/accountingEngine';
-import { Property, Unit, RegionalProvince, User } from '../types/erp';
+import { Property, Unit, RegionalProvince, User, ParkingSpot } from '../types/erp';
 import { ConfirmDeleteModal } from './ConfirmDeleteModal';
 
 interface PropertiesViewProps {
@@ -17,6 +18,8 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ currentUser, onT
   const properties = storage.getProperties();
   const units = storage.getUnits();
   const landlords = storage.getLandlords();
+  const tenants = storage.getTenants();
+  const leases = storage.getLeases();
 
   const [activeTab, setActiveTab] = useState<'PROPERTIES' | 'UNITS'>('PROPERTIES');
   const [showPropertyModal, setShowPropertyModal] = useState(false);
@@ -34,37 +37,60 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ currentUser, onT
     Property_Name: string;
     Address: string;
     City: string;
-    Province: RegionalProvince;
+    Province?: string;
     Postal_Code: string;
     Landlord_ID: string;
     Master_Rent_Amount: number;
+    Has_Divisions: boolean;
+    Division_Structure: 'None' | 'Main_And_Basement';
+    Default_Main_Share_Pct: number;
+    Default_Basement_Share_Pct: number;
     Division_Type: Property['Division_Type'];
     Parent_Property_ID?: string;
     Active: boolean;
+    Parking_Spots: ParkingSpot[];
   }>({
     Property_Name: '',
     Address: '',
     City: 'Toronto',
-    Province: 'ON',
     Postal_Code: 'M5V 2T6',
     Landlord_ID: landlords[0]?.Landlord_ID || '',
-    Master_Rent_Amount: 4500,
+    Master_Rent_Amount: 4000,
+    Has_Divisions: false,
+    Division_Structure: 'None',
+    Default_Main_Share_Pct: 60,
+    Default_Basement_Share_Pct: 40,
     Division_Type: 'None',
     Parent_Property_ID: '',
-    Active: true
+    Active: true,
+    Parking_Spots: []
   });
 
   // Unit Form State
-  const [unitForm, setUnitForm] = useState({
+  const [unitForm, setUnitForm] = useState<{
+    Unit_ID: string;
+    Property_ID: string;
+    Unit_Number_Name: string;
+    Unit_Type: string;
+    Division_Level?: string;
+    Utility_Share_Percentage?: number;
+    Bedrooms: number;
+    Bathrooms: number;
+    Square_Feet: number;
+    Target_Rent: number;
+    Current_Status: Unit['Current_Status'];
+  }>({
     Unit_ID: '',
     Property_ID: properties[0]?.Property_ID || '',
     Unit_Number_Name: '',
     Unit_Type: 'Apartment',
+    Division_Level: 'None',
+    Utility_Share_Percentage: 0,
     Bedrooms: 2,
     Bathrooms: 1,
     Square_Feet: 750,
     Target_Rent: 2200,
-    Current_Status: 'Vacant' as Unit['Current_Status']
+    Current_Status: 'Vacant'
   });
 
   const landlordName = (id?: string) => landlords.find(l => l.Landlord_ID === id)?.Full_Name || id || '—';
@@ -76,13 +102,20 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ currentUser, onT
       Property_Name: '',
       Address: '',
       City: 'Toronto',
-      Province: 'ON',
       Postal_Code: 'M5V 2T6',
       Landlord_ID: landlords[0]?.Landlord_ID || '',
-      Master_Rent_Amount: 4500,
+      Master_Rent_Amount: 4000,
+      Has_Divisions: false,
+      Division_Structure: 'None',
+      Default_Main_Share_Pct: 60,
+      Default_Basement_Share_Pct: 40,
       Division_Type: 'None',
       Parent_Property_ID: '',
-      Active: true
+      Active: true,
+      Parking_Spots: [
+        { Spot_ID: `PRK-${Date.now().toString(36).slice(-4)}-1`, Spot_Number_Name: 'Spot 1 - Driveway Left', Spot_Type: 'Driveway', Monthly_Fee: 0, Status: 'Available' },
+        { Spot_ID: `PRK-${Date.now().toString(36).slice(-4)}-2`, Spot_Number_Name: 'Spot 2 - Driveway Right', Spot_Type: 'Driveway', Monthly_Fee: 0, Status: 'Available' }
+      ]
     });
     setShowPropertyModal(true);
   };
@@ -94,54 +127,153 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ currentUser, onT
       Property_Name: p.Property_Name,
       Address: p.Address,
       City: p.City,
-      Province: p.Province,
       Postal_Code: p.Postal_Code,
       Landlord_ID: p.Landlord_ID || landlords[0]?.Landlord_ID || '',
       Master_Rent_Amount: p.Master_Rent_Amount,
+      Has_Divisions: !!p.Has_Divisions,
+      Division_Structure: p.Division_Structure || (p.Has_Divisions ? 'Main_And_Basement' : 'None'),
+      Default_Main_Share_Pct: p.Default_Main_Share_Pct !== undefined ? p.Default_Main_Share_Pct : 60,
+      Default_Basement_Share_Pct: p.Default_Basement_Share_Pct !== undefined ? p.Default_Basement_Share_Pct : 40,
       Division_Type: p.Division_Type || 'None',
       Parent_Property_ID: p.Parent_Property_ID || '',
-      Active: p.Active ?? true
+      Active: p.Active ?? true,
+      Parking_Spots: p.Parking_Spots ? p.Parking_Spots.map(s => ({ ...s })) : []
     });
     setShowPropertyModal(true);
   };
 
+  const handleAddParkingSpotToPropForm = () => {
+    const currentSpots = propForm.Parking_Spots || [];
+    const nextNum = currentSpots.length + 1;
+    const newSpot: ParkingSpot = {
+      Spot_ID: `PRK-${Date.now().toString(36).slice(-4)}-${nextNum}`,
+      Spot_Number_Name: `Spot ${nextNum}`,
+      Spot_Type: 'Driveway',
+      Monthly_Fee: 0,
+      Status: 'Available'
+    };
+    setPropForm({
+      ...propForm,
+      Parking_Spots: [...currentSpots, newSpot]
+    });
+  };
+
+  const handleQuickAddStandardSpots = (count: number) => {
+    const currentSpots = propForm.Parking_Spots || [];
+    const newSpots: ParkingSpot[] = [];
+    for (let i = 1; i <= count; i++) {
+      const spotNum = currentSpots.length + i;
+      newSpots.push({
+        Spot_ID: `PRK-${Date.now().toString(36).slice(-4)}-${spotNum}`,
+        Spot_Number_Name: `Spot ${spotNum} - ${i % 2 === 1 ? 'Driveway' : 'Garage'}`,
+        Spot_Type: i % 2 === 1 ? 'Driveway' : 'Garage',
+        Monthly_Fee: 0,
+        Status: 'Available'
+      });
+    }
+    setPropForm({
+      ...propForm,
+      Parking_Spots: [...currentSpots, ...newSpots]
+    });
+  };
+
+  const handleRemoveParkingSpotFromPropForm = (idx: number) => {
+    const currentSpots = propForm.Parking_Spots || [];
+    setPropForm({
+      ...propForm,
+      Parking_Spots: currentSpots.filter((_, i) => i !== idx)
+    });
+  };
+
+  const handleUpdateParkingSpotInPropForm = (idx: number, patch: Partial<ParkingSpot>) => {
+    const currentSpots = [...(propForm.Parking_Spots || [])];
+    currentSpots[idx] = { ...currentSpots[idx], ...patch };
+    setPropForm({
+      ...propForm,
+      Parking_Spots: currentSpots
+    });
+  };
+
   const handleSaveProperty = (e: React.FormEvent) => {
     e.preventDefault();
+    const targetPropId = editingProperty ? editingProperty.Property_ID : ('PROP-' + Date.now().toString(36).toUpperCase());
+
+    const propertyPayload: Property = {
+      Property_ID: targetPropId,
+      Property_Name: propForm.Property_Name,
+      Address: propForm.Address,
+      City: propForm.City,
+      Postal_Code: propForm.Postal_Code,
+      Landlord_ID: propForm.Landlord_ID,
+      Master_Rent_Amount: Number(propForm.Master_Rent_Amount) || 0,
+      Has_Divisions: propForm.Has_Divisions,
+      Division_Structure: propForm.Has_Divisions ? propForm.Division_Structure : 'None',
+      Default_Main_Share_Pct: propForm.Has_Divisions ? Number(propForm.Default_Main_Share_Pct) : undefined,
+      Default_Basement_Share_Pct: propForm.Has_Divisions ? Number(propForm.Default_Basement_Share_Pct) : undefined,
+      Division_Type: propForm.Division_Type,
+      Parent_Property_ID: propForm.Parent_Property_ID ? propForm.Parent_Property_ID : undefined,
+      Active: propForm.Active,
+      Parking_Spots: propForm.Parking_Spots,
+      Created_At: editingProperty?.Created_At || new Date().toISOString().slice(0, 10)
+    };
+
     if (editingProperty) {
-      const updated: Property = {
-        ...editingProperty,
-        Property_Name: propForm.Property_Name,
-        Address: propForm.Address,
-        City: propForm.City,
-        Province: propForm.Province,
-        Postal_Code: propForm.Postal_Code,
-        Landlord_ID: propForm.Landlord_ID,
-        Master_Rent_Amount: Number(propForm.Master_Rent_Amount) || 0,
-        Division_Type: propForm.Division_Type,
-        Parent_Property_ID: propForm.Parent_Property_ID ? propForm.Parent_Property_ID : undefined,
-        Active: propForm.Active
-      };
-      storage.updateProperty(updated, currentUser.Email);
-      onToast(`Property "${updated.Property_Name}" updated successfully!`, 'success');
+      storage.updateProperty(propertyPayload, currentUser.Email);
+      onToast(`Property "${propertyPayload.Property_Name}" updated successfully!`, 'success');
     } else {
-      const newId = 'PROP-' + Date.now().toString(36).toUpperCase();
-      const newProp: Property = {
-        Property_ID: newId,
-        Property_Name: propForm.Property_Name,
-        Address: propForm.Address,
-        City: propForm.City,
-        Province: propForm.Province,
-        Postal_Code: propForm.Postal_Code,
-        Landlord_ID: propForm.Landlord_ID,
-        Master_Rent_Amount: Number(propForm.Master_Rent_Amount) || 0,
-        Division_Type: propForm.Division_Type,
-        Parent_Property_ID: propForm.Parent_Property_ID ? propForm.Parent_Property_ID : undefined,
-        Active: propForm.Active,
-        Created_At: new Date().toISOString().slice(0, 10)
-      };
-      storage.addProperty(newProp, currentUser.Email);
-      onToast(`Property "${newProp.Property_Name}" created!`, 'success');
+      storage.addProperty(propertyPayload, currentUser.Email);
+      onToast(`Property "${propertyPayload.Property_Name}" created!`, 'success');
     }
+
+    // If configured as divided property (Main Floor & Basement), auto-provision or update sub-units
+    if (propForm.Has_Divisions && propForm.Division_Structure === 'Main_And_Basement') {
+      const existingUnits = storage.getUnits().filter(u => u.Property_ID === targetPropId);
+      const mainUnit = existingUnits.find(u => u.Division_Level === 'Main Floor' || u.Unit_Number_Name?.toLowerCase().includes('main'));
+      const bsmntUnit = existingUnits.find(u => u.Division_Level === 'Basement' || u.Unit_Number_Name?.toLowerCase().includes('basement'));
+
+      const masterRent = Number(propForm.Master_Rent_Amount) || 4000;
+
+      if (!mainUnit) {
+        storage.addUnit({
+          Unit_ID: 'UNIT-' + Date.now().toString(36).toUpperCase() + '-M',
+          Property_ID: targetPropId,
+          Unit_Number_Name: 'Main Floor',
+          Unit_Type: 'Main Floor Suite',
+          Division_Level: 'Main Floor',
+          Target_Rent: Math.round(masterRent * 0.6),
+          Current_Status: 'Vacant',
+          Bedrooms: 2,
+          Bathrooms: 1,
+          Square_Feet: 1200
+        }, currentUser.Email);
+      } else {
+        storage.updateUnit({
+          ...mainUnit,
+          Division_Level: 'Main Floor'
+        }, currentUser.Email);
+      }
+
+      if (!bsmntUnit) {
+        storage.addUnit({
+          Unit_ID: 'UNIT-' + Date.now().toString(36).toUpperCase() + '-B',
+          Property_ID: targetPropId,
+          Unit_Number_Name: 'Basement Suite',
+          Unit_Type: 'Basement Suite',
+          Division_Level: 'Basement',
+          Target_Rent: Math.round(masterRent * 0.4),
+          Current_Status: 'Vacant',
+          Bedrooms: 1,
+          Bathrooms: 1,
+          Square_Feet: 800
+        }, currentUser.Email);
+      } else {
+        storage.updateUnit({
+          ...bsmntUnit,
+          Division_Level: 'Basement'
+        }, currentUser.Email);
+      }
+    }
+
     setShowPropertyModal(false);
   };
 
@@ -159,6 +291,8 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ currentUser, onT
       Property_ID: properties[0]?.Property_ID || '',
       Unit_Number_Name: '',
       Unit_Type: 'Apartment',
+      Division_Level: 'None',
+      Utility_Share_Percentage: 0,
       Bedrooms: 2,
       Bathrooms: 1,
       Square_Feet: 750,
@@ -175,6 +309,8 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ currentUser, onT
       Property_ID: u.Property_ID,
       Unit_Number_Name: u.Unit_Number_Name || u.Unit_Number || '',
       Unit_Type: u.Unit_Type || u.Floor_Plan || 'Apartment',
+      Division_Level: u.Division_Level || 'None',
+      Utility_Share_Percentage: u.Utility_Share_Percentage || 0,
       Bedrooms: u.Bedrooms || 1,
       Bathrooms: u.Bathrooms || 1,
       Square_Feet: u.Square_Feet || 650,
@@ -193,6 +329,8 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ currentUser, onT
         Unit_Number_Name: unitForm.Unit_Number_Name,
         Unit_Number: unitForm.Unit_Number_Name,
         Unit_Type: unitForm.Unit_Type,
+        Division_Level: unitForm.Division_Level === 'None' ? undefined : (unitForm.Division_Level as any),
+        Utility_Share_Percentage: Number(unitForm.Utility_Share_Percentage) || undefined,
         Bedrooms: Number(unitForm.Bedrooms),
         Bathrooms: Number(unitForm.Bathrooms),
         Square_Feet: Number(unitForm.Square_Feet),
@@ -208,6 +346,8 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ currentUser, onT
         Property_ID: unitForm.Property_ID,
         Unit_Number_Name: unitForm.Unit_Number_Name,
         Unit_Type: unitForm.Unit_Type,
+        Division_Level: unitForm.Division_Level === 'None' ? undefined : (unitForm.Division_Level as any),
+        Utility_Share_Percentage: Number(unitForm.Utility_Share_Percentage) || undefined,
         Bedrooms: Number(unitForm.Bedrooms),
         Bathrooms: Number(unitForm.Bathrooms),
         Square_Feet: Number(unitForm.Square_Feet),
@@ -306,7 +446,7 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ currentUser, onT
                         </span>
                       )}
                       <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                        {p.Province} · Active
+                        Active
                       </span>
                       <button
                         onClick={() => handleOpenEditProperty(p)}
@@ -347,6 +487,94 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ currentUser, onT
                       <span className="font-bold text-indigo-700">{occRate}% ({occupiedUnits.length}/{propUnits.length} Units)</span>
                     </div>
                   </div>
+
+                  {/* Sub-Unit Division Breakdown (Main Floor & Basement) */}
+                  {p.Has_Divisions && (
+                    <div className="mt-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-slate-800 text-[11px] flex items-center gap-1">
+                          <span>🏢 Single Property Division</span>
+                        </span>
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-100">
+                          1 Master Rent: {AccountingEngine.formatCurrency(p.Master_Rent_Amount)}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-[11px]">
+                        {/* Main Floor sub-unit */}
+                        {(() => {
+                          const mUnit = propUnits.find(u => u.Division_Level === 'Main Floor' || u.Unit_Number_Name?.toLowerCase().includes('main'));
+                          const mTenant = mUnit ? tenants.find(t => t.Current_Unit_ID === mUnit.Unit_ID || (t.Current_Property_ID === p.Property_ID && t.Floor_Division === 'Main Floor')) : null;
+                          return (
+                            <div className="p-2 bg-blue-50/50 rounded-lg border border-blue-100">
+                              <div className="flex items-center justify-between font-bold text-blue-900 text-[11px]">
+                                <span>🏠 Main Floor</span>
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded font-medium ${mTenant ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}`}>
+                                  {mTenant ? 'Occupied' : 'Vacant'}
+                                </span>
+                              </div>
+                              <div className="text-[10px] text-slate-600 mt-1 truncate">
+                                Tenant: <span className="font-semibold text-slate-900">{mTenant ? mTenant.Full_Name : 'No active tenant'}</span>
+                              </div>
+                            </div>
+                          );
+                        })()}
+
+                        {/* Basement sub-unit */}
+                        {(() => {
+                          const bUnit = propUnits.find(u => u.Division_Level === 'Basement' || u.Unit_Number_Name?.toLowerCase().includes('basement'));
+                          const bTenant = bUnit ? tenants.find(t => t.Current_Unit_ID === bUnit.Unit_ID || (t.Current_Property_ID === p.Property_ID && t.Floor_Division === 'Basement')) : null;
+                          return (
+                            <div className="p-2 bg-amber-50/50 rounded-lg border border-amber-100">
+                              <div className="flex items-center justify-between font-bold text-amber-900 text-[11px]">
+                                <span>🏡 Basement</span>
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded font-medium ${bTenant ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}`}>
+                                  {bTenant ? 'Occupied' : 'Vacant'}
+                                </span>
+                              </div>
+                              <div className="text-[10px] text-slate-600 mt-1 truncate">
+                                Tenant: <span className="font-semibold text-slate-900">{bTenant ? bTenant.Full_Name : 'No active tenant'}</span>
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                      <p className="text-[10px] text-slate-500 italic">
+                        Expenses, repairs & utility bills are allocated manually to each floor as incurred.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Property Level Parking Overview */}
+                  {p.Parking_Spots && p.Parking_Spots.length > 0 && (
+                    <div className="p-2.5 rounded-xl bg-blue-50/60 border border-blue-100 text-xs space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-blue-950 flex items-center gap-1.5 text-[11px]">
+                          <Car className="w-3.5 h-3.5 text-blue-600" />
+                          Parking ({p.Parking_Spots.filter(s => s.Status === 'Assigned').length}/{p.Parking_Spots.length} Assigned)
+                        </span>
+                        <span className="text-[10px] text-blue-700 font-semibold">
+                          {p.Parking_Spots.filter(s => s.Status === 'Available').length} Available
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {p.Parking_Spots.map(s => {
+                          const t = tenants.find(ten => ten.Tenant_ID === s.Assigned_Tenant_ID);
+                          const isAssigned = s.Status === 'Assigned';
+                          return (
+                            <span
+                              key={s.Spot_ID}
+                              className={`text-[10px] px-2 py-0.5 rounded-md border font-medium flex items-center gap-1 ${
+                                isAssigned ? 'bg-white border-blue-200 text-blue-900 font-semibold' : 'bg-slate-50 border-slate-200 text-slate-500'
+                              }`}
+                            >
+                              {s.Spot_Number_Name}
+                              {isAssigned && t && <span className="text-blue-700 font-bold">({t.Full_Name.split(' ')[0]})</span>}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -388,6 +616,7 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ currentUser, onT
                   <th className="py-3 px-4">Unit ID</th>
                   <th className="py-3 px-4">Suite / Name</th>
                   <th className="py-3 px-4">Property</th>
+                  <th className="py-3 px-4">Floor Division</th>
                   <th className="py-3 px-4">Type</th>
                   <th className="py-3 px-4 text-right">Target Rent ($)</th>
                   <th className="py-3 px-4">Status</th>
@@ -400,6 +629,22 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ currentUser, onT
                     <td className="py-3 px-4 font-mono font-semibold text-slate-600">{u.Unit_ID}</td>
                     <td className="py-3 px-4 font-bold text-slate-900">{u.Unit_Number_Name || u.Unit_Number}</td>
                     <td className="py-3 px-4 text-slate-700">{propertyName(u.Property_ID)}</td>
+                    <td className="py-3 px-4">
+                      {u.Division_Level && u.Division_Level !== 'None' ? (
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                            u.Division_Level === 'Main Floor' ? 'bg-blue-100 text-blue-800' :
+                            u.Division_Level === 'Basement' ? 'bg-amber-100 text-amber-800' :
+                            'bg-teal-100 text-teal-800'
+                          }`}>
+                            {u.Division_Level === 'Main Floor' ? '🏠 Main Floor' :
+                             u.Division_Level === 'Basement' ? '🏡 Basement' : u.Division_Level}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-slate-400 italic text-[11px]">Standard / Whole</span>
+                      )}
+                    </td>
                     <td className="py-3 px-4 text-slate-600">{u.Bedrooms} Bed · {u.Bathrooms} Bath ({u.Square_Feet} sqft)</td>
                     <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">
                       {AccountingEngine.formatCurrency(u.Target_Rent || u.Monthly_Rent || 0)}
@@ -440,8 +685,8 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ currentUser, onT
       {/* Add / Edit Property Modal */}
       {showPropertyModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
+          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
+            <div className="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/50 sticky top-0 bg-white z-10">
               <h3 className="text-sm font-bold text-slate-900">
                 {editingProperty ? `Edit Property: ${editingProperty.Property_Name}` : 'Register Property'}
               </h3>
@@ -472,7 +717,7 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ currentUser, onT
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs font-semibold text-slate-700 block mb-1">City</label>
                   <input
@@ -482,22 +727,6 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ currentUser, onT
                     onChange={(e) => setPropForm({ ...propForm, City: e.target.value })}
                     className="w-full text-xs rounded-xl border border-slate-200 p-2.5 outline-none focus:border-indigo-600"
                   />
-                </div>
-                <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">Province</label>
-                  <select
-                    value={propForm.Province}
-                    onChange={(e) => setPropForm({ ...propForm, Province: e.target.value as RegionalProvince })}
-                    className="w-full text-xs rounded-xl border border-slate-200 p-2.5 outline-none focus:border-indigo-600 bg-white"
-                  >
-                    <option value="ON">ON (13% HST)</option>
-                    <option value="BC">BC (5% GST + 7% PST)</option>
-                    <option value="QC">QC (5% GST + 9.975% QST)</option>
-                    <option value="AB">AB (5% GST)</option>
-                    <option value="MB">MB (5% GST + 7% PST)</option>
-                    <option value="SK">SK (5% GST + 6% PST)</option>
-                    <option value="NS">NS (15% HST)</option>
-                  </select>
                 </div>
                 <div>
                   <label className="text-xs font-semibold text-slate-700 block mb-1">Postal Code</label>
@@ -525,60 +754,227 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ currentUser, onT
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">Master Rent ($)</label>
+                  <label className="text-xs font-semibold text-slate-700 block mb-1">Master Rent ($/mo)</label>
                   <input
                     type="number"
                     step="0.01"
                     value={propForm.Master_Rent_Amount}
                     onChange={(e) => setPropForm({ ...propForm, Master_Rent_Amount: Number(e.target.value) })}
-                    className="w-full text-xs rounded-xl border border-slate-200 p-2.5 outline-none focus:border-indigo-600"
+                    className="w-full text-xs rounded-xl border border-slate-200 p-2.5 outline-none focus:border-indigo-600 font-mono font-semibold"
                   />
+                  <span className="text-[10px] text-slate-500">Rent paid on full property</span>
                 </div>
               </div>
 
-              {/* Property Division / Tagging Configuration */}
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5">
+              {/* Single Property with Sub-Unit Division (Main Floor & Basement) */}
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
                 <div>
                   <label className="text-xs font-semibold text-slate-800 block mb-1">
-                    Property Division Tag (Basement / Main Floor / Multi-Unit)
+                    Property Structure & Floor Division
                   </label>
-                  <select
-                    value={propForm.Division_Type || 'None'}
-                    onChange={(e) => setPropForm({ ...propForm, Division_Type: e.target.value as any })}
-                    className="w-full text-xs rounded-xl border border-slate-200 p-2 outline-none focus:border-indigo-600 bg-white"
-                  >
-                    <option value="None">Standalone Single Property (No Division)</option>
-                    <option value="Parent_Building">🏢 Master Parent Building (Has divided sub-properties)</option>
-                    <option value="Main_Floor">🏠 Main Floor Division</option>
-                    <option value="Basement_Suite">🏡 Basement Suite Division</option>
-                    <option value="Upper_Floor">🔼 Upper Floor Division</option>
-                    <option value="Laneway_House">🏡 Laneway / Carriage House</option>
-                    <option value="Custom_Division">🧩 Custom Tagged Division</option>
-                  </select>
-                  <p className="text-[10px] text-slate-500 mt-1">
-                    Allows unified single utility invoices to be automatically apportioned between Main Floor & Basement or sub-divisions.
-                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setPropForm({ ...propForm, Has_Divisions: false, Division_Structure: 'None' })}
+                      className={`p-2.5 rounded-xl border text-left transition-all ${
+                        !propForm.Has_Divisions
+                          ? 'border-indigo-600 bg-indigo-50/70 text-indigo-900 font-bold'
+                          : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                      }`}
+                    >
+                      <div className="text-xs font-bold">🏢 Single Whole Unit</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5 leading-tight">Standard undivided building</div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setPropForm({
+                        ...propForm,
+                        Has_Divisions: true,
+                        Division_Structure: 'Main_And_Basement',
+                        Default_Main_Share_Pct: propForm.Default_Main_Share_Pct || 60,
+                        Default_Basement_Share_Pct: propForm.Default_Basement_Share_Pct || 40
+                      })}
+                      className={`p-2.5 rounded-xl border text-left transition-all ${
+                        propForm.Has_Divisions
+                          ? 'border-indigo-600 bg-indigo-50/70 text-indigo-900 font-bold'
+                          : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                      }`}
+                    >
+                      <div className="text-xs font-bold text-indigo-700">🏠 Main Floor & 🏡 Basement</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5 leading-tight">1 Property for rent, divided for expenses & tenants</div>
+                    </button>
+                  </div>
                 </div>
 
-                {propForm.Division_Type && propForm.Division_Type !== 'None' && propForm.Division_Type !== 'Parent_Building' && (
-                  <div>
-                    <label className="text-xs font-semibold text-slate-800 block mb-1">
-                      Link to Master Parent Property (Optional)
-                    </label>
-                    <select
-                      value={propForm.Parent_Property_ID || ''}
-                      onChange={(e) => setPropForm({ ...propForm, Parent_Property_ID: e.target.value })}
-                      className="w-full text-xs rounded-xl border border-slate-200 p-2 outline-none focus:border-indigo-600 bg-white"
+                {propForm.Has_Divisions && (
+                  <div className="pt-2 border-t border-slate-200 space-y-2.5 animate-in fade-in duration-150">
+                    <div className="p-3 rounded-xl bg-indigo-50/80 border border-indigo-200 text-xs text-indigo-950 space-y-2">
+                      <div className="font-bold flex items-center gap-1.5 text-indigo-900">
+                        <span>🏢 Unified Single Property Architecture</span>
+                      </div>
+                      <p className="text-[11px] text-slate-700 leading-relaxed">
+                        Rent is paid on the single full property ({AccountingEngine.formatCurrency(propForm.Master_Rent_Amount || 0)} master rent). Saving will maintain the <strong>Main Floor</strong> and <strong>Basement Suite</strong> sub-units for assigning tenants.
+                      </p>
+                      <div className="p-2 bg-white rounded-lg border border-indigo-100 text-[11px] text-slate-600 flex items-center gap-2">
+                        <span className="text-emerald-600 font-bold">✓ Manual Expense Allocation:</span>
+                        <span>Utility bills, repairs, and expenses are manually allocated to Main Floor and Basement as incurred without any fixed ratio.</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Property-Level Parking Spots Management */}
+              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center">
+                      <Car className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900">Property Parking Spots</h4>
+                      <p className="text-[10px] text-slate-500">
+                        Configured at property level (cannot be split by unit); assignable to tenants
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={handleAddParkingSpotToPropForm}
+                      className="px-2.5 py-1 text-[11px] font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-1 transition-colors shadow-xs"
                     >
-                      <option value="">-- Select Parent Building or Standalone Parent --</option>
-                      {properties
-                        .filter(p => !editingProperty || p.Property_ID !== editingProperty.Property_ID)
-                        .map(p => (
-                          <option key={p.Property_ID} value={p.Property_ID}>
-                            {p.Property_Name} ({p.Address})
-                          </option>
-                        ))}
-                    </select>
+                      <Plus className="w-3 h-3" />
+                      Add Spot
+                    </button>
+                  </div>
+                </div>
+
+                {(!propForm.Parking_Spots || propForm.Parking_Spots.length === 0) ? (
+                  <div className="p-4 bg-white rounded-xl border border-dashed border-slate-200 text-center space-y-2">
+                    <p className="text-xs text-slate-500">No parking spots configured for this property.</p>
+                    <div className="flex items-center justify-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleQuickAddStandardSpots(2)}
+                        className="px-2.5 py-1 text-[10px] font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200"
+                      >
+                        + Add 2 Spots (Driveway & Garage)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleQuickAddStandardSpots(4)}
+                        className="px-2.5 py-1 text-[10px] font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-lg border border-slate-200"
+                      >
+                        + Add 4 Spots
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-2.5 max-h-60 overflow-y-auto pr-1">
+                    {propForm.Parking_Spots.map((spot, idx) => (
+                      <div key={spot.Spot_ID || idx} className="p-2.5 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-2 text-xs">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 flex-1">
+                            <span className="font-mono text-[10px] text-slate-400 font-bold">#{idx + 1}</span>
+                            <input
+                              type="text"
+                              value={spot.Spot_Number_Name}
+                              onChange={(e) => handleUpdateParkingSpotInPropForm(idx, { Spot_Number_Name: e.target.value })}
+                              placeholder="e.g. Spot 1 - Driveway Left"
+                              className="text-xs font-bold text-slate-900 border-b border-slate-200 focus:border-blue-600 outline-none flex-1 py-0.5"
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveParkingSpotFromPropForm(idx)}
+                            className="p-1 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                            title="Remove Spot"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-2">
+                          <div>
+                            <label className="text-[10px] text-slate-500 block mb-0.5 font-medium">Type</label>
+                            <select
+                              value={spot.Spot_Type || 'Driveway'}
+                              onChange={(e) => handleUpdateParkingSpotInPropForm(idx, { Spot_Type: e.target.value as any })}
+                              className="w-full text-xs rounded-lg border border-slate-200 p-1.5 outline-none bg-white"
+                            >
+                              <option value="Driveway">Driveway</option>
+                              <option value="Garage">Garage</option>
+                              <option value="Underground">Underground</option>
+                              <option value="Covered">Covered</option>
+                              <option value="Outdoor Surface">Outdoor Surface</option>
+                              <option value="Street Permit">Street Permit</option>
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="text-[10px] text-slate-500 block mb-0.5 font-medium">Fee ($/mo)</label>
+                            <input
+                              type="number"
+                              min="0"
+                              step="5"
+                              value={spot.Monthly_Fee || 0}
+                              onChange={(e) => handleUpdateParkingSpotInPropForm(idx, { Monthly_Fee: Number(e.target.value) })}
+                              className="w-full text-xs rounded-lg border border-slate-200 p-1.5 outline-none font-mono"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="text-[10px] text-slate-500 block mb-0.5 font-medium">Status</label>
+                            <select
+                              value={spot.Status}
+                              onChange={(e) => {
+                                const newStatus = e.target.value as ParkingSpot['Status'];
+                                handleUpdateParkingSpotInPropForm(idx, {
+                                  Status: newStatus,
+                                  Assigned_Tenant_ID: newStatus === 'Available' ? undefined : spot.Assigned_Tenant_ID
+                                });
+                              }}
+                              className="w-full text-xs rounded-lg border border-slate-200 p-1.5 outline-none bg-white font-semibold"
+                            >
+                              <option value="Available">Available</option>
+                              <option value="Assigned">Assigned</option>
+                              <option value="Reserved">Reserved</option>
+                              <option value="Maintenance">Maintenance</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        {spot.Status === 'Assigned' && (
+                          <div className="pt-1.5 border-t border-slate-100 grid grid-cols-2 gap-2 bg-blue-50/40 p-2 rounded-lg">
+                            <div>
+                              <label className="text-[10px] text-blue-900 block mb-0.5 font-semibold">Assigned Tenant</label>
+                              <select
+                                value={spot.Assigned_Tenant_ID || ''}
+                                onChange={(e) => handleUpdateParkingSpotInPropForm(idx, { Assigned_Tenant_ID: e.target.value || undefined })}
+                                className="w-full text-[11px] rounded-md border border-blue-200 p-1 bg-white outline-none"
+                              >
+                                <option value="">Select tenant...</option>
+                                {tenants.map(t => (
+                                  <option key={t.Tenant_ID} value={t.Tenant_ID}>{t.Full_Name}</option>
+                                ))}
+                              </select>
+                            </div>
+                            <div>
+                              <label className="text-[10px] text-blue-900 block mb-0.5 font-semibold">Vehicle Plate (Optional)</label>
+                              <input
+                                type="text"
+                                value={spot.Vehicle_Plate || ''}
+                                onChange={(e) => handleUpdateParkingSpotInPropForm(idx, { Vehicle_Plate: e.target.value.toUpperCase() })}
+                                placeholder="e.g. CXYZ-789"
+                                className="w-full text-[11px] rounded-md border border-blue-200 p-1 bg-white outline-none font-mono uppercase"
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
@@ -593,7 +989,7 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ currentUser, onT
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl"
+                  className="px-4 py-2 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-xs"
                 >
                   {editingProperty ? 'Save Changes' : 'Save Property'}
                 </button>
@@ -606,8 +1002,8 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ currentUser, onT
       {/* Add / Edit Unit Modal */}
       {showUnitModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
+          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
+            <div className="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/50 sticky top-0 bg-white z-10">
               <h3 className="text-sm font-bold text-slate-900">
                 {editingUnit ? `Edit Unit: ${editingUnit.Unit_Number_Name || editingUnit.Unit_ID}` : 'Add Unit / Suite'}
               </h3>
@@ -622,21 +1018,48 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ currentUser, onT
                   className="w-full text-xs rounded-xl border border-slate-200 p-2.5 outline-none focus:border-indigo-600 bg-white"
                 >
                   {properties.map(p => (
-                    <option key={p.Property_ID} value={p.Property_ID}>{p.Property_Name}</option>
+                    <option key={p.Property_ID} value={p.Property_ID}>
+                      {p.Property_Name} {p.Has_Divisions ? '(Divided Main & Basement)' : ''}
+                    </option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1">Unit / Suite Number</label>
+                <label className="text-xs font-semibold text-slate-700 block mb-1">Unit / Suite Number or Title</label>
                 <input
                   type="text"
                   required
                   value={unitForm.Unit_Number_Name}
                   onChange={(e) => setUnitForm({ ...unitForm, Unit_Number_Name: e.target.value })}
-                  placeholder="e.g. Suite 402 or Unit B"
+                  placeholder="e.g. Main Floor or Basement Suite"
                   className="w-full text-xs rounded-xl border border-slate-200 p-2.5 outline-none focus:border-indigo-600"
                 />
+              </div>
+
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                <div>
+                  <label className="text-xs font-semibold text-slate-800 block mb-1">Division / Floor Level</label>
+                  <select
+                    value={unitForm.Division_Level || 'None'}
+                    onChange={(e) => {
+                      setUnitForm({
+                        ...unitForm,
+                        Division_Level: e.target.value
+                      });
+                    }}
+                    className="w-full text-xs rounded-xl border border-slate-200 p-2 outline-none focus:border-indigo-600 bg-white"
+                  >
+                    <option value="None">None (Whole Property / Standard Unit)</option>
+                    <option value="Main Floor">🏠 Main Floor Division</option>
+                    <option value="Basement">🏡 Basement Suite Division</option>
+                    <option value="Upper Floor">🔼 Upper Floor Division</option>
+                    <option value="Laneway House">🏡 Laneway / Carriage House</option>
+                  </select>
+                </div>
+                <p className="text-[11px] text-slate-500 leading-snug">
+                  Main Floor and Basement suites are maintained for separate leasing. Utility bills, repairs, and expenses are manually allocated without fixed percentage ratios.
+                </p>
               </div>
 
               <div className="grid grid-cols-3 gap-2">

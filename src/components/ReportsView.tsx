@@ -92,9 +92,10 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ currentUser, onToast }
 
   const handleExportDepositsPending = () => {
     const pending = deposits.filter(d => d.Status !== 'Received');
-    const headers = ['Deposit Txn ID', 'Lease ID', 'Tenant Name', 'Unit ID', 'Due Amount', 'Paid Amount', 'Balance Due', 'Status'];
+    const headers = ['Deposit Txn ID', 'Deposit Type', 'Lease ID', 'Tenant Name', 'Unit ID', 'Due Amount', 'Paid Amount', 'Balance Due', 'Status'];
     const rows = pending.map(d => [
       d.Deposit_Txn_ID,
+      `"${d.Deposit_Type || 'Security Deposit'}"`,
       d.Lease_ID,
       `"${tenantName(d.Tenant_ID)}"`,
       d.Unit_ID,
@@ -201,8 +202,8 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ currentUser, onToast }
               <span className="p-2 bg-purple-50 text-purple-600 rounded-xl">
                 <PiggyBank className="w-5 h-5" />
               </span>
-              <span className="text-xs font-bold text-purple-600">
-                {deposits.filter(d => d.Status !== 'Received').length} Pending
+              <span className="text-[11px] font-bold text-purple-600">
+                {deposits.filter(d => d.Deposit_Type === 'Security Deposit' && d.Status !== 'Received').length} Sec · {deposits.filter(d => d.Deposit_Type === 'Last Month Rent' && d.Status !== 'Received').length} LMR Pending
               </span>
             </div>
             <h3 className="text-sm font-bold text-slate-900">Deposits & LMR Pending</h3>

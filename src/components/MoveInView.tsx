@@ -359,7 +359,7 @@ export const MoveInView: React.FC<MoveInViewProps> = ({ currentUser, onToast }) 
                 <p className="font-bold text-slate-800 text-xs">Initial Utility Meter Readings (Day 1)</p>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block font-medium text-slate-600 mb-1">Electricity / Hydro Meter</label>
+                    <label className="block font-medium text-slate-600 mb-1">Electricity / Hydro Meter (Alectra / Hydro)</label>
                     <input
                       type="text"
                       value={hydroMeterReading}
@@ -369,7 +369,7 @@ export const MoveInView: React.FC<MoveInViewProps> = ({ currentUser, onToast }) 
                     />
                   </div>
                   <div>
-                    <label className="block font-medium text-slate-600 mb-1">Natural Gas Meter</label>
+                    <label className="block font-medium text-slate-600 mb-1">Natural Gas Meter (Enbridge)</label>
                     <input
                       type="text"
                       value={gasMeterReading}
@@ -400,7 +400,7 @@ export const MoveInView: React.FC<MoveInViewProps> = ({ currentUser, onToast }) 
                     onChange={(e) => setDepositReceived(e.target.checked)}
                     className="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500"
                   />
-                  <span className="font-semibold text-slate-800">Security Deposit / LMR Held in Trust Account</span>
+                  <span className="font-semibold text-slate-800">Security Deposit / LMR Received & Held</span>
                 </label>
 
                 <label className="flex items-center gap-2 cursor-pointer">

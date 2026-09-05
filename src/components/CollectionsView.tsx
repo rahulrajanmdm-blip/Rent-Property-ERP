@@ -44,8 +44,11 @@ export const CollectionsView: React.FC<CollectionsViewProps> = ({ currentUser, o
   const [notes, setNotes] = useState<string>('Tenant agreed to clear balance via Interac e-Transfer by Friday.');
   const [nextFollowUp, setNextFollowUp] = useState<string>(new Date(Date.now() + 5 * 86400000).toISOString().split('T')[0]);
 
-  // Arrears Rent Transactions
-  const arrearsTxns = rentTxns.filter(r => r.Balance > 0);
+  // Arrears Rent Transactions (excluding orphaned leases)
+  const arrearsTxns = rentTxns.filter(r => {
+    if (r.Lease_ID && !leases.some(l => l.Lease_ID === r.Lease_ID)) return false;
+    return r.Balance > 0;
+  });
 
   const filteredArrears = arrearsTxns.filter(r => {
     const tenant = tenants.find(t => t.Tenant_ID === r.Tenant_ID);
@@ -290,13 +293,13 @@ export const CollectionsView: React.FC<CollectionsViewProps> = ({ currentUser, o
                   </td>
                 </tr>
               ) : (
-                filteredArrears.map(r => {
+                filteredArrears.map((r, idx) => {
                   const tenant = tenants.find(t => t.Tenant_ID === r.Tenant_ID);
                   const prop = properties.find(p => p.Property_ID === r.Property_ID);
                   const unit = units.find(u => u.Unit_ID === r.Unit_ID);
 
                   return (
-                    <tr key={r.Rent_Txn_ID} className="hover:bg-slate-50/80 transition-colors">
+                    <tr key={`${r.Rent_Txn_ID || 'arrears'}-${idx}`} className="hover:bg-slate-50/80 transition-colors">
                       <td className="py-3.5 px-4">
                         <p className="font-mono font-bold text-slate-900">{r.Rent_Txn_ID}</p>
                         <span className="text-[11px] font-semibold text-indigo-600">{r.Period_Month}</span>
@@ -314,8 +317,16 @@ export const CollectionsView: React.FC<CollectionsViewProps> = ({ currentUser, o
                       <td className="py-3.5 px-4">
                         <span className="font-semibold text-rose-700">{r.Due_Date}</span>
                       </td>
-                      <td className="py-3.5 px-4 text-right font-mono font-bold text-slate-600">
-                        {AccountingEngine.formatCurrency(r.Amount_Billed)}
+                      <td className="py-3.5 px-4 text-right font-mono">
+                        {r.Discount_Amount && r.Discount_Amount > 0 ? (
+                          <div>
+                            <span className="text-[10px] text-slate-400 line-through block">{AccountingEngine.formatCurrency(r.Amount_Billed)}</span>
+                            <span className="font-bold text-slate-800">{AccountingEngine.formatCurrency(r.Amount_Billed - r.Discount_Amount)}</span>
+                            <span className="text-[10px] text-indigo-600 font-semibold block">(-{AccountingEngine.formatCurrency(r.Discount_Amount)} disc)</span>
+                          </div>
+                        ) : (
+                          <span className="font-bold text-slate-600">{AccountingEngine.formatCurrency(r.Amount_Billed)}</span>
+                        )}
                       </td>
                       <td className="py-3.5 px-4 text-right font-mono font-black text-rose-600">
                         {AccountingEngine.formatCurrency(r.Balance)}
@@ -518,10 +529,10 @@ export const CollectionsView: React.FC<CollectionsViewProps> = ({ currentUser, o
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-rose-500 font-semibold"
                   required
                 >
-                  {arrearsTxns.map(r => {
+                  {arrearsTxns.map((r, idx) => {
                     const t = tenants.find(x => x.Tenant_ID === r.Tenant_ID);
                     return (
-                      <option key={r.Rent_Txn_ID} value={r.Rent_Txn_ID}>
+                      <option key={`${r.Rent_Txn_ID || 'opt'}-${idx}`} value={r.Rent_Txn_ID}>
                         {r.Rent_Txn_ID} — {t?.Full_Name || r.Tenant_ID} ({r.Period_Month}, Balance: ${r.Balance.toLocaleString()})
                       </option>
                     );

@@ -27,6 +27,13 @@ export const AccountingView: React.FC<AccountingViewProps> = ({ currentUser, onT
   const [glAccount, setGlAccount] = useState('1010');
   const [glFrom, setGlFrom] = useState('2025-01-01');
   const [glTo, setGlTo] = useState(new Date().toISOString().slice(0, 10));
+  const [glFilterProperty, setGlFilterProperty] = useState('ALL');
+  const [glFilterDivision, setGlFilterDivision] = useState('ALL');
+
+  // Journal View Filters
+  const [journalSearch, setJournalSearch] = useState('');
+  const [journalFilterProperty, setJournalFilterProperty] = useState('ALL');
+  const [journalFilterDivision, setJournalFilterDivision] = useState('ALL');
 
   // Manual Journal Modal
   const [showJournalModal, setShowJournalModal] = useState(false);
@@ -36,13 +43,28 @@ export const AccountingView: React.FC<AccountingViewProps> = ({ currentUser, onT
   const [journalLines, setJournalLines] = useState<Array<{
     account: string;
     propertyId: string;
+    divisionLevel: string;
     debit: number;
     credit: number;
     memo: string;
   }>>([
-    { account: '1010', propertyId: '', debit: 0, credit: 0, memo: '' },
-    { account: '4000', propertyId: '', debit: 0, credit: 0, memo: '' }
+    { account: '5020', propertyId: properties[0]?.Property_ID || '', divisionLevel: 'None', debit: 0, credit: 0, memo: '' },
+    { account: '1010', propertyId: properties[0]?.Property_ID || '', divisionLevel: 'None', debit: 0, credit: 0, memo: '' }
   ]);
+
+  // Quick preset: Split Expense manually between Main Floor & Basement
+  const handlePresetFloorExpenseSplit = (propId?: string) => {
+    const p = properties.find(item => item.Property_ID === propId) || properties.find(item => item.Has_Divisions) || properties[0];
+    const pid = p ? p.Property_ID : '';
+    setJournalLines([
+      { account: '5020', propertyId: pid, divisionLevel: 'Main Floor', debit: 0, credit: 0, memo: 'Main Floor allocation' },
+      { account: '5020', propertyId: pid, divisionLevel: 'Basement', debit: 0, credit: 0, memo: 'Basement allocation' },
+      { account: '1010', propertyId: pid, divisionLevel: 'None', debit: 0, credit: 0, memo: 'Paid from Operating Bank' }
+    ]);
+    if (!journalDesc) {
+      setJournalDesc(`Expense allocation for ${p?.Property_Name || 'Property'}`);
+    }
+  };
 
   // Handle Trial Balance Date Change with Auto-Switching logic
   const handleTbToChange = (newTo: string) => {
@@ -70,6 +92,11 @@ export const AccountingView: React.FC<AccountingViewProps> = ({ currentUser, onT
     const d = new Date(header.Date);
     if (glFrom && d < new Date(glFrom)) return false;
     if (glTo && d > new Date(glTo + 'T23:59:59')) return false;
+    if (glFilterProperty !== 'ALL' && l.Property_ID !== glFilterProperty) return false;
+    if (glFilterDivision !== 'ALL') {
+      if (glFilterDivision === 'None' && (l.Division_Level && l.Division_Level !== 'None')) return false;
+      if (glFilterDivision !== 'None' && l.Division_Level !== glFilterDivision) return false;
+    }
     return true;
   }).map(l => {
     const header = journalHeaders.find(h => h.Journal_ID === l.Journal_ID)!;
@@ -90,7 +117,7 @@ export const AccountingView: React.FC<AccountingViewProps> = ({ currentUser, onT
 
   // Manual Journal Handlers
   const addJournalLine = () => {
-    setJournalLines([...journalLines, { account: '1010', propertyId: '', debit: 0, credit: 0, memo: '' }]);
+    setJournalLines([...journalLines, { account: '1010', propertyId: properties[0]?.Property_ID || '', divisionLevel: 'None', debit: 0, credit: 0, memo: '' }]);
   };
 
   const removeJournalLine = (index: number) => {
@@ -117,7 +144,8 @@ export const AccountingView: React.FC<AccountingViewProps> = ({ currentUser, onT
         Line_ID: `${jId}-${idx + 1}`,
         Journal_ID: jId,
         Account_Code: l.account,
-        Property_ID: l.propertyId,
+        Property_ID: l.propertyId || undefined,
+        Division_Level: (l.divisionLevel && l.divisionLevel !== 'None') ? (l.divisionLevel as any) : undefined,
         Debit_Amount: Number(l.debit) || 0,
         Credit_Amount: Number(l.credit) || 0,
         Memo: l.memo || journalDesc
@@ -308,13 +336,39 @@ export const AccountingView: React.FC<AccountingViewProps> = ({ currentUser, onT
               <select
                 value={glAccount}
                 onChange={(e) => setGlAccount(e.target.value)}
-                className="text-xs rounded-xl border border-slate-200 p-2 bg-white outline-none font-semibold w-72"
+                className="text-xs rounded-xl border border-slate-200 p-2 bg-white outline-none font-semibold w-64"
               >
                 {coa.map(a => (
                   <option key={a.Account_Code} value={a.Account_Code}>
                     {a.Account_Code} — {a.Account_Name} ({a.Account_Type})
                   </option>
                 ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-slate-500 block mb-1">Filter Property</label>
+              <select
+                value={glFilterProperty}
+                onChange={(e) => setGlFilterProperty(e.target.value)}
+                className="text-xs rounded-xl border border-slate-200 p-2 bg-white outline-none"
+              >
+                <option value="ALL">All Properties</option>
+                {properties.map(p => (
+                  <option key={p.Property_ID} value={p.Property_ID}>{p.Property_Name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-slate-500 block mb-1">Filter Floor Division</label>
+              <select
+                value={glFilterDivision}
+                onChange={(e) => setGlFilterDivision(e.target.value)}
+                className="text-xs rounded-xl border border-slate-200 p-2 bg-white outline-none"
+              >
+                <option value="ALL">All Divisions</option>
+                <option value="Main Floor">🏠 Main Floor Only</option>
+                <option value="Basement">🏡 Basement Only</option>
+                <option value="None">Whole Property / General</option>
               </select>
             </div>
             <div>
@@ -353,6 +407,7 @@ export const AccountingView: React.FC<AccountingViewProps> = ({ currentUser, onT
                   <tr>
                     <th className="py-3 px-4">Date</th>
                     <th className="py-3 px-4">Journal Ref</th>
+                    <th className="py-3 px-4">Property & Floor</th>
                     <th className="py-3 px-4">Description / Memo</th>
                     <th className="py-3 px-4 text-right">Debit ($)</th>
                     <th className="py-3 px-4 text-right">Credit ($)</th>
@@ -362,27 +417,54 @@ export const AccountingView: React.FC<AccountingViewProps> = ({ currentUser, onT
                 <tbody className="divide-y divide-slate-100">
                   {glRowsWithBalance.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="py-8 text-center text-slate-400 font-sans">
+                      <td colSpan={7} className="py-8 text-center text-slate-400 font-sans">
                         No transactions found for this account in the specified period.
                       </td>
                     </tr>
                   ) : (
-                    glRowsWithBalance.map((row, idx) => (
-                      <tr key={idx} className="hover:bg-slate-50/70 transition-colors">
-                        <td className="py-3 px-4 text-slate-800">{row.header.Date}</td>
-                        <td className="py-3 px-4 font-bold text-indigo-700">{row.Journal_ID}</td>
-                        <td className="py-3 px-4 font-sans text-slate-700">{row.Memo || row.header.Description}</td>
-                        <td className="py-3 px-4 text-right text-slate-900 font-medium">
-                          {row.Debit_Amount > 0 ? AccountingEngine.formatCurrency(row.Debit_Amount) : '—'}
-                        </td>
-                        <td className="py-3 px-4 text-right text-slate-900 font-medium">
-                          {row.Credit_Amount > 0 ? AccountingEngine.formatCurrency(row.Credit_Amount) : '—'}
-                        </td>
-                        <td className="py-3 px-4 text-right font-bold text-slate-900">
-                          {AccountingEngine.formatCurrency(row.runningBal)}
-                        </td>
-                      </tr>
-                    ))
+                    glRowsWithBalance.map((row, idx) => {
+                      const prop = properties.find(p => p.Property_ID === row.Property_ID);
+                      return (
+                        <tr key={idx} className="hover:bg-slate-50/70 transition-colors">
+                          <td className="py-3 px-4 text-slate-800">{row.header.Date}</td>
+                          <td className="py-3 px-4 font-bold text-indigo-700">{row.Journal_ID}</td>
+                          <td className="py-3 px-4 font-sans text-slate-700">
+                            {prop ? (
+                              <div className="flex items-center gap-1 flex-wrap">
+                                <span className="font-semibold text-slate-900">{prop.Property_Name}</span>
+                                {row.Division_Level === 'Main Floor' && (
+                                  <span className="text-[10px] bg-blue-100 text-blue-800 px-1.5 py-0.2 rounded font-bold">
+                                    🏠 Main Floor
+                                  </span>
+                                )}
+                                {row.Division_Level === 'Basement' && (
+                                  <span className="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded font-bold">
+                                    🏡 Basement
+                                  </span>
+                                )}
+                                {row.Division_Level && row.Division_Level !== 'Main Floor' && row.Division_Level !== 'Basement' && row.Division_Level !== 'None' && (
+                                  <span className="text-[10px] bg-teal-100 text-teal-800 px-1.5 py-0.2 rounded font-bold">
+                                    {row.Division_Level}
+                                  </span>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="text-slate-400 italic font-sans">—</span>
+                            )}
+                          </td>
+                          <td className="py-3 px-4 font-sans text-slate-700">{row.Memo || row.header.Description}</td>
+                          <td className="py-3 px-4 text-right text-slate-900 font-medium">
+                            {row.Debit_Amount > 0 ? AccountingEngine.formatCurrency(row.Debit_Amount) : '—'}
+                          </td>
+                          <td className="py-3 px-4 text-right text-slate-900 font-medium">
+                            {row.Credit_Amount > 0 ? AccountingEngine.formatCurrency(row.Credit_Amount) : '—'}
+                          </td>
+                          <td className="py-3 px-4 text-right font-bold text-slate-900">
+                            {AccountingEngine.formatCurrency(row.runningBal)}
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>
@@ -507,19 +589,229 @@ export const AccountingView: React.FC<AccountingViewProps> = ({ currentUser, onT
         </div>
       )}
 
-      {/* 4. JOURNAL POSTING MODAL */}
+      {/* 4. JOURNAL ENTRIES VIEW TAB */}
+      {subTab === 'JOURNAL' && (
+        <div className="space-y-4">
+          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-end gap-3 justify-between">
+            <div className="flex flex-wrap items-center gap-3">
+              <div>
+                <label className="text-xs font-semibold text-slate-500 block mb-1">Search Journals</label>
+                <input
+                  type="text"
+                  value={journalSearch}
+                  onChange={(e) => setJournalSearch(e.target.value)}
+                  placeholder="Search ref, memo, or desc..."
+                  className="text-xs rounded-xl border border-slate-200 p-2 bg-white outline-none w-60"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-slate-500 block mb-1">Filter Property</label>
+                <select
+                  value={journalFilterProperty}
+                  onChange={(e) => setJournalFilterProperty(e.target.value)}
+                  className="text-xs rounded-xl border border-slate-200 p-2 bg-white outline-none"
+                >
+                  <option value="ALL">All Properties</option>
+                  {properties.map(p => (
+                    <option key={p.Property_ID} value={p.Property_ID}>{p.Property_Name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-slate-500 block mb-1">Filter Floor Division</label>
+                <select
+                  value={journalFilterDivision}
+                  onChange={(e) => setJournalFilterDivision(e.target.value)}
+                  className="text-xs rounded-xl border border-slate-200 p-2 bg-white outline-none"
+                >
+                  <option value="ALL">All Divisions</option>
+                  <option value="Main Floor">🏠 Main Floor Only</option>
+                  <option value="Basement">🏡 Basement Only</option>
+                  <option value="None">Whole Property / General</option>
+                </select>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowJournalModal(true)}
+              className="px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white transition-all flex items-center gap-1.5 shadow-xs"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              New Journal Entry
+            </button>
+          </div>
+
+          <div className="space-y-3">
+            {(() => {
+              const allHeaders = storage.getJournalHeaders();
+              const allLinesData = storage.getJournalLines();
+
+              const filteredHeaders = allHeaders.filter(h => {
+                const lines = allLinesData.filter(l => l.Journal_ID === h.Journal_ID);
+                
+                // Property filter
+                if (journalFilterProperty !== 'ALL') {
+                  const hasProp = lines.some(l => l.Property_ID === journalFilterProperty);
+                  if (!hasProp) return false;
+                }
+
+                // Division filter
+                if (journalFilterDivision !== 'ALL') {
+                  const hasDiv = lines.some(l => {
+                    if (journalFilterDivision === 'None') return !l.Division_Level || l.Division_Level === 'None';
+                    return l.Division_Level === journalFilterDivision;
+                  });
+                  if (!hasDiv) return false;
+                }
+
+                // Search text filter
+                if (journalSearch.trim()) {
+                  const q = journalSearch.toLowerCase();
+                  const matchHeader = h.Journal_ID.toLowerCase().includes(q) ||
+                    h.Description.toLowerCase().includes(q) ||
+                    (h.Reference_ID && h.Reference_ID.toLowerCase().includes(q));
+                  const matchLines = lines.some(l => l.Memo?.toLowerCase().includes(q) || l.Account_Code.includes(q));
+                  if (!matchHeader && !matchLines) return false;
+                }
+
+                return true;
+              }).sort((a, b) => new Date(b.Date).getTime() - new Date(a.Date).getTime());
+
+              if (filteredHeaders.length === 0) {
+                return (
+                  <div className="bg-white p-12 text-center rounded-2xl border border-slate-200 text-slate-400 text-xs">
+                    No journal entries found matching the active filters.
+                  </div>
+                );
+              }
+
+              return filteredHeaders.map(h => {
+                const lines = allLinesData.filter(l => l.Journal_ID === h.Journal_ID);
+                const totalDebit = lines.reduce((s, l) => s + (l.Debit_Amount || 0), 0);
+                const totalCredit = lines.reduce((s, l) => s + (l.Credit_Amount || 0), 0);
+
+                return (
+                  <div key={h.Journal_ID} className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                    <div className="p-4 bg-slate-50/70 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex items-center gap-3 flex-wrap">
+                        <span className="font-mono font-bold text-xs text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-100">
+                          {h.Journal_ID}
+                        </span>
+                        <span className="text-xs font-bold text-slate-900">{h.Description}</span>
+                        {h.Reference_ID && (
+                          <span className="text-[11px] text-slate-500 font-mono">
+                            Ref: {h.Reference_ID}
+                          </span>
+                        )}
+                        <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">
+                          {h.Reference_Type}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3 text-xs">
+                        <span className="text-slate-500 font-medium">Date: <strong>{h.Date}</strong></span>
+                        <span className="font-mono font-bold text-slate-900">
+                          {AccountingEngine.formatCurrency(totalDebit)}
+                        </span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
+                          {h.Status}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs font-mono">
+                        <thead className="bg-slate-50/40 text-slate-400 uppercase font-semibold text-[10px] border-b border-slate-100 font-sans">
+                          <tr>
+                            <th className="py-2.5 px-4">Account</th>
+                            <th className="py-2.5 px-4">Property & Floor Division</th>
+                            <th className="py-2.5 px-4">Memo</th>
+                            <th className="py-2.5 px-4 text-right">Debit ($)</th>
+                            <th className="py-2.5 px-4 text-right">Credit ($)</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {lines.map((l, lIdx) => {
+                            const acc = coa.find(a => a.Account_Code === l.Account_Code);
+                            const prop = properties.find(p => p.Property_ID === l.Property_ID);
+                            return (
+                              <tr key={lIdx} className="hover:bg-slate-50/50">
+                                <td className="py-2.5 px-4">
+                                  <span className="font-bold text-indigo-700 mr-2">{l.Account_Code}</span>
+                                  <span className="font-sans text-slate-700">{acc?.Account_Name}</span>
+                                </td>
+                                <td className="py-2.5 px-4 font-sans">
+                                  {prop ? (
+                                    <div className="flex items-center gap-1.5 flex-wrap">
+                                      <span className="font-semibold text-slate-900">{prop.Property_Name}</span>
+                                      {l.Division_Level === 'Main Floor' && (
+                                        <span className="text-[10px] bg-blue-100 text-blue-800 px-1.5 py-0.2 rounded font-bold">
+                                          🏠 Main Floor
+                                        </span>
+                                      )}
+                                      {l.Division_Level === 'Basement' && (
+                                        <span className="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded font-bold">
+                                          🏡 Basement
+                                        </span>
+                                      )}
+                                      {l.Division_Level && l.Division_Level !== 'Main Floor' && l.Division_Level !== 'Basement' && l.Division_Level !== 'None' && (
+                                        <span className="text-[10px] bg-teal-100 text-teal-800 px-1.5 py-0.2 rounded font-bold">
+                                          {l.Division_Level}
+                                        </span>
+                                      )}
+                                    </div>
+                                  ) : (
+                                    <span className="text-slate-400 italic">—</span>
+                                  )}
+                                </td>
+                                <td className="py-2.5 px-4 font-sans text-slate-600">{l.Memo || '—'}</td>
+                                <td className="py-2.5 px-4 text-right font-medium text-slate-900">
+                                  {l.Debit_Amount > 0 ? AccountingEngine.formatCurrency(l.Debit_Amount) : '—'}
+                                </td>
+                                <td className="py-2.5 px-4 text-right font-medium text-slate-900">
+                                  {l.Credit_Amount > 0 ? AccountingEngine.formatCurrency(l.Credit_Amount) : '—'}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                );
+              });
+            })()}
+          </div>
+        </div>
+      )}
+
+      {/* 5. JOURNAL POSTING MODAL */}
       {showJournalModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-3xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             <div className="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
               <div>
                 <h3 className="text-sm font-bold text-slate-900">Create Double-Entry Journal Entry</h3>
-                <p className="text-xs text-slate-500">Posts directly to General Ledger upon balance validation</p>
+                <p className="text-xs text-slate-500">Allocate expenses and journals to properties and specific floor divisions</p>
               </div>
-              <button onClick={() => setShowJournalModal(false)} className="text-slate-400 hover:text-slate-600">✕</button>
+              <button onClick={() => setShowJournalModal(false)} className="text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
             </div>
 
-            <form onSubmit={handlePostJournal} className="p-5 space-y-4">
+            <form onSubmit={handlePostJournal} className="p-5 space-y-4 max-h-[85vh] overflow-y-auto">
+              {/* Quick Split Helper */}
+              <div className="p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl flex items-center justify-between gap-3 flex-wrap">
+                <div className="text-xs">
+                  <span className="font-bold text-indigo-950 block">⚡ Quick Manual Expense Split</span>
+                  <span className="text-slate-600 text-[11px]">Allocate expense separately to Main Floor & Basement without fixed percentages</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handlePresetFloorExpenseSplit()}
+                  className="px-3 py-1.5 text-xs font-bold bg-white text-indigo-700 hover:bg-indigo-100 rounded-lg border border-indigo-200 shadow-2xs transition-colors"
+                >
+                  ⚡ Preset Main Floor & Basement Lines
+                </button>
+              </div>
+
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs font-semibold text-slate-700 block mb-1">Journal Date</label>
@@ -537,7 +829,7 @@ export const AccountingView: React.FC<AccountingViewProps> = ({ currentUser, onT
                     type="text"
                     value={journalRef}
                     onChange={(e) => setJournalRef(e.target.value)}
-                    placeholder="e.g. ADJ-2025-01"
+                    placeholder="e.g. EXP-REPAIR-01"
                     className="w-full text-xs rounded-xl border border-slate-200 p-2.5 outline-none focus:border-indigo-600"
                   />
                 </div>
@@ -550,64 +842,130 @@ export const AccountingView: React.FC<AccountingViewProps> = ({ currentUser, onT
                   required
                   value={journalDesc}
                   onChange={(e) => setJournalDesc(e.target.value)}
-                  placeholder="e.g. Month-end HVAC repair expense adjustment"
+                  placeholder="e.g. Plumbing repairs & inspection invoice"
                   className="w-full text-xs rounded-xl border border-slate-200 p-2.5 outline-none focus:border-indigo-600"
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-xs font-semibold text-slate-700 block">Debit & Credit Lines</label>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-slate-700">Debit & Credit Lines</label>
+                  <span className="text-[11px] text-slate-500">Each line can be tagged to a specific Floor Division</span>
+                </div>
+
                 {journalLines.map((line, idx) => (
-                  <div key={idx} className="flex items-center gap-2">
-                    <select
-                      value={line.account}
-                      onChange={(e) => {
-                        const updated = [...journalLines];
-                        updated[idx].account = e.target.value;
-                        setJournalLines(updated);
-                      }}
-                      className="flex-1 text-xs rounded-xl border border-slate-200 p-2 bg-white outline-none"
-                    >
-                      {coa.map(a => (
-                        <option key={a.Account_Code} value={a.Account_Code}>
-                          {a.Account_Code} · {a.Account_Name}
-                        </option>
-                      ))}
-                    </select>
+                  <div key={idx} className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                      <div>
+                        <label className="text-[10px] font-semibold text-slate-500 block mb-0.5">Account</label>
+                        <select
+                          value={line.account}
+                          onChange={(e) => {
+                            const updated = [...journalLines];
+                            updated[idx].account = e.target.value;
+                            setJournalLines(updated);
+                          }}
+                          className="w-full text-xs rounded-lg border border-slate-200 p-2 bg-white outline-none"
+                        >
+                          {coa.map(a => (
+                            <option key={a.Account_Code} value={a.Account_Code}>
+                              {a.Account_Code} · {a.Account_Name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                    <input
-                      type="number"
-                      step="0.01"
-                      placeholder="Debit"
-                      value={line.debit || ''}
-                      onChange={(e) => {
-                        const updated = [...journalLines];
-                        updated[idx].debit = Number(e.target.value);
-                        setJournalLines(updated);
-                      }}
-                      className="w-28 text-xs rounded-xl border border-slate-200 p-2 outline-none font-mono"
-                    />
+                      <div>
+                        <label className="text-[10px] font-semibold text-slate-500 block mb-0.5">Property</label>
+                        <select
+                          value={line.propertyId}
+                          onChange={(e) => {
+                            const updated = [...journalLines];
+                            updated[idx].propertyId = e.target.value;
+                            setJournalLines(updated);
+                          }}
+                          className="w-full text-xs rounded-lg border border-slate-200 p-2 bg-white outline-none"
+                        >
+                          <option value="">General / None</option>
+                          {properties.map(p => (
+                            <option key={p.Property_ID} value={p.Property_ID}>{p.Property_Name}</option>
+                          ))}
+                        </select>
+                      </div>
 
-                    <input
-                      type="number"
-                      step="0.01"
-                      placeholder="Credit"
-                      value={line.credit || ''}
-                      onChange={(e) => {
-                        const updated = [...journalLines];
-                        updated[idx].credit = Number(e.target.value);
-                        setJournalLines(updated);
-                      }}
-                      className="w-28 text-xs rounded-xl border border-slate-200 p-2 outline-none font-mono"
-                    />
+                      <div>
+                        <label className="text-[10px] font-semibold text-slate-500 block mb-0.5">Floor Division</label>
+                        <select
+                          value={line.divisionLevel || 'None'}
+                          onChange={(e) => {
+                            const updated = [...journalLines];
+                            updated[idx].divisionLevel = e.target.value;
+                            setJournalLines(updated);
+                          }}
+                          className="w-full text-xs rounded-lg border border-slate-200 p-2 bg-white outline-none font-semibold"
+                        >
+                          <option value="None">Whole Property / General</option>
+                          <option value="Main Floor">🏠 Main Floor</option>
+                          <option value="Basement">🏡 Basement</option>
+                          <option value="Upper Floor">🔼 Upper Floor</option>
+                        </select>
+                      </div>
+                    </div>
 
-                    <button
-                      type="button"
-                      onClick={() => removeJournalLine(idx)}
-                      className="text-slate-400 hover:text-rose-600 p-2"
-                    >
-                      ✕
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1">
+                        <input
+                          type="text"
+                          placeholder="Line memo / note (e.g. Main floor kitchen sink)"
+                          value={line.memo}
+                          onChange={(e) => {
+                            const updated = [...journalLines];
+                            updated[idx].memo = e.target.value;
+                            setJournalLines(updated);
+                          }}
+                          className="w-full text-xs rounded-lg border border-slate-200 p-2 bg-white outline-none"
+                        />
+                      </div>
+
+                      <div className="w-28">
+                        <input
+                          type="number"
+                          step="0.01"
+                          placeholder="Debit ($)"
+                          value={line.debit || ''}
+                          onChange={(e) => {
+                            const updated = [...journalLines];
+                            updated[idx].debit = Number(e.target.value);
+                            setJournalLines(updated);
+                          }}
+                          className="w-full text-xs rounded-lg border border-slate-200 p-2 bg-white outline-none font-mono font-bold text-slate-900"
+                        />
+                      </div>
+
+                      <div className="w-28">
+                        <input
+                          type="number"
+                          step="0.01"
+                          placeholder="Credit ($)"
+                          value={line.credit || ''}
+                          onChange={(e) => {
+                            const updated = [...journalLines];
+                            updated[idx].credit = Number(e.target.value);
+                            setJournalLines(updated);
+                          }}
+                          className="w-full text-xs rounded-lg border border-slate-200 p-2 bg-white outline-none font-mono font-bold text-slate-900"
+                        />
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => removeJournalLine(idx)}
+                        className="text-slate-400 hover:text-rose-600 p-2 text-sm font-bold"
+                        title="Remove Line"
+                      >
+                        ✕
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -653,7 +1011,7 @@ export const AccountingView: React.FC<AccountingViewProps> = ({ currentUser, onT
         </div>
       )}
 
-      {/* 5. CHART OF ACCOUNTS TAB */}
+      {/* 6. CHART OF ACCOUNTS TAB */}
       {subTab === 'COA' && (
         <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">

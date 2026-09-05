@@ -2,10 +2,11 @@ import React from 'react';
 import {
   DollarSign, TrendingUp, AlertCircle, CheckCircle2,
   Building, DoorOpen, Users, PiggyBank, Clock,
-  ArrowUpRight, FileText, ChevronRight, Zap
+  ArrowUpRight, FileText, ChevronRight, Zap, Landmark
 } from 'lucide-react';
 import { storage } from '../services/storage';
 import { AccountingEngine } from '../services/accountingEngine';
+import { getUnitOccupancySummary } from '../utils/roomAllocation';
 
 interface DashboardProps {
   onNavigateTab: (tab: string) => void;
@@ -27,10 +28,21 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigateTab, onQuickActi
   const totalOutstanding = Math.max(0, totalBilled - totalCollected);
 
   const activeUnits = units.filter(u => u.Current_Status !== 'Inactive');
-  const occupiedUnits = activeUnits.filter(u => u.Current_Status === 'Occupied').length;
-  const occupancyRate = activeUnits.length > 0 ? Math.round((occupiedUnits / activeUnits.length) * 100) : 0;
+  let totalPortfolioCapacity = 0;
+  let totalPortfolioOccupied = 0;
+  activeUnits.forEach(u => {
+    const occ = getUnitOccupancySummary(u, leases, tenants);
+    totalPortfolioCapacity += occ.totalCapacity;
+    totalPortfolioOccupied += occ.totalOccupied;
+  });
+  const occupancyRate = totalPortfolioCapacity > 0 ? Math.round((totalPortfolioOccupied / totalPortfolioCapacity) * 100) : 0;
 
-  const totalDepositsHeld = deposits.reduce((sum, d) => sum + d.Paid_Amount, 0);
+  const totalSecurityDepositsHeld = deposits
+    .filter(d => d.Deposit_Type === 'Security Deposit')
+    .reduce((sum, d) => sum + (d.Paid_Amount || 0) - (d.Refund_Amount || 0), 0);
+  const totalLMRHeld = deposits
+    .filter(d => d.Deposit_Type === 'Last Month Rent')
+    .reduce((sum, d) => sum + (d.Paid_Amount || 0) - (d.Refund_Amount || 0), 0);
   const totalLandlordPaid = landlordPayments.filter(p => p.Status === 'Posted').reduce((sum, p) => sum + p.Net_Amount, 0);
 
   // Current month specific metrics
@@ -53,12 +65,22 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigateTab, onQuickActi
     });
   }
 
-  const vacantUnits = activeUnits.filter(u => u.Current_Status === 'Vacant');
-  if (vacantUnits.length > 0) {
+  const trulyVacantUnits = activeUnits.filter(u => {
+    const occ = getUnitOccupancySummary(u, leases, tenants);
+    const hasActiveLease = leases.some(l => l.Unit_ID === u.Unit_ID && (l.Status === 'Active' || (l.Status as string) === 'active'));
+    if (hasActiveLease || occ.totalOccupied > 0 || u.Current_Status === 'Occupied') return false;
+    if (u.Spaces && u.Spaces.length > 0) {
+      const anyOccupied = u.Spaces.some(s => s.Current_Status === 'Occupied' || Boolean(s.Tenant_ID));
+      if (anyOccupied) return false;
+    }
+    return true;
+  });
+
+  if (trulyVacantUnits.length > 0 && totalPortfolioOccupied < totalPortfolioCapacity) {
     alerts.push({
       type: 'warning',
-      title: `${vacantUnits.length} Vacant Units Ready for Lease`,
-      message: `Potential monthly rent loss of ${AccountingEngine.formatCurrency(vacantUnits.reduce((s, u) => s + u.Target_Rent, 0))}.`,
+      title: `${trulyVacantUnits.length} Vacant Units Ready for Lease`,
+      message: `Potential monthly rent loss of ${AccountingEngine.formatCurrency(trulyVacantUnits.reduce((s, u) => s + u.Target_Rent, 0))}.`,
       actionTab: 'Units'
     });
   }
@@ -96,6 +118,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigateTab, onQuickActi
 
           <div className="flex flex-wrap gap-2.5">
             <button
+              onClick={() => onQuickAction('ALLOCATE_BANK_PAYMENT')}
+              className="px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white shadow-md transition-all flex items-center gap-1.5"
+            >
+              <Landmark className="w-3.5 h-3.5" />
+              Allocate Multi-Item Payment
+            </button>
+            <button
               onClick={() => onQuickAction('GENERATE_RENT')}
               className="px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-500 hover:bg-indigo-600 text-white shadow-md transition-all flex items-center gap-1.5"
             >
@@ -121,7 +150,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigateTab, onQuickActi
       </div>
 
       {/* KPI Cards Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
           <div className="flex items-center justify-between">
             <p className="text-xs font-semibold text-slate-500">Rent Billed (This Month)</p>
@@ -140,7 +169,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigateTab, onQuickActi
 
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold text-slate-500">Rent Receivable / Arrears</p>
+            <p className="text-xs font-semibold text-slate-500">Rent Arrears</p>
             <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
               <AlertCircle className="w-4 h-4" />
             </div>
@@ -163,7 +192,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigateTab, onQuickActi
           <p className="text-xl font-extrabold text-slate-900 mt-2">
             {occupancyRate}%
           </p>
-          <div className="w-full bg-slate-100 rounded-full h-1.5 mt-2.5 overflow-hidden">
+          <p className="text-[11px] text-slate-500 mt-0.5">
+            {totalPortfolioOccupied} of {totalPortfolioCapacity} tenant spaces occupied
+          </p>
+          <div className="w-full bg-slate-100 rounded-full h-1.5 mt-2 overflow-hidden">
             <div
               className="bg-purple-600 h-full rounded-full transition-all duration-500"
               style={{ width: `${occupancyRate}%` }}
@@ -173,16 +205,31 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigateTab, onQuickActi
 
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold text-slate-500">Deposits in Trust (LMR)</p>
-            <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+            <p className="text-xs font-semibold text-slate-500">Security Deposits</p>
+            <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
               <PiggyBank className="w-4 h-4" />
             </div>
           </div>
           <p className="text-xl font-extrabold text-slate-900 mt-2">
-            {AccountingEngine.formatCurrency(totalDepositsHeld)}
+            {AccountingEngine.formatCurrency(totalSecurityDepositsHeld)}
           </p>
           <p className="text-xs text-slate-600 mt-2">
-            Held under GL Account 2200
+            Held under GL 2200 (Escrow)
+          </p>
+        </div>
+
+        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold text-slate-500">Last Month Rent (LMR)</p>
+            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <Landmark className="w-4 h-4" />
+            </div>
+          </div>
+          <p className="text-xl font-extrabold text-emerald-700 mt-2">
+            {AccountingEngine.formatCurrency(totalLMRHeld)}
+          </p>
+          <p className="text-xs text-slate-600 mt-2">
+            Held under GL 2210 (LMR)
           </p>
         </div>
       </div>
@@ -263,7 +310,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigateTab, onQuickActi
               <div className="space-y-3">
                 {properties.map(p => {
                   const propUnits = units.filter(u => u.Property_ID === p.Property_ID);
-                  const occupied = propUnits.filter(u => u.Current_Status === 'Occupied').length;
+                  const occupied = propUnits.filter(u => {
+                    const occ = getUnitOccupancySummary(u, leases, tenants);
+                    const hasLease = leases.some(l => l.Unit_ID === u.Unit_ID && (l.Status === 'Active' || (l.Status as string) === 'active'));
+                    return occ.totalOccupied > 0 || hasLease || u.Current_Status === 'Occupied';
+                  }).length;
                   const occPercent = propUnits.length > 0 ? Math.round((occupied / propUnits.length) * 100) : 0;
 
                   return (
@@ -271,7 +322,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigateTab, onQuickActi
                       <div className="flex items-center justify-between mb-1.5">
                         <span className="text-xs font-bold text-slate-900">{p.Property_Name}</span>
                         <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700">
-                          {p.Province}
+                          {p.City}
                         </span>
                       </div>
                       <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
